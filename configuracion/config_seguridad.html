@@ -1,0 +1,30 @@
+{% extends "admin/config_base.html" %}
+
+{% block config_content %}
+<div class="config-group">
+    <span class="group-title">Acceso y Contraseñas</span>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Cambio de Clave Periódico</span>
+            <span class="row-desc">Forzar actualización cada 90 días.</span>
+        </div>
+        <label class="switch"><input type="checkbox" name="sec_cambio_contra_periodico" id="cfg-sec-pwd"><span
+                class="slider"></span></label>
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Intentos para Bloqueo</span>
+            <span class="row-desc">Máximo de fallos antes de bloquear la cuenta.</span>
+        </div>
+        <input type="number" name="sec_intentos_bloqueo" id="cfg-sec-intentos" class="config-input">
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Cierre de Sesión Automático (Min)</span>
+            <span class="row-desc">Proteja su información: el sistema cerrará el acceso tras este tiempo de
+                inactividad.</span>
+        </div>
+        <input type="number" name="sec_timeout_sesion" id="cfg-sec-timeout" class="config-input">
+    </div>
+</div>
+{% endblock %}

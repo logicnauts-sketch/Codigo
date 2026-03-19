@@ -1,0 +1,82 @@
+{% extends "admin/config_base.html" %}
+
+{% block config_content %}
+{% if license.plan != 'START' %}
+<div class="config-group">
+    <span class="group-title">Integración MEGA.nz Cloud</span>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Respaldo en la Nube</span>
+            <span class="row-desc">Activa el respaldo automático en MEGA.NZ además del local.</span>
+        </div>
+        <label class="switch"><input type="checkbox" name="bkp_mega_enabled" id="cfg-bkp-mega-en-auto"><span
+                class="slider"></span></label>
+    </div>
+
+    <div id="mega-credentials-box" class="ms-4 ps-3 border-start mb-3">
+        <div class="config-row">
+            <div class="row-info">
+                <span class="row-label">Cuenta de MEGA (Email)</span>
+                <span class="row-desc">Correo asociado a su cuenta de mega.nz.</span>
+            </div>
+            <input type="email" id="cfg-bkp-mega-mail" class="config-input" placeholder="ejemplo@mega.nz">
+        </div>
+        <div class="config-row">
+            <div class="row-info">
+                <span class="row-label">Contraseña de MEGA</span>
+                <span class="row-desc">Clave de acceso (se encripta localmente).</span>
+            </div>
+            <input type="password" id="cfg-bkp-mega-pass" class="config-input" placeholder="••••••••">
+            <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="validateMegaCredentials()">
+                <i class="fas fa-check-circle"></i> Validar e Inicializar
+            </button>
+        </div>
+        <div class="config-row">
+            <div class="row-info">
+                <span class="row-label">Retención Local (Días)</span>
+                <span class="row-desc">Días que se conservarán los archivos .sql locales.</span>
+            </div>
+            <input type="number" id="cfg-bkp-retention" class="config-input" min="1" max="90" value="7"
+                style="width: 80px;">
+        </div>
+        <div class="config-row">
+            <div class="row-info">
+                <span class="row-label">Sincronización Total</span>
+                <span class="row-desc">Sube todos los respaldos y facturas PDF locales a la nube.</span>
+            </div>
+            <button type="button" class="btn btn-outline-info btn-sm" onclick="syncAllBackupsToMega()"
+                id="btn-sync-mega">
+                <i class="fas fa-cloud-upload-alt"></i> Sincronizar Todo a MEGA
+            </button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="config-group">
+    <div class="divider"><span>Backups Recientes</span></div>
+    <div class="header-actions mb-3">
+        <button type="button" class="btn btn-primary btn-sm" id="btnRunBackup"><i class="fas fa-play"></i> Ejecutar
+            Ahora</button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead class="bg-light">
+                <tr>
+                    <th>Archivo</th>
+                    <th>Tamaño</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="backupListBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof loadBackups === 'function') loadBackups();
+    });
+</script>
+{% endblock %}

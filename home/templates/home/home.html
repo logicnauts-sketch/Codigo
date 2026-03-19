@@ -1,0 +1,322 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Design â€” Dashboard</title>
+    <link rel="stylesheet" href="/static/lib/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/home/static/css/home.css">
+</head>
+<body class="sidebar-hidden" id="appBody" data-rol="{{ rol|default('admin')|lower }}">
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/home" class="brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="brand-details">
+                        <span class="brand-name">Next Design</span>
+                        <span class="brand-sub">SaaS Enterprise</span>
+                    </div>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">Módulos Principales</div>
+                <a href="/home/" class="nav-item active">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/facturacion/" class="nav-item">
+                    <i class="fas fa-receipt"></i>
+                    <span>Facturación</span>
+                </a>
+                <a href="/caja/" class="nav-item">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Caja</span>
+                </a>
+                <a href="/trabajos_pendientes/" class="nav-item">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Trabajos Pendientes</span>
+                </a>
+                <a href="/gastos_diarios/" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Gastos Diarios</span>
+                </a>
+                
+                <div class="nav-section">Administración</div>
+                <a href="/inventario/" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Inventario</span>
+                </a>
+                <a href="/productos/" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Productos</span>
+                </a>
+                <a href="/clientes/" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+                <a href="/proveedores/" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Proveedores</span>
+                </a>
+                <a href="/reporteventas/" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Reporte de Ventas</span>
+                </a>
+                <a href="/usuarios/" class="nav-item">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="/configuracion/" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+                <div class="sidebar-heading px-3 mt-4 mb-2 text-muted text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">Extras</div>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Logros</span>
+                </a>
+            </nav>
+
+        </aside>
+
+        <!-- Main Container -->
+        <div class="main-container">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="topbar-context">
+                        <div class="context-badge">
+                            <i class="fas fa-th-large"></i> DASHBOARD
+                        </div>
+                        <h1>Panel Principal</h1>
+                    </div>
+                </div>
+                
+                <div class="topbar-right">
+                    <div class="datetime-display d-none d-md-flex" id="timeDisplay">
+                        <i class="far fa-clock me-2"></i>
+                        <span>Cargando...</span>
+                    </div>
+
+                    <div class="status-pill offline">
+                        <div class="status-dot"></div>
+                        AGENTE: OFFLINE
+                    </div>
+                    
+                    <div class="dropdown">
+                        <div class="user-display" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                            <div class="user-avatar">{{ iniciales }}</div>
+                            <div class="user-meta">
+                                <span class="user-name">{{ nombre_completo }}</span>
+                                <span class="user-role">{{ rol|upper }}</span>
+                            </div>
+                            <i class="fas fa-chevron-down ms-2 text-muted" style="font-size: 0.8rem;"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" style="border-radius: 12px; min-width: 200px;">
+                            <li><h6 class="dropdown-header">Mi Cuenta</h6></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold d-flex align-items-center py-2" href="/logout">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-wrapper">
+
+                <div class="welcome-banner">
+                    <h1>Â¡Hola, {{ nombre_completo.split()[0] }}!</h1>
+                    <p>Bienvenido al panel de gestión de Next Design.</p>
+                    {% if not db_connected %}
+                    <div class="alert alert-warning d-flex align-items-center mt-3 py-2" style="font-size: 0.85rem; border-radius: 10px;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Sin conexión a la base de datos principal. Los datos mostrados son temporales.
+                        <a href="/infra/db" class="ms-auto fw-bold text-decoration-none text-dark">Configurar DB</a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="icon blue"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="info">
+                            <span class="label">Ventas Hoy</span>
+                            <span class="value">RD$ {{ "{:,.2f}".format(dashboard.ventas_hoy) }}</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon green"><i class="fas fa-wallet"></i></div>
+                        <div class="info">
+                            <span class="label">Caja Actual</span>
+                            <span class="value">RD$ {{ "{:,.2f}".format(dashboard.caja_actual) }}</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon orange"><i class="fas fa-users"></i></div>
+                        <div class="info">
+                            <span class="label">Clientes</span>
+                            <span class="value">{{ dashboard.total_clientes }}</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon red"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="info">
+                            <span class="label">Stock Bajo</span>
+                            <span class="value">{{ dashboard.stock_bajo }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-sections">
+                    <div class="section-card chart-section">
+                        <div class="section-header">
+                            <h3>Ventas del Día</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Gamificación Premium -->
+                    <div class="section-card gamification-section premium-card {% if gamificacion.nivel >= 4 %}core-mode{% endif %}">
+                        <div class="section-header">
+                            <div class="title-with-icon">
+                                <i class="fas fa-medal gold"></i>
+                                <h3>Sistema de Logros</h3>
+                                {% if gamificacion.nivel >= 4 %}
+                                <span class="badge bg-warning text-dark ms-2" style="font-size: 0.65rem; font-weight: 800; letter-spacing: 1px;">MODO CORE ACTIVO</span>
+                                {% endif %}
+                            </div>
+                            <div class="level-showcase">
+                                <span class="level-label">Rango actual</span>
+                                <span class="level-number">{{ gamificacion.nivel }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="gamification-body">
+                            <div class="xp-showcase">
+                                <div class="rank-icon">
+                                    <i class="fas {% if gamificacion.nivel >= 4 %}fa-gem{% else %}fa-crown{% endif %}"></i>
+                                </div>
+                                <div class="xp-details">
+                                    <div class="xp-info">
+                                        <span class="xp-label">Progreso de Nivel</span>
+                                        <span class="xp-values"><b>{{ gamificacion.xp_actual }}</b> / {{ gamificacion.xp_siguiente }} XP</span>
+                                    </div>
+                                    <div class="progress-bar-wrapper">
+                                        <div class="progress-bar-glow"></div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill premium-gradient" style="width: {{ gamificacion.progreso }}%">
+                                                <div class="progress-particles"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="missions-container mt-4">
+                                <div class="missions-header">
+                                    <h4>
+                                        <i class="fas {% if gamificacion.nivel >= 4 %}fa-rocket{% else %}fa-scroll{% endif %}"></i> 
+                                        {% if gamificacion.nivel >= 4 %}Misiones Core de Operación{% else %}Misiones del Día{% endif %}
+                                    </h4>
+                                    <span class="mission-count">{{ gamificacion.misiones|length }} activas</span>
+                                </div>
+                                <div class="missions-grid">
+                                    {% if not gamificacion.misiones %}
+                                    <div class="text-center py-4 text-muted" style="grid-column: 1 / -1; font-size: 0.9rem;">
+                                        <i class="fas fa-spinner fa-spin mb-2 d-block" style="font-size: 1.5rem;"></i>
+                                        Sincronizando misiones con el servidor...
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% for mision in gamificacion.misiones %}
+                                    <div class="mission-card {% if mision.completada %}is-completed{% endif %}">
+                                        <div class="mission-indicator">
+                                            {% if mision.completada %}
+                                            <div class="check-box"><i class="fas fa-check"></i></div>
+                                            {% else %}
+                                            <div class="check-box animate-pulse"></div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="mission-info">
+                                            <span class="mission-name">{{ mision.titulo }}</span>
+                                            <span class="mission-text">{{ mision.descripcion }}</span>
+                                        </div>
+                                        <div class="mission-reward">
+                                            <i class="fas fa-star" style="color: #fbbf24;"></i>
+                                            <span>+{{ mision.xp_recompensa }} XP</span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="{{ url_for('home.static', filename='css/home.css') }}">
+    <script src="/static/lib/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/lib/chartjs/chart.min.js"></script>
+    <script src="/home/static/js/home.js" defer></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('salesChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: {{ dashboard.ventas_por_hora.labels | tojson }},
+                    datasets: [{
+                        label: 'Ventas por Hora (RD$)',
+                        data: {{ dashboard.ventas_por_hora.data | tojson }},
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#6366f1',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false },
+                            ticks: { callback: function(value) { return 'RD$' + value.toLocaleString(); } }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false }
+                        }
+                    }
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>
+

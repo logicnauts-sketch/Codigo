@@ -1,0 +1,82 @@
+{% extends "admin/config_base.html" %}
+
+{% block config_content %}
+<div class="config-group">
+    <span class="group-title">Control de Efectivo</span>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Requerir Apertura de Caja</span>
+            <span class="row-desc">Bloquea ventas si no hay un turno de caja activo.</span>
+        </div>
+        <label class="switch">
+            <input type="checkbox" name="caja_requerida_fact" id="cfg-caja-req">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Permitir Arqueos Parciales</span>
+            <span class="row-desc">Habilita cierres sin terminar la jornada (cambio de turno).</span>
+        </div>
+        <label class="switch">
+            <input type="checkbox" name="caja_permite_arqueo_parcial" id="cfg-caja-parcial">
+            <span class="slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="config-group">
+    <span class="group-title">🏦 Sincronización Bancaria</span>
+
+    <div class="config-row locked-feature">
+        <div class="row-info">
+            <span class="row-label">Sincronización en Tiempo Real</span>
+            <span class="row-desc">Conecte sus cuentas bancarias para importar transacciones automáticamente.</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+            <span class="premium-lock-tag"><i class="fas fa-lock"></i> MODO CORE</span>
+            <label class="switch">
+                <input type="checkbox" disabled>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="config-row locked-feature">
+        <div class="row-info">
+            <span class="row-label">Detección de Banco</span>
+            <span class="row-desc">Seleccione su entidad para optimizar la lectura inteligente de archivos.</span>
+        </div>
+        <select disabled class="config-select" style="min-width: 180px;">
+            <option>Detección Automática</option>
+            <option>Banco Popular</option>
+            <option>BHD</option>
+            <option>BanReservas</option>
+        </select>
+    </div>
+
+    <div class="config-row locked-feature">
+        <div class="row-info">
+            <span class="row-label">Validar Origen del PDF</span>
+            <span class="row-desc">Muestra advertencia si el documento no coincide con el banco.</span>
+        </div>
+        <label class="switch">
+            <input type="checkbox" disabled>
+            <span class="slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="config-info-box"
+    style="background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.2); border-radius: 12px; padding: 1.25rem; margin-top: 1rem;">
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <i class="fas fa-university" style="font-size: 2rem; color: var(--ln-primary);"></i>
+        <div>
+            <h4 style="margin: 0; font-size: 1rem; font-weight: 800; color: var(--ln-primary);">Gestión Bancaria Pro
+            </h4>
+            <p style="margin: 5px 0 0; font-size: 0.85rem; color: var(--ln-text-muted);">La integración directa con API
+                bancarias y la IA de conciliación requieren el Plan CORE o superior.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

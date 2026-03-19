@@ -1,0 +1,100 @@
+<!-- Modal: Perfil del Cliente (Reutilizable) -->
+<div id="clientProfileModal" class="modal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3 class="modal-title">Perfil de Cliente</h3>
+            <button class="modal-close" id="closeProfileModal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Header del Perfil -->
+            <div class="profile-header-card" style="margin-bottom: 2rem;">
+                <div class="profile-name" id="profileName">Cargando...</div>
+                <div class="profile-subtitle" id="profileDocument">-</div>
+                <div class="profile-status-badge" id="profileStatus">ACTIVO</div>
+            </div>
+
+            <div class="profile-sections" style="margin-bottom: 2.5rem;">
+                <!-- Información Principal -->
+                <div class="profile-section" style="grid-column: 1 / -1;">
+                    <h4 class="section-title">
+                        <i class="fas fa-id-card"></i>
+                        Identificación del Cliente
+                    </h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div class="info-item">
+                            <div class="info-label">Dirección</div>
+                            <div class="info-value" id="profileAddress">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Teléfono</div>
+                            <div class="info-value" id="profilePhone">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value" id="profileEmail">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Fecha de Registro</div>
+                            <div class="info-value" id="profileRegistered">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facturas Recientes -->
+            <div class="reporte-card" style="margin-bottom: 0; border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden;">
+                <div class="reporte-card-header" style="padding: 16px 24px; background: var(--gray-light); border-bottom: 1px solid var(--border-subtle);">
+                    <h4 class="reporte-card-title" style="margin: 0; font-size: 1.1rem; color: var(--slate-800);">Historial de Facturas</h4>
+                </div>
+                
+                <!-- Dedicated Filter Row -->
+                <div class="profile-invoice-filters" style="padding: 12px 24px; background: white; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: flex-end; align-items: center; gap: 12px;">
+                    <div class="date-range-group" style="display: flex; align-items: center; gap: 8px; background: var(--gray-light); padding: 4px 12px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                        <i class="fas fa-calendar-alt" style="color: var(--text-muted); font-size: 0.8rem;"></i>
+                        <input type="date" id="profileDateStart" class="filter-input-sm" style="border: none; background: transparent; font-size: 0.813rem; color: var(--text-main); height: 28px; outline: none;">
+                        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">al</span>
+                        <input type="date" id="profileDateEnd" class="filter-input-sm" style="border: none; background: transparent; font-size: 0.813rem; color: var(--text-main); height: 28px; outline: none;">
+                    </div>
+                    <button id="btnFilterProfileInvoices" class="btn-sm btn-primary" style="height: 36px; width: 36px; padding: 0; border-radius: 8px;" title="Filtrar Historial">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr style="position: sticky; top: 0; background: var(--card-bg, white); z-index: 10;">
+                                <th style="display: none;">NCF</th>
+                                <th>Fecha</th>
+                                <th class="text-end">Monto</th>
+                                <th>Estado</th>
+                                <th class="text-center">Abonos</th>
+                                <th class="text-center">PDF</th>
+                            </tr>
+                        </thead>
+                        <tbody id="profileInvoicesBody">
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <i class="fas fa-file-invoice"></i>
+                                    <p>No hay facturas registradas</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" id="btnCreateInvoice">
+                <i class="fas fa-receipt"></i> Crear Factura
+            </button>
+            <button class="btn" id="btnViewHistory">
+                <i class="fas fa-history"></i> Ver Historial
+            </button>
+            <button class="btn btn-primary" id="btnRegisterPayment">
+                <i class="fas fa-money-bill-wave"></i> Registrar Pago
+            </button>
+        </div>
+    </div>
+</div>

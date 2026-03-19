@@ -1,0 +1,333 @@
+{% extends "admin/config_base.html" %}
+
+{% block config_content %}
+<div class="config-alert">
+    <i class="fas fa-cube"></i>
+    <div class="config-alert-text"><b>Plan {{ get_current_plan() }}:</b> Personalice los accesos de sus usuarios a los
+        módulos del sistema.
+    </div>
+</div>
+
+<div class="module-config-container">
+    <!-- Fila Superior: Usuarios -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-users"></i>
+                        <span>Usuarios Habilitados</span>
+                    </div>
+                </div>
+
+                <p class="section-description">
+                    Seleccione un usuario para configurar sus módulos permitidos.
+                </p>
+
+                <div class="users-grid" id="usersGrid">
+                    <div class="loading-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Cargando usuarios...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fila Inferior: Configuración de Módulos -->
+    <div class="row" id="permissionsRow" style="display: none;">
+        <div class="col-12">
+            <div class="section-card permissions-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-key"></i>
+                        <span>Módulos permitidos para: <b id="selectedUserName" class="text-primary">---</b></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div id="saveStatus" class="save-status">
+                            <i class="fas fa-check-circle"></i> Cambios guardados
+                        </div>
+                        <button class="btn btn-sm btn-primary px-3" onclick="closePermissions()">
+                            <i class="fas fa-save me-1"></i> Guardar y Cerrar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="permissions-grid" id="permissionsGrid">
+                    <!-- Los módulos se generarán dinámicamente o se mapearán aquí -->
+                    {% set modulos_list = [
+                    ('home', 'Inicio / Dashboard', 'fa-home'),
+                    ('facturacion', 'Facturación', 'fa-file-invoice-dollar'),
+                    ('caja', 'Caja', 'fa-cash-register'),
+                    ('clientes', 'Clientes', 'fa-users'),
+                    ('proveedores', 'Proveedores', 'fa-truck'),
+                    ('productos', 'Productos', 'fa-box'),
+                    ('inventario', 'Inventario', 'fa-warehouse'),
+                    ('usuarios', 'Usuarios', 'fa-user-cog'),
+                    ('reporteventas', 'Reporte de Ventas', 'fa-chart-line'),
+                    ('asistencia', 'Asistencia / Personal', 'fa-clock'),
+                    ('servicios', 'Servicios', 'fa-concierge-bell'),
+                    ('finanzas', 'Finanzas / Contabilidad', 'fa-university'),
+                    ('gamificacion', 'Logros y Gamificación', 'fa-trophy'),
+                    ('delivery', 'Delivery / Entregas', 'fa-shipping-fast')
+                    ] %}
+
+                    {% for key, label, icon in modulos_list %}
+                    <div class="perm-item {% if key=='home' %}locked-system-item{% endif %}" data-mod="{{ key }}">
+                        <div class="perm-info">
+                            {% if key == 'home' %}
+                            <i class="fa-solid fa-lock" style="color: #0ea5e9 !important; font-size: 1.2rem;"
+                                title="Módulo Mandatorio"></i>
+                            {% else %}
+                            <i class="fas {{ icon }}"></i>
+                            {% endif %}
+                            <span>{{ label }}</span>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input mod-toggle" type="checkbox" {% if key=='home' %}checked
+                                disabled title="Módulo obligatorio del sistema" {% endif %}
+                                onchange="togglePerm('{{ key }}')">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .users-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .user-item {
+        padding: 1rem;
+        background: var(--ln-card-bg);
+        border: 1px solid var(--ln-border);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .user-item:hover {
+        border-color: var(--ln-primary);
+        background: rgba(59, 130, 246, 0.05);
+    }
+
+    .user-item.active {
+        border-color: var(--ln-primary);
+        background: var(--ln-primary);
+        color: white;
+    }
+
+    .user-avatar {
+        width: 38px;
+        height: 38px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+
+    .permissions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+
+    .perm-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1rem;
+        background: var(--ln-grid-row-even);
+        border-radius: 8px;
+        border: 1px solid transparent;
+    }
+
+    .perm-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .perm-info i {
+        width: 20px;
+        text-align: center;
+        color: var(--ln-primary);
+    }
+
+    .save-status {
+        display: none;
+        color: #10b981;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .locked-system-item {
+        background: rgba(14, 165, 233, 0.08) !important;
+        border: 1.5px solid #0ea5e9 !important;
+        cursor: not-allowed;
+    }
+
+    .locked-highlight {
+        background: rgba(14, 165, 233, 0.05) !important;
+        border: 1px dashed #0ea5e9 !important;
+    }
+
+    .locked-system-item .perm-info i {
+        color: #0ea5e9 !important;
+    }
+
+    .locked-system-item .form-check-input {
+        filter: grayscale(1) opacity(0.5);
+    }
+</style>
+
+<script>
+    let usuariosPerms = {{ usuarios_habilitados | default ({}) | tojson }};
+    let selectedUserId = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadUsers();
+    });
+
+    async function loadUsers() {
+        const grid = document.getElementById('usersGrid');
+        try {
+            const response = await fetch("{{ url_for('usuarios.usuarios_data') }}");
+            if (!response.ok) throw new Error('Error al cargar usuarios');
+
+            const result = await response.json();
+
+            grid.innerHTML = '';
+
+            if (!result || result.length === 0) {
+                grid.innerHTML = '<div class="alert alert-info w-100">No se encontraron usuarios.</div>';
+                return;
+            }
+
+            // result is a flat list of users
+            result.forEach(user => {
+                const item = document.createElement('div');
+                item.className = 'user-item';
+                if (selectedUserId == user.id) item.classList.add('active');
+
+                const initial = user.nombre_completo ? user.nombre_completo[0].toUpperCase() : '?';
+                item.innerHTML = `
+                    <div class="user-avatar">${initial}</div>
+                    <div class="user-details">
+                        <div class="fw-bold">${user.nombre_completo}</div>
+                        <small class="opacity-75">${user.rol}</small>
+                    </div>
+                `;
+
+                item.onclick = (e) => selectUser(user, e);
+                grid.appendChild(item);
+            });
+        } catch (e) {
+            console.error(e);
+            grid.innerHTML = `<div class="alert alert-danger w-100">
+                <i class="fas fa-exclamation-circle me-2"></i> Error al cargar datos: ${e.message}
+            </div>`;
+        }
+    }
+
+    function selectUser(user, e) {
+        selectedUserId = user.id;
+        document.getElementById('selectedUserName').innerText = user.nombre_completo;
+        document.getElementById('permissionsRow').style.display = 'block';
+
+        // Actualizar UI activa
+        document.querySelectorAll('.user-item').forEach(i => i.classList.remove('active'));
+        if (e && e.currentTarget) e.currentTarget.classList.add('active');
+
+        // Cargar permisos
+        const userPerms = usuariosPerms[user.id] || [];
+        const isEmpleado = user.rol && user.rol.toLowerCase() === 'empleado';
+        const isGerente = user.rol && user.rol.toLowerCase() === 'gerente';
+        const gerenteWhitelist = ['home', 'facturacion', 'caja', 'clientes', 'proveedores', 'productos', 'inventario', 'usuarios', 'reporteventas', 'configuracion', 'licencia', 'gamificacion', 'calculadora'];
+
+        document.querySelectorAll('.mod-toggle').forEach(input => {
+            const mod = input.closest('.perm-item').dataset.mod;
+
+            // 1. Módulos obligatorios / bloqueados
+            if (mod === 'home' || (isEmpleado && (mod === 'facturacion' || mod === 'caja')) || (isGerente && gerenteWhitelist.includes(mod))) {
+                input.checked = true;
+                input.disabled = true;
+                input.title = "Módulo obligatorio para este rol";
+                input.closest('.perm-item').style.opacity = mod === 'home' ? "1" : "0.7";
+                if (mod === 'home') input.closest('.perm-item').classList.add('locked-highlight');
+                else input.closest('.perm-item').classList.add('bg-light');
+            }
+            else if (isGerente && (mod === 'asistencia' || mod === 'finanzas' || mod === 'servicios')) {
+                input.checked = false;
+                input.disabled = true;
+                input.title = "Módulo no disponible para este rol";
+                input.closest('.perm-item').style.opacity = "0.5";
+                input.closest('.perm-item').classList.add('bg-light');
+            }
+            else {
+                // 2. Comportamiento normal
+                input.checked = userPerms.includes(mod);
+                input.disabled = false;
+                input.title = "";
+                input.closest('.perm-item').style.opacity = "1";
+                input.closest('.perm-item').classList.remove('bg-light');
+                input.closest('.perm-item').classList.remove('locked-highlight');
+            }
+        });
+    }
+
+    async function togglePerm(mod) {
+        if (!selectedUserId) return;
+
+        // Obtener coleccion actual
+        const perms = [];
+        document.querySelectorAll('.mod-toggle:checked').forEach(input => {
+            perms.push(input.closest('.perm-item').dataset.mod);
+        });
+
+        usuariosPerms[selectedUserId] = perms;
+        await saveGlobal();
+    }
+
+    async function saveGlobal() {
+        const status = document.getElementById('saveStatus');
+        status.style.display = 'none';
+
+        try {
+            const response = await fetch('/configuracion/usuarios-habilitados', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuarios: usuariosPerms })
+            });
+
+            if (response.ok) {
+                status.style.display = 'block';
+                setTimeout(() => status.style.display = 'none', 3000);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function closePermissions() {
+        document.getElementById('permissionsRow').style.display = 'none';
+        document.querySelectorAll('.user-item').forEach(i => i.classList.remove('active'));
+        selectedUserId = null;
+        // Refrescar para aplicar cambios visuales (sidebar, etc)
+        location.reload();
+    }
+</script>
+{% endblock %}

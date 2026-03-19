@@ -1,0 +1,650 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración â€” Next Design</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/base.css?v=2">
+    <style>
+        /* â”€â”€ Config Container â”€â”€ */
+        .config-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            height: calc(100vh - 68px);
+            box-sizing: border-box;
+        }
+        @media (max-width: 900px) {
+            .config-container { grid-template-columns: 1fr; height: auto; }
+        }
+
+        /* â”€â”€ Internal Nav â”€â”€ */
+        .config-nav {
+            background: var(--card-bg, #fff);
+            border-radius: 12px;
+            border: 1px solid var(--border-color, #e2e8f0);
+            overflow-y: auto;
+            height: 100%;
+            padding: 0.5rem 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+        @media (max-width: 900px) {
+            .config-nav {
+                display: flex; overflow-x: auto; white-space: nowrap;
+                padding: 0.5rem; height: auto;
+            }
+            .cnav-cat { display: none; }
+            .cnav-item { display: inline-flex; padding: 0.5rem 1rem; border-radius: 8px; margin-right: 0.4rem; }
+            .cnav-item.active { border-bottom: 2px solid #0ea5e9; }
+        }
+        .cnav-cat {
+            font-size: 0.6rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1.5px; color: #94a3b8; padding: 1rem 1.25rem 0.4rem;
+        }
+        .cnav-item {
+            padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.75rem;
+            color: #64748b; text-decoration: none; cursor: pointer;
+            transition: all 0.2s; font-weight: 500; font-size: 0.88rem;
+        }
+        .cnav-item i { width: 20px; text-align: center; font-size: 0.95rem; transition: transform 0.2s; }
+        .cnav-item:hover { background: #f8fafc; color: #0ea5e9; }
+        .cnav-item:hover i { transform: scale(1.1); }
+        .cnav-item.active {
+            background: rgba(14,165,233,0.08); color: #0ea5e9;
+            border-right: 3px solid #0ea5e9; font-weight: 600;
+        }
+
+        /* â”€â”€ Config Panel â”€â”€ */
+        .config-panel {
+            background: #fff; border-radius: 12px;
+            border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            display: flex; flex-direction: column; overflow: hidden; height: 100%;
+        }
+        .cpanel-header {
+            padding: 1.25rem 1.75rem; border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc; display: flex; align-items: center; justify-content: space-between;
+        }
+        .cpanel-header h2 { margin: 0; font-size: 1.15rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 0.5rem; }
+        .cpanel-body-wrapper { flex: 1; overflow-y: auto; padding: 1.75rem; }
+        .cpanel-body { display: none; animation: cfadeIn 0.3s ease; }
+        .cpanel-body.active { display: block; }
+        @keyframes cfadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* â”€â”€ Config Group & Row â”€â”€ */
+        .cgroup { margin-bottom: 2rem; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+        .cgroup-title {
+            font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em;
+            color: #64748b; font-weight: 700; padding: 0.85rem 1.4rem;
+            background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .crow {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            padding: 1.25rem 1.4rem; border-bottom: 1px solid #f1f5f9; gap: 1.5rem;
+            transition: background 0.2s;
+        }
+        .crow:last-child { border-bottom: none; }
+        .crow:hover { background: #fafbfc; }
+        .crow-info { flex: 1; }
+        .crow-label { font-weight: 600; font-size: 0.95rem; color: #1e293b; display: block; margin-bottom: 2px; }
+        .crow-desc { font-size: 0.83rem; color: #64748b; line-height: 1.4; margin: 0; }
+        .crow-ctrl { min-width: 240px; display: flex; justify-content: flex-end; align-items: center; }
+        @media (max-width: 768px) {
+            .crow { flex-direction: column; }
+            .crow-ctrl { min-width: unset; width: 100%; justify-content: flex-start; margin-top: 0.5rem; }
+        }
+
+        /* â”€â”€ Inputs â”€â”€ */
+        .cfg-input, .cfg-select {
+            width: 100%; padding: 0.55rem 0.85rem; border: 1px solid #cbd5e1;
+            border-radius: 6px; font-size: 0.9rem; color: #1e293b; background: #fff;
+            transition: all 0.2s;
+        }
+        .cfg-input:focus, .cfg-select:focus { border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14,165,233,0.1); outline: none; }
+
+        /* â”€â”€ Toggle Switch â”€â”€ */
+        .tswitch { position: relative; display: inline-block; width: 48px; height: 26px; }
+        .tswitch input { opacity: 0; width: 0; height: 0; }
+        .tslider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: #cbd5e1; transition: .3s; border-radius: 34px;
+        }
+        .tslider:before {
+            position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+            background: #fff; transition: .3s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+        input:checked + .tslider { background: #0ea5e9; }
+        input:checked + .tslider:before { transform: translateX(22px); }
+
+        /* â”€â”€ Alert â”€â”€ */
+        .cfg-alert {
+            display: flex; padding: 1rem 1.25rem; background: rgba(14,165,233,0.08);
+            border-left: 4px solid #0ea5e9; border-radius: 4px; margin-bottom: 1.75rem;
+            align-items: center; gap: 0.75rem;
+        }
+        .cfg-alert i { font-size: 1.3rem; color: #0ea5e9; }
+        .cfg-alert p { margin: 0; font-size: 0.88rem; color: #334155; font-weight: 500; }
+
+        /* â”€â”€ Module Cards â”€â”€ */
+        .mod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+        .mod-card {
+            border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem;
+            display: flex; gap: 1rem; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .mod-card:hover { border-color: #0ea5e9; box-shadow: 0 4px 12px rgba(14,165,233,0.06); }
+        .mod-icon {
+            width: 46px; height: 46px; border-radius: 10px; background: rgba(14,165,233,0.1);
+            color: #0ea5e9; display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; flex-shrink: 0;
+        }
+        .mod-info { flex: 1; }
+        .mod-title { font-weight: 700; font-size: 1rem; margin-bottom: 3px; color: #1e293b; display: flex; align-items: center; justify-content: space-between; }
+        .mod-desc { font-size: 0.82rem; color: #64748b; line-height: 1.35; }
+        .pro-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+            padding: 1px 6px; border-radius: 4px; font-size: 0.55rem; font-weight: 700;
+            letter-spacing: 0.5px; text-transform: uppercase; vertical-align: middle;
+        }
+
+        /* â”€â”€ Footer â”€â”€ */
+        .cpanel-footer {
+            padding: 1rem 1.75rem; background: #f8fafc; border-top: 1px solid #e2e8f0;
+            display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem;
+        }
+        .btn-cfg-save {
+            background: #0ea5e9; color: #fff; border: none; padding: 0.55rem 1.4rem;
+            border-radius: 6px; font-weight: 600; font-size: 0.92rem; cursor: pointer;
+            display: flex; align-items: center; gap: 0.4rem; transition: background 0.2s;
+        }
+        .btn-cfg-save:hover { background: #0284c7; }
+    </style>
+</head>
+<body class="sidebar-hidden">
+    <div class="app-layout">
+        <!-- â•â•â• Sidebar â•â•â• -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/home" class="brand">
+                    <div class="brand-icon"><i class="fas fa-shield-halved"></i></div>
+                    <div class="brand-details">
+                        <span class="brand-name">Next Design</span>
+                        <span class="brand-sub">SaaS Enterprise</span>
+                    </div>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">Módulos Principales</div>
+                <a href="/home" class="nav-item"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+                <a href="/facturacion" class="nav-item"><i class="fas fa-receipt"></i><span>Facturación</span></a>
+                <a href="/caja" class="nav-item"><i class="fas fa-cash-register"></i><span>Caja</span></a>
+                <a href="/trabajos_pendientes" class="nav-item"><i class="fas fa-tools"></i><span>Trabajos Pendientes</span></a>
+                <a href="/gastos_diarios" class="nav-item"><i class="fas fa-file-invoice-dollar"></i><span>Gastos Diarios</span></a>
+                <div class="nav-section">Administración</div>
+                <a href="/inventario" class="nav-item"><i class="fas fa-box"></i><span>Inventario</span></a>
+                <a href="/productos" class="nav-item"><i class="fas fa-tags"></i><span>Productos</span></a>
+                <a href="/clientes" class="nav-item"><i class="fas fa-users"></i><span>Clientes</span></a>
+                <a href="/proveedores" class="nav-item"><i class="fas fa-building"></i><span>Proveedores</span></a>
+                <a href="/reporteventas" class="nav-item"><i class="fas fa-chart-line"></i><span>Reporte de Ventas</span></a>
+                <a href="/usuarios" class="nav-item"><i class="fas fa-user-shield"></i><span>Usuarios</span></a>
+                <a href="/configuracion" class="nav-item active"><i class="fas fa-cog"></i><span>Configuración</span></a>
+                <div class="sidebar-heading px-3 mt-4 mb-2 text-muted text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">Extras</div>
+                <a href="#" class="nav-item"><i class="fas fa-trophy"></i><span>Logros</span></a>
+            </nav>
+        </aside>
+
+        <!-- â•â•â• Main Content â•â•â• -->
+        <main class="main-container">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                    <div class="page-info">Sistema / <span>Configuración Global</span></div>
+                </div>
+                <div class="topbar-right">
+                    <div class="status-pill"><div class="status-dot"></div>CORE OPERATIONAL</div>
+                    <div class="dropdown">
+                        <div class="user-display" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                            <div class="user-avatar">{{ sesion.iniciales }}</div>
+                            <div class="user-meta">
+                                <span class="user-name">{{ sesion.nombre_completo }}</span>
+                                <span class="user-role">{{ sesion.rol|upper }}</span>
+                            </div>
+                            <i class="fas fa-chevron-down ms-2 text-muted" style="font-size: 0.8rem;"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" style="border-radius: 12px; min-width: 200px;">
+                            <li><h6 class="dropdown-header">Mi Cuenta</h6></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger fw-bold d-flex align-items-center py-2" href="/logout"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <!-- â•â•â• Config Layout â•â•â• -->
+            <div class="config-container">
+                <!-- Internal sidebar -->
+                <div class="config-nav">
+                    <div class="cnav-cat">General</div>
+                    <a class="cnav-item active" data-target="panel-general"><i class="fas fa-cog"></i> <span>Ajustes Generales</span></a>
+                    <a class="cnav-item" data-target="panel-empresa"><i class="fas fa-building"></i> <span>Perfil de Empresa</span></a>
+                    <a class="cnav-item" data-target="panel-license"><i class="fas fa-id-card"></i> <span>Suscripción</span></a>
+
+                    <div class="cnav-cat">Operaciones</div>
+                    <a class="cnav-item" data-target="panel-facturacion"><i class="fas fa-file-invoice-dollar"></i> <span>Facturación</span></a>
+                    <a class="cnav-item" data-target="panel-caja"><i class="fas fa-cash-register"></i> <span>Caja y Pagos</span></a>
+                    <a class="cnav-item" data-target="panel-inventario"><i class="fas fa-boxes"></i> <span>Inventario</span></a>
+
+                    <div class="cnav-cat">Sistema</div>
+                    <a class="cnav-item" data-target="panel-modulos"><i class="fas fa-cubes"></i> <span>Módulos <span class="pro-badge">PRO</span></span></a>
+                    <a class="cnav-item" data-target="panel-seguridad"><i class="fas fa-shield-alt"></i> <span>Seguridad</span></a>
+                    <a class="cnav-item" data-target="panel-avanzado"><i class="fas fa-sliders-h"></i> <span>Avanzado</span></a>
+                </div>
+
+                <!-- Config Panel -->
+                <div class="config-panel">
+                    <div class="cpanel-header">
+                        <h2 id="cpanel-title"><i class="fas fa-cog"></i> Ajustes Generales</h2>
+                        <div id="save-status" style="font-size: 0.82rem; color: #10b981; font-weight: 500; display: none;">
+                            <i class="fas fa-check-circle"></i> Guardado
+                        </div>
+                    </div>
+                    <div class="cpanel-body-wrapper">
+                        <form id="configForm" onsubmit="return false;">
+
+                            <!-- â•â•â• PANEL: General â•â•â• -->
+                            <div class="cpanel-body active" id="panel-general">
+                                <div class="cfg-alert">
+                                    <i class="fas fa-globe-americas"></i>
+                                    <p>Configuración base del sistema. Revisa la moneda y zona horaria para que los cierres de caja y reportes sean precisos.</p>
+                                </div>
+                                <div class="cgroup">
+                                    <div class="cgroup-title"><i class="fas fa-money-bill-wave"></i> Moneda y Formato</div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Moneda Base</span><p class="crow-desc">Moneda para reportes, contabilidad y cierres de caja.</p></div>
+                                        <div class="crow-ctrl">
+                                            <select name="moneda" class="cfg-select">
+                                                <option value="DOP" {{ 'selected' if empresa.moneda == 'DOP' }}>Peso Dominicano (RD$)</option>
+                                                <option value="USD" {{ 'selected' if empresa.moneda == 'USD' }}>Dólar (US$)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Multi-Moneda</span><p class="crow-desc">Cobrar en distintas monedas usando una tasa fija.</p></div>
+                                        <div class="crow-ctrl" style="justify-content: flex-end;">
+                                            <label class="tswitch"><input type="checkbox" name="uso_multimoneda" {{ 'checked' if config.uso_multimoneda == '1' }}><span class="tslider"></span></label>
+                                        </div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Tasa de Cambio (USD)</span><p class="crow-desc">1 USD = RD$ â€¦</p></div>
+                                        <div class="crow-ctrl">
+                                            <div class="input-group" style="width: 180px;"><span class="input-group-text fw-bold">RD$</span><input type="number" step="0.01" name="tasa_dolar" class="form-control text-end fw-bold" value="{{ config.tasa_dolar }}"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="cgroup">
+                                    <div class="cgroup-title"><i class="fas fa-clock"></i> Localización</div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Formato de Fecha</span></div>
+                                        <div class="crow-ctrl">
+                                            <select name="formato_fecha" class="cfg-select">
+                                                <option value="DD/MM/YYYY" {{ 'selected' if empresa.formato_fecha == 'DD/MM/YYYY' }}>31/12/2026</option>
+                                                <option value="YYYY-MM-DD" {{ 'selected' if empresa.formato_fecha == 'YYYY-MM-DD' }}>2026-12-31</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Zona Horaria</span><p class="crow-desc">Registros de auditoría y facturas.</p></div>
+                                        <div class="crow-ctrl">
+                                            <select name="zona_horaria" class="cfg-select">
+                                                <option value="America/Santo_Domingo" {{ 'selected' if empresa.zona_horaria == 'America/Santo_Domingo' }}>Santo Domingo (AST)</option>
+                                                <option value="America/New_York" {{ 'selected' if empresa.zona_horaria == 'America/New_York' }}>New York (EST)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- â•â•â• PANEL: Empresa â•â•â• -->
+                            <div class="cpanel-body" id="panel-empresa">
+                                <div class="cgroup">
+                                    <div class="cgroup-title"><i class="fas fa-building"></i> Información Comercial</div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Razón Social</span></div>
+                                        <div class="crow-ctrl"><input type="text" name="nombre" class="cfg-input" value="{{ empresa.nombre }}"></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">RNC / Cédula</span></div>
+                                        <div class="crow-ctrl"><input type="text" name="rnc" class="cfg-input fw-bold" value="{{ empresa.rnc }}"></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Correo Comercial</span></div>
+                                        <div class="crow-ctrl"><input type="email" name="email" class="cfg-input" value="{{ empresa.email }}"></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Teléfono</span></div>
+                                        <div class="crow-ctrl"><input type="text" name="telefono" class="cfg-input" value="{{ empresa.telefono }}"></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Dirección Física</span></div>
+                                        <div class="crow-ctrl"><textarea name="direccion" class="cfg-input" style="height: 70px; resize: none;">{{ empresa.direccion }}</textarea></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- â•â•â• PANEL: Licencia â•â•â• -->
+                            <div class="cpanel-body" id="panel-license">
+                                <div class="cfg-alert">
+                                    <i class="fas fa-certificate"></i>
+                                    <p>Tu suscripción está <strong>activa</strong>. Plan <strong>{{ license.plan }}</strong> hasta {{ license.expires_at }}.</p>
+                                </div>
+                                <div class="cgroup">
+                                    <div class="cgroup-title"><i class="fas fa-id-card"></i> Estado Actual</div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Plan Contratado</span></div>
+                                        <div class="crow-ctrl" style="justify-content: flex-end;"><span class="badge bg-primary fs-6">{{ license.plan }}</span></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Límite de Usuarios</span></div>
+                                        <div class="crow-ctrl" style="justify-content: flex-end;"><strong class="text-success text-capitalize"><i class="fas fa-infinity me-1"></i> {{ license.users_limit }}</strong></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Expiración</span></div>
+                                        <div class="crow-ctrl" style="justify-content: flex-end;"><strong>{{ license.expires_at }}</strong></div>
+                                    </div>
+                                </div>
+                                <div class="cgroup">
+                                    <div class="cgroup-title"><i class="fas fa-key"></i> Actualizar Licencia</div>
+                                    <div class="crow" style="flex-direction: column;">
+                                        <div class="crow-info"><span class="crow-label">Token de Licencia</span><p class="crow-desc">Pegue aquí el código proporcionado por LN Systems.</p></div>
+                                        <textarea id="license-token" class="cfg-input font-monospace mt-2" style="height: 80px; resize: none; font-size: 0.8rem;" placeholder="eyJhbGciOiJIUzI1NiIs..."></textarea>
+                                        <div class="text-end mt-2"><button type="button" class="btn btn-outline-primary btn-sm" id="btn-verify-license"><i class="fas fa-cloud-download-alt me-1"></i> Validar Licencia</button></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- â•â•â• PANEL: Facturación â•â•â• -->
+                            <div class="cpanel-body" id="panel-facturacion">
+                                <div class="cgroup">
+                                    <div class="cgroup-title"><i class="fas fa-receipt"></i> Comprobantes (NCF)</div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Vencimiento NCF</span><p class="crow-desc">Fecha de caducidad de secuencias DGII.</p></div>
+                                        <div class="crow-ctrl"><input type="date" name="ncf_vencimiento" class="cfg-input fw-bold" value="{{ config.ncf_vencimiento }}"></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Facturas de Consumo (B02)</span></div>
+                                        <div class="crow-ctrl" style="justify-content: flex-end;"><label class="tswitch"><input type="checkbox" name="tipo_comprobante_b02" {{ 'checked' if config.tipo_comprobante_b02 == '1' }}><span class="tslider"></span></label></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Facturas Crédito Fiscal (B01)</span></div>
+                                        <div class="crow-ctrl" style="justify-content: flex-end;"><label class="tswitch"><input type="checkbox" name="tipo_comprobante_b01" {{ 'checked' if config.tipo_comprobante_b01 == '1' }}><span class="tslider"></span></label></div>
+                                    </div>
+                                </div>
+                                <div class="cgroup">
+                                    <div class="cgroup-title"><i class="fas fa-print"></i> Impresión</div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Modo Predeterminado</span></div>
+                                        <div class="crow-ctrl">
+                                            <select name="global_print_format" class="cfg-select">
+                                                <option value="ticket" {{ 'selected' if config.global_print_format == 'ticket' }}>Ticket Térmico</option>
+                                                <option value="a4" {{ 'selected' if config.global_print_format == 'a4' }}>Hoja A4 (PDF)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Impresión Automática</span></div>
+                                        <div class="crow-ctrl" style="justify-content: flex-end;"><label class="tswitch"><input type="checkbox" name="impresion_automatica" {{ 'checked' if config.impresion_automatica == '1' }}><span class="tslider"></span></label></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Mensaje del Ticket</span></div>
+                                        <div class="crow-ctrl"><input type="text" name="mensaje_ticket" class="cfg-input" value="{{ config.mensaje_ticket }}"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- â•â•â• PANEL: Caja â•â•â• -->
+                            <div class="cpanel-body" id="panel-caja">
+                                <div class="cgroup">
+                                    <div class="cgroup-title"><i class="fas fa-shield-alt"></i> Seguridad y Arqueos</div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Requerir Apertura Formal</span><p class="crow-desc">El cajero declara el fondo inicial antes de operar.</p></div>
+                                        <div class="crow-ctrl" style="justify-content: flex-end;"><label class="tswitch"><input type="checkbox" name="requerir_apertura_caja" {{ 'checked' if config.requerir_apertura_caja == '1' }}><span class="tslider"></span></label></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Fondo de Cambio Sugerido</span></div>
+                                        <div class="crow-ctrl"><div class="input-group" style="width: 180px;"><span class="input-group-text fw-bold">RD$</span><input type="number" name="monto_apertura_default" class="form-control text-end" value="{{ config.monto_apertura_default }}"></div></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Cierre "A Ciegas"</span><p class="crow-desc">El cajero declara el efectivo sin ver los totales del sistema.</p></div>
+                                        <div class="crow-ctrl" style="justify-content: flex-end;"><label class="tswitch"><input type="checkbox" name="requerir_cierre_ciego" {{ 'checked' if config.requerir_cierre_ciego == '1' }}><span class="tslider"></span></label></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- â•â•â• PANEL: Inventario â•â•â• -->
+                            <div class="cpanel-body" id="panel-inventario">
+                                <div class="cgroup">
+                                    <div class="cgroup-title"><i class="fas fa-boxes"></i> Controles de Stock</div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Permitir Venta en Negativo</span><p class="crow-desc">Facturar aunque el stock llegue a cero.</p></div>
+                                        <div class="crow-ctrl" style="justify-content: flex-end;"><label class="tswitch"><input type="checkbox" name="permitir_venta_sin_stock" {{ 'checked' if config.permitir_venta_sin_stock == '1' }}><span class="tslider"></span></label></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Nivel de "Stock Bajo"</span><p class="crow-desc">Umbral para alerta en el Dashboard.</p></div>
+                                        <div class="crow-ctrl"><input type="number" name="nivel_stock_bajo_global" class="cfg-input text-end" style="max-width: 100px;" value="{{ config.nivel_stock_bajo_global }}"></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Método de Costeo</span></div>
+                                        <div class="crow-ctrl">
+                                            <select name="calculo_costo" class="cfg-select">
+                                                <option value="promedio" {{ 'selected' if config.calculo_costo == 'promedio' }}>Costo Promedio Ponderado</option>
+                                                <option value="ultimo_costo" {{ 'selected' if config.calculo_costo == 'ultimo_costo' }}>Último Costo</option>
+                                                <option value="peps" {{ 'selected' if config.calculo_costo == 'peps' }}>PEPS</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- â•â•â• PANEL: Módulos â•â•â• -->
+                            <div class="cpanel-body" id="panel-modulos">
+                                <div class="cfg-alert"><i class="fas fa-magic"></i><p>Activa o desactiva secciones del sistema. Los datos permanecen seguros al apagar un módulo.</p></div>
+                                <div class="mod-grid">
+                                    <div class="mod-card">
+                                        <div class="mod-icon"><i class="fas fa-file-invoice"></i></div>
+                                        <div class="mod-info">
+                                            <div class="mod-title">Facturación <label class="tswitch"><input type="checkbox" class="modulo-toggle" data-modulo="facturacion" {{ 'checked' if modulos_estado.facturacion }}><span class="tslider"></span></label></div>
+                                            <div class="mod-desc">Emisión de tickets y comprobantes NCF.</div>
+                                        </div>
+                                    </div>
+                                    <div class="mod-card">
+                                        <div class="mod-icon"><i class="fas fa-cash-register"></i></div>
+                                        <div class="mod-info">
+                                            <div class="mod-title">Caja <label class="tswitch"><input type="checkbox" class="modulo-toggle" data-modulo="caja" {{ 'checked' if modulos_estado.caja }}><span class="tslider"></span></label></div>
+                                            <div class="mod-desc">Interfaz POS para ventas en mostrador.</div>
+                                        </div>
+                                    </div>
+                                    <div class="mod-card">
+                                        <div class="mod-icon"><i class="fas fa-boxes"></i></div>
+                                        <div class="mod-info">
+                                            <div class="mod-title">Inventario <label class="tswitch"><input type="checkbox" class="modulo-toggle" data-modulo="inventario" {{ 'checked' if modulos_estado.inventario }}><span class="tslider"></span></label></div>
+                                            <div class="mod-desc">Kardex de entradas, salidas y ajustes.</div>
+                                        </div>
+                                    </div>
+                                    <div class="mod-card">
+                                        <div class="mod-icon"><i class="fas fa-truck"></i></div>
+                                        <div class="mod-info">
+                                            <div class="mod-title">Proveedores <label class="tswitch"><input type="checkbox" class="modulo-toggle" data-modulo="proveedores" {{ 'checked' if modulos_estado.proveedores }}><span class="tslider"></span></label></div>
+                                            <div class="mod-desc">Cuentas por pagar e historial de compras.</div>
+                                        </div>
+                                    </div>
+                                    <div class="mod-card">
+                                        <div class="mod-icon" style="background: rgba(245,158,11,0.12); color: #d97706;"><i class="fas fa-chart-line"></i></div>
+                                        <div class="mod-info">
+                                            <div class="mod-title">Analytics & BI <span class="pro-badge">PRO</span></div>
+                                            <div class="mod-desc mt-2"><button type="button" class="btn btn-sm btn-outline-warning w-100"><i class="fas fa-lock me-1"></i> Desbloquear</button></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- â•â•â• PANEL: Seguridad â•â•â• -->
+                            <div class="cpanel-body" id="panel-seguridad">
+                                <div class="cgroup">
+                                    <div class="cgroup-title"><i class="fas fa-shield-alt"></i> Políticas de Autenticación</div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Contraseñas Fuertes</span><p class="crow-desc">Mín. 8 caracteres, números y símbolos.</p></div>
+                                        <div class="crow-ctrl" style="justify-content: flex-end;"><label class="tswitch"><input type="checkbox" name="requerir_alfanumerico" {{ 'checked' if config.requerir_alfanumerico == '1' }}><span class="tslider"></span></label></div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Auto-Cierre por Inactividad</span></div>
+                                        <div class="crow-ctrl">
+                                            <select name="sesion_timeout" class="cfg-select">
+                                                <option value="15" {{ 'selected' if config.sesion_timeout == '15' }}>15 Min (Alta Seguridad)</option>
+                                                <option value="30" {{ 'selected' if config.sesion_timeout == '30' }}>30 Min (Normal)</option>
+                                                <option value="120" {{ 'selected' if config.sesion_timeout == '120' }}>2 Horas</option>
+                                                <option value="0" {{ 'selected' if config.sesion_timeout == '0' }}>Nunca</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">Intentos Fallidos</span><p class="crow-desc">Bloquea la cuenta hasta que un Admin la restablezca.</p></div>
+                                        <div class="crow-ctrl"><input type="number" name="bloqueo_intentos" class="cfg-input text-end" style="max-width: 100px;" value="{{ config.bloqueo_intentos }}"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- â•â•â• PANEL: Avanzado â•â•â• -->
+                            <div class="cpanel-body" id="panel-avanzado">
+                                <div class="cgroup">
+                                    <div class="cgroup-title"><i class="fas fa-vial"></i> Feature Toggles (Experimental)</div>
+                                    {% for toggle in toggles %}
+                                    <div class="crow">
+                                        <div class="crow-info"><span class="crow-label">{{ toggle.name }}</span><p class="crow-desc">{{ toggle.description }}</p></div>
+                                        <div class="crow-ctrl" style="justify-content: flex-end;"><label class="tswitch"><input type="checkbox" class="toggle-api" data-name="{{ toggle.name }}" {{ 'checked' if toggle.enabled }}><span class="tslider"></span></label></div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="cpanel-footer">
+                        <button class="btn btn-outline-secondary btn-sm" onclick="window.location.reload()"><i class="fas fa-undo me-1"></i> Descartar</button>
+                        <button class="btn-cfg-save" id="btnSave"><i class="fas fa-save"></i> Aplicar Cambios</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JS Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // â”€â”€ Internal Nav â”€â”€
+        const titles = {
+            general: '<i class="fas fa-cog"></i> Ajustes Generales',
+            empresa: '<i class="fas fa-building"></i> Perfil del Negocio',
+            license: '<i class="fas fa-id-card"></i> Plan y Licencia',
+            facturacion: '<i class="fas fa-file-invoice-dollar"></i> Reglas de Facturación',
+            caja: '<i class="fas fa-cash-register"></i> Control y Arqueos',
+            inventario: '<i class="fas fa-boxes"></i> Bodega y Costeos',
+            modulos: '<i class="fas fa-cubes"></i> Arquitectura Modular',
+            seguridad: '<i class="fas fa-shield-alt"></i> Seguridad',
+            avanzado: '<i class="fas fa-sliders-h"></i> Laboratorio'
+        };
+
+        document.querySelectorAll('.cnav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.cnav-item').forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                const target = this.dataset.target;
+                document.querySelectorAll('.cpanel-body').forEach(p => p.classList.remove('active'));
+                const el = document.getElementById(target);
+                if (el) el.classList.add('active');
+                const key = target.replace('panel-', '');
+                document.getElementById('cpanel-title').innerHTML = titles[key] || 'Configuración';
+            });
+        });
+
+        // â”€â”€ Save Button â”€â”€
+        document.getElementById('btnSave').addEventListener('click', function() {
+            const btn = this, orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            btn.disabled = true;
+            const fd = new FormData(document.getElementById('configForm'));
+            const data = {}; fd.forEach((v, k) => data[k] = v);
+
+            fetch('/configuracion/api/guardar', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ grupo: 'general', valores: data })
+            }).then(r => r.json()).then(res => {
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Â¡Guardado!';
+                    btn.style.background = '#10b981';
+                    document.querySelectorAll('.cpanel-body.active .crow').forEach(r => {
+                        r.style.background = 'rgba(16,185,129,0.04)';
+                        setTimeout(() => r.style.background = '', 800);
+                    });
+                    document.getElementById('save-status').style.display = 'block';
+                    setTimeout(() => {
+                        btn.innerHTML = orig; btn.style.background = ''; btn.disabled = false;
+                        setTimeout(() => document.getElementById('save-status').style.display = 'none', 1500);
+                    }, 1800);
+                }, 500);
+            });
+        });
+
+        // â”€â”€ Module Toggles â”€â”€
+        document.querySelectorAll('.modulo-toggle').forEach(t => {
+            t.addEventListener('change', function() {
+                const mod = this.dataset.modulo, on = this.checked, card = this.closest('.mod-card');
+                fetch('/configuracion/api/toggle-modulo', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ modulo: mod, estado: on })
+                }).then(r => r.json()).then(d => {
+                    if (!d.ok) { this.checked = !on; alert(d.error); }
+                    else { card.style.borderColor = on ? '#0ea5e9' : '#e2e8f0'; card.style.opacity = on ? '1' : '0.6'; }
+                });
+            });
+        });
+
+        // â”€â”€ License Verify â”€â”€
+        const btnLic = document.getElementById('btn-verify-license');
+        if (btnLic) {
+            btnLic.addEventListener('click', function() {
+                const tok = document.getElementById('license-token').value;
+                if (tok.length < 10) { alert('Token inválido (mínimo 10 caracteres).'); return; }
+                const orig = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-circle-notch fa-spin me-1"></i> Verificando...'; this.disabled = true;
+                fetch('/configuracion/api/verificar-licencia', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ token: tok })
+                }).then(r => r.json()).then(d => {
+                    setTimeout(() => { if (d.ok) { alert(d.msg); location.reload(); } else { alert(d.error); this.innerHTML = orig; this.disabled = false; } }, 800);
+                });
+            });
+        }
+
+        // â”€â”€ Module cards init (dim disabled) â”€â”€
+        document.querySelectorAll('.mod-card input:not(:checked)').forEach(el => { el.closest('.mod-card').style.opacity = '0.6'; });
+
+        // â”€â”€ Sidebar Toggle â”€â”€
+        const menuToggle = document.getElementById('menuToggle');
+        const menuIcon = menuToggle.querySelector('i');
+        function updateIcon() { menuIcon.className = document.body.classList.contains('sidebar-hidden') ? 'fas fa-bars' : 'fas fa-bars-staggered'; }
+        menuToggle.addEventListener('click', () => { document.body.classList.toggle('sidebar-hidden'); updateIcon(); });
+        document.addEventListener('keydown', e => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+            if (e.key.toLowerCase() === 's') { document.body.classList.toggle('sidebar-hidden'); updateIcon(); }
+        });
+        updateIcon();
+    });
+    </script>
+</body>
+</html>
+

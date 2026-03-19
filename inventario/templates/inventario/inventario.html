@@ -1,0 +1,436 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Inventario â€” {{ BRAND_NAME }}</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="/static/lib/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/datatables/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="/static/lib/notyf/notyf.min.css">
+    
+    <!-- System Styles -->
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="{{ url_for('inventario.static', filename='css/inventario.css') }}">
+    
+    <style>
+        .container {
+            padding: 32px;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+        /* Force light mode override */
+        html, body {
+            background-color: #f1f5f9 !important;
+            color: #1e293b !important;
+        }
+        .topbar {
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .main-container {
+            background: #f1f5f9 !important;
+        }
+    </style>
+    <script>
+        document.documentElement.classList.remove('dark-theme');
+    </script>
+</head>
+<body class="sidebar-hidden">
+    <div class="app-layout">
+        <!-- Unified Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/home" class="brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="brand-details">
+                        <span class="brand-name">Next Design</span>
+                        <span class="brand-sub">SaaS Enterprise</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">SUPERVISIÃ“N</div>
+                <a href="/home" class="nav-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <div class="nav-section">OPERACIONES</div>
+                <a href="/facturacion" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Facturación</span>
+                </a>
+                <a href="/caja" class="nav-item">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Caja</span>
+                </a>
+                <a href="/trabajos_pendientes" class="nav-item">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Trabajos Pendientes</span>
+                </a>
+                <a href="/gastos_diarios" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Gastos Diarios</span>
+                </a>
+                
+                <div class="nav-section">GESTIÃ“N</div>
+                <a href="/inventario" class="nav-item active">
+                    <i class="fas fa-box"></i>
+                    <span>Inventario</span>
+                </a>
+                <a href="/productos" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Productos</span>
+                </a>
+                <a href="/clientes" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+                <a href="/proveedores" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Proveedores</span>
+                </a>
+                <a href="/reporteventas" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Reporte de Ventas</span>
+                </a>
+                <a href="/usuarios" class="nav-item">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="/configuracion" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+                <div class="sidebar-heading px-3 mt-4 mb-2 text-muted text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">Extras</div>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Logros</span>
+                </a>
+            </nav>
+
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-container">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="sidebarToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="topbar-context">
+                        <span class="context-badge"><i class="fas fa-box me-1"></i>Gestión</span>
+                        <h1>Inventario de Mercancía</h1>
+                    </div>
+                </div>
+                
+                <div class="topbar-right">
+                    <div class="datetime-display" id="systemClock">
+                        <i class="far fa-clock me-2"></i> <span>--:--:--</span>
+                    </div>
+                    <button class="btn-primary-action" onclick="abrirModalMovimiento()">
+                        <i class="fas fa-plus"></i>
+                        Nuevo Movimiento
+                    </button>
+                    <div class="dropdown">
+                        <div class="user-display" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; margin-left: 15px;">
+                            <div class="user-avatar text-white" style="background: var(--accent);">{{ session.get('nombre_completo', 'U')[0] }}</div>
+                            <div class="user-meta">
+                                <span class="user-name">{{ session.get('nombre_completo', 'Usuario') }}</span>
+                                <span class="user-role">{{ session.get('rol', 'Cajero').title() }}</span>
+                            </div>
+                            <i class="fas fa-chevron-down ms-2 text-muted" style="font-size: 0.8rem;"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" style="border-radius: 12px; min-width: 200px;">
+                            <li><h6 class="dropdown-header">Mi Cuenta</h6></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold d-flex align-items-center py-2" href="/logout">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+            <div class="container-fluid py-4 inv-app">
+                <!-- Premium KPI Grid -->
+                <div class="kpi-container">
+                    <div class="kpi-card">
+                        <div class="icon-box icon-blue">
+                            <i class="fas fa-coins text-primary"></i>
+                        </div>
+                        <span class="kpi-lbl">Valoración Stock</span>
+                        <h2 class="kpi-val" id="kpi-valor-venta">RD$0.00</h2>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="icon-box icon-green">
+                            <i class="fas fa-warehouse text-success"></i>
+                        </div>
+                        <span class="kpi-lbl">Costo en Bodega</span>
+                        <h2 class="kpi-val" id="kpi-valor-costo">RD$0.00</h2>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="icon-box icon-red">
+                            <i class="fas fa-exclamation-triangle text-danger"></i>
+                        </div>
+                        <span class="kpi-lbl">SKUs Stock Bajo</span>
+                        <h2 class="kpi-val" id="kpi-bajo-stock">0</h2>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="icon-box icon-gold">
+                            <i class="fas fa-history text-warning"></i>
+                        </div>
+                        <span class="kpi-lbl">Movimientos (Mes)</span>
+                        <h2 class="kpi-val" id="kpi-mov-mes">0</h2>
+                    </div>
+                </div>
+
+                <!-- Modern Segmented Tabs -->
+                <div class="tabs-premium">
+                    <button class="tab-btn active" onclick="switchTab('existencias', this)">
+                        <i class="fas fa-list-ul"></i> Existencias
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('historial', this)">
+                        <i class="fas fa-history"></i> Historial
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('auditoria', this)">
+                        <i class="fas fa-clipboard-check me-2"></i> Conteo de Mercancía
+                    </button>
+                </div>
+
+                <!-- Tab Content: Existencias -->
+                <div id="tab-existencias" class="tab-content">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <h3 class="fw-800 m-0">Existencias Actuales</h3>
+                            <div class="input-group input-group-sm" style="max-width: 300px;">
+                                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" id="busqueda-stock" class="form-control border-start-0" placeholder="Filtrar stock...">
+                            </div>
+                        </div>
+                        <button class="btn btn-light border fw-bold px-4" onclick="exportarInventario()">
+                            <i class="fas fa-file-export me-2"></i> Exportar
+                        </button>
+                    </div>
+                    
+                    <div class="table-container-premium">
+                        <table class="table-inv" id="tabla-stock">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Producto</th>
+                                    <th>Categoría</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-center">Stock</th>
+                                    <th class="text-center">Estado</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Historial -->
+                <div id="tab-historial" class="tab-content d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="fw-800 m-0">Historial de Movimientos</h3>
+                        <div class="input-group input-group-sm" style="max-width: 300px;">
+                            <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" id="busqueda-historial" class="form-control border-start-0" placeholder="Buscar movimientos...">
+                        </div>
+                    </div>
+                    <div class="table-container-premium">
+                        <table class="table-inv" id="tabla-movimientos">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cant.</th>
+                                    <th>Responsable</th>
+                                    <th>Motivo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Auditoría Física -->
+                <div id="tab-auditoria" class="tab-content d-none">
+                <!-- VISTA IDLE (SIN SESIÃ“N) -->
+                <div id="audit-idle-view" class="row justify-content-center py-5">
+                    <div class="col-md-6 text-center">
+                        <div class="audit-status-card p-5">
+                            <div class="audit-icon-circle mb-4">
+                                <i class="fas fa-barcode"></i>
+                            </div>
+                            <h2 class="fw-800 mb-3">Nuevo Conteo de Mercancía</h2>
+                            <p class="text-muted mb-4 px-4">
+                                Inicie una sesión de conteo para validar las existencias físicas contra el stock del sistema.
+                            </p>
+                            <button class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow" onclick="iniciarCorteInventario()">
+                                <i class="fas fa-play me-2"></i> Comenzar Sesión de Conteo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA ACTIVA (EN PROGRESO) -->
+                <div id="audit-active-view" class="d-none">
+                    <div class="row mb-4 align-items-center">
+                        <div class="col-md">
+                            <h3 class="fw-800 mb-1">Sesión de Conteo Activa</h3>
+                            <p class="text-primary small mb-0 fw-600"><i class="fas fa-circle-notch fa-spin me-2"></i>Sincronizando conteos en tiempo real...</p>
+                        </div>
+                            <div class="d-flex gap-3 align-items-center">
+                                <div class="input-group input-group-sm" style="max-width: 250px;">
+                                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                                    <input type="text" id="busqueda-audit" class="form-control border-start-0" placeholder="Buscar en conteo...">
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-danger fw-bold px-4" onclick="cancelarAuditoria()">Cancelar</button>
+                                    <button class="btn-primary-action px-4" onclick="confirmarFinalizarAudit()">
+                                        Finalizar y Ajustar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-container-premium">
+                            <table class="table-inv" id="tabla-audit-conteo">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Producto</th>
+                                        <th class="text-center">Sistema</th>
+                                        <th class="text-center">Físico</th>
+                                        <th class="text-center">Dif.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Movimiento -->
+    <div class="modal fade" id="modalMovimiento" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-exchange-alt me-2 text-primary"></i>Nuevo Movimiento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formMovimiento">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Producto</label>
+                            <select id="select-producto" class="form-select border-0 bg-light" required>
+                                <option value="">Seleccione un producto...</option>
+                            </select>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-7">
+                                <label class="form-label small fw-bold">Tipo de Operación</label>
+                                <select id="mov-tipo" class="form-select border-0 bg-light" required>
+                                    <option value="Entrada">Entrada (Compra)</option>
+                                    <option value="Salida">Salida (Merma/Venta)</option>
+                                    <option value="Devolución">Devolución</option>
+                                    <option value="Ajuste">Ajuste Manual</option>
+                                </select>
+                            </div>
+                            <div class="col-5">
+                                <label class="form-label small fw-bold">Cantidad</label>
+                                <input type="number" id="mov-cantidad" class="form-control border-0 bg-light" min="1" required>
+                            </div>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label small fw-bold">Motivo / Observación</label>
+                            <textarea id="mov-motivo" class="form-control border-0 bg-light" rows="3" placeholder="Ej: Recepción de mercancía..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary px-4 rounded-3 fw-bold" onclick="guardarMovimiento()">Registrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/lib/jquery/jquery.min.js"></script>
+    <script src="/static/lib/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/lib/datatables/jquery.dataTables.min.js"></script>
+    <script src="/static/lib/datatables/dataTables.bootstrap5.min.js"></script>
+    <script src="/static/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="/static/lib/notyf/notyf.min.js"></script>
+    <script>
+        // Common functionality
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('systemClock').innerHTML = `<i class="far fa-clock"></i> <span>${now.toLocaleTimeString('es-DO', {hour12: true})}</span>`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Sidebar 
+        const sidebarToggleBtn = document.getElementById('sidebarToggle');
+        const menuIcon = sidebarToggleBtn ? sidebarToggleBtn.querySelector('i') : null;
+
+        function updateIcon() {
+            if (!menuIcon) return;
+            const isHidden = document.body.classList.contains('sidebar-hidden');
+            menuIcon.className = isHidden ? 'fas fa-bars' : 'fas fa-bars-staggered';
+        }
+
+        if (sidebarToggleBtn) {
+            sidebarToggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('sidebar-hidden');
+                updateIcon();
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+            if (e.key.toLowerCase() === 's') { 
+                e.preventDefault(); 
+                document.body.classList.toggle('sidebar-hidden'); 
+                updateIcon();
+            }
+        });
+
+        // Initialize state
+        updateIcon();
+
+        // Tab Switching Logic
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(p => p.classList.add('d-none'));
+            
+            btn.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.remove('d-none');
+        }
+    </script>
+    <script src="{{ url_for('inventario.static', filename='js/inventario.js') }}"></script>
+</body>
+</html>
+

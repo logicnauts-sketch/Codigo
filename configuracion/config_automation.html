@@ -1,0 +1,89 @@
+{% extends "admin/config_base.html" %}
+
+{% block config_content %}
+{% if session.rol == 'gerente' and license.plan == 'START' %}
+<div class="config-gate-overlay">
+    <div class="config-gate-content">
+        <div class="config-gate-icon">
+            <i class="fas fa-microchip"></i>
+        </div>
+        <div class="config-gate-title">Modo Core Necesario</div>
+        <div class="config-gate-desc">
+            Las funciones avanzadas de automatización y orquestación requieren una licencia <b>PRO</b> o <b>ULTRA</b>.
+            Póngase en contacto con su administrador para actualizar su plan.
+        </div>
+        <a href="{{ url_for('configuracion.panel_license') }}" class="btn-premium">
+            <i class="fas fa-rocket"></i> Ver Planes Disponibles
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<div class="config-alert">
+    <i class="fas fa-robot"></i>
+    <div class="config-alert-text">
+        <b>Automatización de Procesos:</b> Centralización de Webhooks y servicios cloud.
+        {% if session.rol == 'gerente' %}<span class="text-danger">(Solo Lectura)</span>{% endif %}
+    </div>
+</div>
+
+<div class="config-group">
+    <span class="group-title">Integraciones de Sistema (n8n)</span>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Webhook de Recuperación</span>
+            <span class="row-desc">URL para el flujo de "Olvidó su contraseña".</span>
+        </div>
+        <input type="url" name="n8n_webhook_url" id="cfg-n8n-url" class="config-input" style="width: 100%;"
+            placeholder="https://...">
+    </div>
+</div>
+
+<div class="config-group">
+    <span class="group-title">Orquestador de Procesos (n8n Avanzado)</span>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Activar Notificaciones (Webhooks)</span>
+            <span class="row-desc">Envía eventos en tiempo real a n8n (Facturación, Stock Bajo).</span>
+        </div>
+        <label class="switch"><input type="checkbox" name="webhook_enabled" id="cfg-webhook-en" {% if
+                session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+    </div>
+    <div class="config-row" style="display: block;">
+        <div class="row-info" style="margin-bottom:0.5rem; max-width: 100%;">
+            <span class="row-label">URL de Webhook n8n</span>
+            <span class="row-desc">Ruta de destino para los paquetes JSON.</span>
+        </div>
+        <input type="text" name="webhook_url_n8n" id="cfg-webhook-url" class="config-input" style="width: 100%;"
+            placeholder="https://n8n.ejemplo.com/webhook/..." {% if session.rol=='gerente' %}readonly{% endif %}>
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Secreto de Firma (HMAC)</span>
+            <span class="row-desc">Llave para que n8n valide que los datos vienen de este servidor.</span>
+        </div>
+        <input type="password" name="webhook_secret" id="cfg-webhook-secret" class="config-input" {% if
+            session.rol=='gerente' %}readonly{% endif %}>
+    </div>
+</div>
+
+<div class="config-group">
+    <span class="group-title">Canal WhatsApp (Solo Lectura)</span>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Habilitar Bot de Consulta</span>
+            <span class="row-desc">Permite que el bot acceda al catálogo de productos.</span>
+        </div>
+        <label class="switch"><input type="checkbox" name="integration_whatsapp_enabled" id="cfg-wa-en" {% if
+                session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+    </div>
+
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">API Key Externa (READ-ONLY)</span>
+            <span class="row-desc">Token obligatorio para n8n: X-LN-API-Key</span>
+        </div>
+        <input type="password" name="external_api_key" id="cfg-external-key" class="config-input" readonly>
+    </div>
+</div>
+{% endblock %}

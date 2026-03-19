@@ -1,0 +1,363 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Design â€” Punto de Venta</title>
+    <link rel="stylesheet" href="/static/lib/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/notyf/notyf.min.css">
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="{{ url_for('facturacion.static', filename='css/facturacion.css') }}?v=2.0">
+</head>
+<body class="sidebar-hidden">
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/home" class="brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="brand-details">
+                        <span class="brand-name">Next Design</span>
+                        <span class="brand-sub">SaaS Enterprise</span>
+                    </div>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">Módulos Principales</div>
+                <a href="/home/" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/facturacion/" class="nav-item active">
+                    <i class="fas fa-receipt"></i>
+                    <span>Facturación</span>
+                </a>
+                <a href="/caja/" class="nav-item">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Caja</span>
+                </a>
+                <a href="/trabajos_pendientes/" class="nav-item">
+                    <i class="fas fa-tools"></i>
+                    <span>Trabajos Pendientes</span>
+                </a>
+                <a href="/gastos_diarios/" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Gastos Diarios</span>
+                </a>
+                
+                <div class="nav-section">Administración</div>
+                <a href="/inventario/" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Inventario</span>
+                </a>
+                <a href="/productos/" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Productos</span>
+                </a>
+                <a href="/clientes/" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+                <a href="/proveedores/" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Proveedores</span>
+                </a>
+                <a href="/reporteventas/" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Reporte de Ventas</span>
+                </a>
+                <a href="/usuarios/" class="nav-item">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="/configuracion/" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Container -->
+        <div class="main-container">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="topbar-context">
+                        <div class="context-badge">
+                            <i class="fas fa-receipt"></i> FACTURACIÃ“N
+                        </div>
+                        <h1>Punto de Venta</h1>
+                    </div>
+                </div>
+                
+                <div class="topbar-right">
+                    <div class="datetime-display d-none d-md-flex" id="timeDisplay">
+                        <i class="far fa-clock me-2"></i>
+                        <span>Cargando...</span>
+                    </div>
+
+                    <div class="badge-offline me-3">
+                        <i class="fas fa-robot"></i> AGENTE: OFFLINE
+                    </div>
+
+                    <div class="dropdown">
+                        <div class="user-display" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                            <div class="user-avatar">SK</div>
+                            <div class="user-meta">
+                                <span class="user-name">Next Design</span>
+                                <span class="user-role">ADMIN</span>
+                            </div>
+                            <i class="fas fa-chevron-down ms-2 text-muted" style="font-size: 0.8rem;"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" style="border-radius: 12px; min-width: 200px;">
+                            <li><h6 class="dropdown-header">Mi Cuenta</h6></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold d-flex align-items-center py-2" href="/logout">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-wrapper" style="padding: 0; overflow: hidden;">
+
+<div class="pos-app">
+  <!-- Middle Workspace: Cart & Session -->
+  <div class="pos-workspace">
+
+    <!-- Command Bar: Search & Client -->
+    <div class="pos-command-bar">
+      <div class="client-pill-elite" id="open-client-modal-btn"
+        style="cursor:pointer; display:flex; align-items:center; gap:0.75rem; background:rgba(16, 185, 129, 0.1); padding:0.6rem 1rem; border-radius:12px; border:1px solid var(--pos-success);">
+        <i class="fas fa-user-circle" style="color:var(--pos-success); font-size:1.25rem;"></i>
+        <div style="display:flex; flex-direction:column; max-width:180px;">
+          <span id="active-client-name"
+            style="font-size:0.85rem; font-weight:800; color:var(--pos-success); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Consumidor
+            Final</span>
+          <span
+            style="font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; opacity:0.7;">Facturar
+            a</span>
+        </div>
+      </div>
+
+      <div class="search-field">
+        <i class="fas fa-barcode"></i>
+        <input type="text" id="product-search" placeholder="Escanear código o buscar producto (F9)..."
+          autocomplete="off">
+        <div id="search-suggestions" class="search-suggestions hidden">
+        </div>
+      </div>
+
+      <div class="search-field" style="max-width: 220px;">
+        <i class="fas fa-id-card" id="rnc-search-icon"></i>
+        <input type="text" id="rnc-search-realtime" placeholder="Buscar RNC Cliente..." autocomplete="off">
+      </div>
+
+      <!-- NCF para Compras -->
+      <div id="ncf-proveedor-container" class="search-field"
+        style="max-width: 200px; display: none; border-color: var(--pos-primary);">
+        <i class="fas fa-file-invoice text-primary"></i>
+        <input type="text" id="ncf-proveedor-input" placeholder="NCF Proveedor..." autocomplete="off">
+      </div>
+
+      <button class="btn btn-success rounded-3" id="toggle-entity-mode" onclick="toggleEntityMode()"
+        title="Cambiar a Modo Proveedor">
+        <i class="fas fa-user"></i>
+        <span id="entity-mode-label" style="font-size:0.7rem; margin-left:0.25rem;">CLI</span>
+      </button>
+    </div>
+
+    <!-- Session Bar (Dinamica) -->
+    <div class="session-bar" id="cart-sessions-bar">
+      <!-- Injected by JS -->
+    </div>
+
+    <!-- Master Cart Area -->
+    <div class="pos-cart-container">
+      <div style="flex:1; overflow-y:auto;" id="cart-scroll-area">
+        <table class="pos-cart-table" id="cart-table">
+          <thead>
+            <tr>
+              <th style="width:50%;">Descripción del Producto</th>
+              <th style="text-align:center;">Cantidad</th>
+              <th style="text-align:center;">Medida/T</th>
+              <th style="text-align:right;">Precio</th>
+              <th style="text-align:right;">Monto Total</th>
+              <th style="width:60px;"></th>
+            </tr>
+          </thead>
+          <tbody id="cart-items">
+            <!-- Items dynamically generated -->
+          </tbody>
+        </table>
+
+        <!-- Empty State -->
+        <div id="empty-cart" class="text-center p-5" style="opacity:0.4;">
+          <i class="fas fa-shopping-basket" style="font-size:4rem; margin-bottom:1.5rem; display:block;"></i>
+          <h3 class="fw-bold">Esperando Operación</h3>
+          <p>Agregue productos para iniciar la facturación</p>
+        </div>
+      </div>
+
+      <!-- Hotkeys Legend -->
+      <div class="p-2 px-3 border-top"
+        style="background:#f8fafc; font-size:0.7rem; color:var(--pos-text-muted); display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span class="badge bg-secondary opacity-50 me-2">F2</span> Renombrar
+          <span class="badge bg-secondary opacity-50 mx-2">F3</span> Clientes
+          <span class="badge bg-secondary opacity-50 mx-2">F4</span> Nuevo Carr.
+          <span class="badge bg-secondary opacity-50 mx-2">F9</span> Buscar
+          <span class="badge bg-secondary opacity-50 mx-2">ENTER</span> Cobrar
+        </div>
+        <div class="fw-bold text-uppercase">Next Design Â· Punto de Venta v2.0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Console (Right) -->
+  <div class="pos-console">
+    <!-- Summary Dashboard -->
+    <div class="summary-card">
+      <div class="d-flex align-items-center gap-2 mb-4">
+        <i class="fas fa-receipt" style="color:var(--pos-primary);"></i>
+        <h5 class="m-0 fw-bold">Análisis de Operación</h5>
+      </div>
+
+      <div class="summary-item" id="fiscal-mode-container"
+        style="display:none; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px dashed var(--pos-border);">
+        <span class="fw-bold"><i class="fas fa-file-invoice text-primary"></i> Facturación Fiscal (NCF)</span>
+        <label class="switch" style="transform: scale(0.8);">
+          <input type="checkbox" id="pos-is-fiscal" checked onchange="toggleFiscalMode()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="summary-item" id="tax-toggle-container"
+        style="display:none; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px dashed var(--pos-border);">
+        <span class="fw-bold"><i class="fas fa-percent text-primary"></i> Facturar con Impuestos</span>
+        <label class="switch" style="transform: scale(0.8);">
+          <input type="checkbox" id="pos-apply-tax" checked onchange="updateSummary()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="summary-item">
+        <span>Subtotal Neto</span>
+        <span id="subtotal" style="color:var(--pos-text-main);">RD$ 0.00</span>
+      </div>
+      <div class="summary-item" id="itbis-row">
+        <span>Impuestos (ITBIS <span id="itbis-rate-label">18</span>%)</span>
+        <span id="itbis-total">RD$ 0.00</span>
+      </div>
+      <div class="summary-item" style="color:var(--pos-success);">
+        <span>Descuentos</span>
+        <span>RD$ 0.00</span>
+      </div>
+
+      <div class="summary-total">
+        <span class="total-label">VALOR TOTAL DE VENTA</span>
+        <span class="total-value" id="total">RD$ 0.00</span>
+      </div>
+    </div>
+
+    <!-- Payment Methodology -->
+    <div class="summary-card" style="flex:1;">
+      <p class="small fw-bold text-muted text-uppercase mb-3" style="letter-spacing:1px;">Forma de Recaudo</p>
+      <div class="payment-grid">
+        <div class="payment-tile active" data-method="efectivo">
+          <i class="fas fa-money-bill-wave"></i>
+          <span>Efectivo</span>
+        </div>
+        <div class="payment-tile" data-method="tarjeta">
+          <i class="fas fa-credit-card"></i>
+          <span>Tarjeta</span>
+        </div>
+        <div class="payment-tile" data-method="transferencia">
+          <i class="fas fa-university"></i>
+          <span>Transferencia</span>
+        </div>
+        <div class="payment-tile" data-method="credito">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <span>Crédito</span>
+        </div>
+        <div class="payment-tile" data-method="dolares">
+          <i class="fas fa-dollar-sign"></i>
+          <span>Dólares</span>
+        </div>
+      </div>
+
+      <div class="mt-4 d-grid gap-2">
+        <button id="reprint-btn" class="btn btn-outline-info btn-elite"
+          style="border-width: 2px; font-size: 0.9rem; padding: 0.8rem;">
+          <i class="fas fa-print"></i> Reimprimir Ãšltima
+        </button>
+        <button id="quote-btn" class="btn btn-outline-primary btn-elite"
+          style="border-width: 2px; font-size: 0.9rem; padding: 0.8rem;">
+          <i class="fas fa-file-pdf"></i> Generar Cotización
+        </button>
+        <button id="invoice-btn" class="btn-elite btn-checkout-elite" disabled>
+          <i class="fas fa-bolt"></i> Procesar Venta
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals Integration -->
+{% include 'facturacion/modals_facturacion.html' %}
+
+            </main>
+        </div>
+    </div>
+
+    <script src="/static/lib/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="/static/lib/notyf/notyf.min.js"></script>
+    <script src="{{ url_for('facturacion.static', filename='js/facturacion.js') }}?v=5.0"></script>
+    <script>
+        // Sidebar Toggle
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        const menuIcon = menuToggle.querySelector('i');
+
+        function updateIcon() {
+            const isHidden = document.body.classList.contains('sidebar-hidden');
+            menuIcon.className = isHidden ? 'fas fa-bars' : 'fas fa-bars-staggered';
+        }
+
+        menuToggle.addEventListener('click', () => {
+            document.body.classList.toggle('sidebar-hidden');
+            if (window.innerWidth <= 1024) {
+                document.body.classList.toggle('sidebar-mobile-active');
+            }
+            updateIcon();
+        });
+
+        updateIcon();
+
+        // Dynamic Clock
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('es-ES', { 
+                hour: 'numeric', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: true 
+            });
+            const timeDisplay = document.getElementById('timeDisplay');
+            if (timeDisplay) {
+                timeDisplay.querySelector('span').textContent = timeStr;
+            }
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gastos Diarios — Next Design</title>
+    
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="/static/lib/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.min.css">
+    
+    <!-- System Styles -->
+    <link rel="stylesheet" href="/static/base.css?v=2">
+    <style>
+        .expense-row {
+            transition: background 0.2s;
+        }
+        .expense-row:hover {
+            background-color: #f8fafc;
+        }
+        .monto-gasto {
+            font-weight: 800;
+            color: var(--danger);
+            font-size: 0.95rem;
+        }
+        .category-badge {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="sidebar-hidden">
+    <div class="app-layout">
+        <!-- Sidebar omitted for consistency -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/home" class="brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="brand-details">
+                        <span class="brand-name">Next Design</span>
+                        <span class="brand-sub">SaaS Enterprise</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">Módulos Principales</div>
+                <a href="/home" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/facturacion" class="nav-item">
+                    <i class="fas fa-receipt"></i>
+                    <span>Facturación</span>
+                </a>
+                <a href="/caja" class="nav-item">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Caja</span>
+                </a>
+                <a href="/trabajos_pendientes" class="nav-item">
+                    <i class="fas fa-tools"></i>
+                    <span>Trabajos Pendientes</span>
+                </a>
+                <a href="/gastos_diarios" class="nav-item active">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Gastos Diarios</span>
+                </a>
+                
+                <div class="nav-section">Administración</div>
+                <a href="/inventario" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Inventario</span>
+                </a>
+                <a href="/productos" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Productos</span>
+                </a>
+                <a href="/clientes" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+                <a href="/proveedores" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Proveedores</span>
+                </a>
+                <a href="/reporteventas" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Reporte de Ventas</span>
+                </a>
+                <a href="/usuarios" class="nav-item">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="/configuracion" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-container">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
+                        <h1>Gastos Diarios</h1>
+                        <span class="context-badge">Gestión de Egresos</span>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <button class="btn-primary-action" id="btnNuevoGasto">
+                        <i class="fas fa-plus"></i> Registrar Gasto
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-wrapper p-3">
+                <div class="card shadow-sm border-0 p-3" style="border-radius: 12px;">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover mb-0">
+                            <thead class="text-muted small text-uppercase">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Categoría</th>
+                                    <th>Descripción</th>
+                                    <th class="text-end">Monto</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaGastos">
+                                <!-- Datos AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Nuevo Gasto -->
+    <div class="modal fade" id="modalGasto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Gasto Diario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formGasto">
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-tag"></i> Tipo de Gasto</label>
+                            <select class="form-select" id="selTipo">
+                                <option value="Suministros">Suministros</option>
+                                <option value="Servicios">Servicios (Luz, Agua, etc.)</option>
+                                <option value="Personal">Personal</option>
+                                <option value="Mantenimiento">Mantenimiento</option>
+                                <option value="Otros" selected>Otros</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-file-alt"></i> Descripción</label>
+                            <input type="text" class="form-control" id="txtDescripcion" required placeholder="Ej: Compra de insumos...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-dollar-sign"></i> Monto</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">$</span>
+                                <input type="number" class="form-control" id="txtMonto" step="0.01" required placeholder="0.00">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary-action px-4" id="btnGuardarGasto">Registrar Gasto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Dependencies -->
+    <script src="/static/lib/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/lib/jquery/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script src="/gastos_diarios/static/gastos.js"></script>
+</body>
+</html>

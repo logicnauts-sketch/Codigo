@@ -1,0 +1,513 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caja â€” Next Design</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="/static/lib/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/notyf/notyf.min.css">
+    
+    <!-- System Styles -->
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/caja/static/caja.css">
+    
+    <style>
+        .container {
+            padding: 32px;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+        /* Overriding specific caja styles to fit light premium */
+        body { font-family: 'Inter', sans-serif; background: var(--bg-main); color: var(--text-primary); }
+        .system-status-indicator {
+            padding: 6px 12px;
+            border-radius: 99px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-closed { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; }
+        .status-open { background: #eff6ff; color: #10b981; border: 1px solid #bbf7d0; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    </style>
+</head>
+<body class="sidebar-hidden">
+    <div class="app-layout">
+        <!-- Unified Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/home" class="brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="brand-details">
+                        <span class="brand-name">Next Design</span>
+                        <span class="brand-sub">SaaS Enterprise</span>
+                    </div>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">Módulos Principales</div>
+                <a href="/home/" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/facturacion/" class="nav-item">
+                    <i class="fas fa-receipt"></i>
+                    <span>Facturación</span>
+                </a>
+                <a href="/caja/" class="nav-item active">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Caja</span>
+                </a>
+                <a href="/trabajos_pendientes/" class="nav-item">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Trabajos Pendientes</span>
+                </a>
+                <a href="/gastos_diarios/" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Gastos Diarios</span>
+                </a>
+                
+                <div class="nav-section">Administración</div>
+                <a href="/inventario/" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Inventario</span>
+                </a>
+                <a href="/productos/" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Productos</span>
+                </a>
+                <a href="/clientes/" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+                <a href="/proveedores/" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Proveedores</span>
+                </a>
+                <a href="/reporteventas/" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Reporte de Ventas</span>
+                </a>
+                <a href="/usuarios/" class="nav-item">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="/configuracion/" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+                <div class="sidebar-heading px-3 mt-4 mb-2 text-muted text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">Extras</div>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Logros</span>
+                </a>
+            </nav>
+
+            
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <main class="main-container">
+            <!-- Unified Topbar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="page-info">
+                        Finanzas / <span>Caja Elite</span>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="badge-offline me-2">
+                        <i class="fas fa-robot"></i> AGENTE: OFFLINE
+                    </div>
+                    
+                                        <div class="dropdown">
+                        <div class="user-display" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                            <div class="user-avatar text-white" style="background: var(--accent);">A</div>
+                            <div class="user-meta">
+                                <span class="user-name">Administrador</span>
+                                <span class="user-role">ADMIN</span>
+                            </div>
+                            <i class="fas fa-chevron-down ms-2 text-muted" style="font-size: 0.8rem;"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" style="border-radius: 12px; min-width: 200px;">
+                            <li><h6 class="dropdown-header">Mi Cuenta</h6></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold d-flex align-items-center py-2" href="/logout">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container" style="padding: 1.25rem;">
+               <header style="background: var(--bg-surface); padding: 24px 32px; border-radius: var(--pos-radius, 16px); border: 1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                 <div class="header-left">
+                   <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 8px;">Control de Caja</h2>
+                   <div class="system-status-indicator">
+                     <div class="status-dot status-closed" id="statusDot"></div>
+                     <span id="statusText">Verificando estado...</span>
+                   </div>
+                 </div>
+                 <div class="header-right" id="headerInfo" style="text-align: right;">
+                   <!-- JS fills this -->
+                 </div>
+               </header>
+             
+               <!-- KPIs de Auditoría -->
+               <div class="audit-kpi-grid">
+                 <div class="audit-card">
+                   <span class="audit-label">Fondo Inicial</span>
+                   <span class="audit-value" id="valFondo">--</span>
+                 </div>
+                 <div class="audit-card">
+                   <span class="audit-label">Efectivo Sistema</span>
+                   <span class="audit-value" id="kpiExpCash">$0.00</span>
+                 </div>
+                 <div class="audit-card">
+                   <span class="audit-label">Tarjeta</span>
+                   <span class="audit-value" id="kpiCard">$0.00</span>
+                 </div>
+                 <div class="audit-card">
+                   <span class="audit-label">Total Sistema</span>
+                   <span class="audit-value" id="kpiTotal">$0.00</span>
+                 </div>
+                 <div class="audit-card" id="cardDiff">
+                   <span class="audit-label">Balance Neto</span>
+                   <span class="audit-value" id="kpiDiff">$0.00</span>
+                 </div>
+                 <div class="audit-card highlight">
+                   <span class="audit-label">Efectivo Contado</span>
+                   <span class="audit-value" id="kpiCntCash">$0.00</span>
+                 </div>
+               </div>
+             
+               <div class="grid-3">
+                 <!-- Panel de Acciones (Control Pad) -->
+                 <div id="panelOperativo">
+                   <h3 class="card-title"><i class="fas fa-calculator text-primary"></i> Operaciones</h3>
+             
+                   <div class="action-stack">
+                     <!-- Vista: Caja Cerrada -->
+                     <div id="sectionCerrada">
+                       <div class="alert alert-warning-custom mb-3" style="background:#fff7ed; border:1px solid #fed7aa; color:#c2410c; padding:16px; border-radius:12px; display:flex; align-items:center;">
+                         <i class="fas fa-lock me-2"></i> La caja está cerrada actualmente.
+                       </div>
+                       <div class="input-group">
+                         <label style="font-weight:700; font-size:0.9rem; margin-bottom:8px; color:var(--text-primary); display:block;">Monto de Apertura</label>
+                         <input class="input" id="inputInicial" type="number" step="0.01" placeholder="RD$ 0.00" style="width:100%; padding:16px; background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:10px; font-size:1.1rem; font-weight:500;"/>
+                       </div>
+                       <button class="caja-btn-primary" id="btnAbrir" style="width: 100%; justify-content: center; padding: 18px; font-size: 1.1rem; background: var(--accent); color: white; border: none; border-radius: 12px; font-weight: 700; margin-top: 16px; cursor: pointer;">
+                         ABRIR TURNO
+                       </button>
+                     </div>
+             
+                     <!-- Vista: Caja Abierta -->
+                     <div id="sectionAbierta" style="display: none;">
+                       <div class="caja-btn-grid-2x2" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:16px;">
+                         <button class="caja-btn" id="btnIngreso">
+                           <i class="fas fa-arrow-down text-success"></i>
+                           <span>Ingreso</span>
+                         </button>
+                         <button class="caja-btn" id="btnEgreso">
+                           <i class="fas fa-arrow-up text-danger"></i>
+                           <span>Egreso</span>
+                         </button>
+                         <button class="caja-btn" id="btnConteo">
+                           <i class="fas fa-coins text-warning"></i>
+                           <span>Conteo</span>
+                         </button>
+                         <button class="caja-btn" id="btnFinalizar" style="background:#fef2f2; border-color:#fee2e2; color:#ef4444;">
+                           <i class="fas fa-power-off"></i>
+                           <span>Cierre</span>
+                         </button>
+                       </div>
+             
+                       <div class="mt-4 pt-3" style="border-top:1px solid var(--border-subtle); margin-top:24px; padding-top:16px;">
+                         <div class="d-flex justify-content-between text-muted small mb-1">
+                           <span>Turno ID:</span>
+                           <strong id="valTurnoId" class="audit-text-main">--</strong>
+                         </div>
+                         <div class="d-flex justify-content-between text-muted small">
+                           <span>Cajero:</span>
+                           <strong id="valCajero" class="audit-text-main">--</strong>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+             
+                 <!-- Bitácora (Log) -->
+                 <div class="caja-card-ghost p-0" style="background: transparent; border: none; box-shadow: none;">
+                   <div class="table-container" style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:16px; overflow:hidden;">
+                     <table class="table" id="tablaAuditoria" style="margin-bottom:0;">
+                       <thead style="background:var(--bg-surface);">
+                         <tr>
+                           <th style="padding:18px 24px; font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary); border-bottom:1px solid var(--border-subtle);">Hora</th>
+                           <th style="padding:18px 24px; font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary); border-bottom:1px solid var(--border-subtle);">Tipo</th>
+                           <th style="padding:18px 24px; font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary); border-bottom:1px solid var(--border-subtle);">Método</th>
+                           <th style="padding:18px 24px; font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary); border-bottom:1px solid var(--border-subtle);">Monto</th>
+                           <th style="padding:18px 24px; font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary); border-bottom:1px solid var(--border-subtle);">Ref.</th>
+                           <th style="padding:18px 24px; font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary); border-bottom:1px solid var(--border-subtle);">Usuario</th>
+                         </tr>
+                       </thead>
+                       <tbody id="tbodyAuditoria">
+                         <tr>
+                           <td colspan="6" class="empty-state" style="text-align:center; padding:40px;">
+                             <i class="fas fa-sync fa-spin"></i>
+                             <p>Cargando movimientos...</p>
+                           </td>
+                         </tr>
+                       </tbody>
+                     </table>
+                   </div>
+                 </div>
+             
+               </div>
+             
+               <!-- Modal para Arqueo / Cierre / Ajustes -->
+               <div class="modal" id="auditModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px); z-index:2000; display:none; align-items:center; justify-content:center; padding:24px;">
+                 <div class="modal-content" style="background:var(--bg-card); border-radius:24px; width:100%; max-width:500px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid var(--border-subtle); overflow:hidden;">
+                   <div class="modal-header" style="padding:24px 32px; background:var(--bg-surface); border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                     <h2 class="modal-title" id="auditModalTitle" style="font-size:1.25rem; font-weight:800; color:var(--text-primary); margin:0;">Confimar Acción</h2>
+                     <button class="modal-close" style="background:transparent; border:none; font-size:1.5rem; color:var(--text-secondary); cursor:pointer;">&times;</button>
+                   </div>
+                   <div class="modal-body" id="auditModalBody" style="padding:32px;">
+                     <!-- Dyn content -->
+                   </div>
+                   <div class="modal-footer" style="padding:20px 32px; border-top:1px solid var(--border-subtle); background:var(--bg-surface); display:flex; justify-content:flex-end; gap:16px;">
+                     <button class="caja-btn bg-light" id="btnAuditCancel" style="border:1px solid var(--border-subtle); border-radius:12px; padding:12px 24px; font-weight:700;">Cancelar</button>
+                     <button class="caja-btn btn-primary" id="btnAuditConfirm" style="width: auto; background:var(--accent); color:white; border:none; border-radius:12px; padding:12px 24px; font-weight:700;">Confirmar</button>
+                   </div>
+                 </div>
+               </div>
+             
+               <!-- Modal Reporte PDF -->
+               <div class="modal" id="reportModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px); z-index:2000; display:none; align-items:center; justify-content:center; padding:24px;">
+                 <div class="modal-content" style="background:var(--bg-card); border-radius:24px; width:100%; max-width:500px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid var(--border-subtle); overflow:hidden;">
+                   <div class="modal-header" style="padding:24px 32px; background:var(--bg-surface); border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                     <h2 class="modal-title" style="font-size:1.25rem; font-weight:800; color:var(--text-primary); margin:0;"><i class="fas fa-print"></i> Reporte de Cierre</h2>
+                     <button class="modal-close" style="background:transparent; border:none; font-size:1.5rem; color:var(--text-secondary); cursor:pointer;">&times;</button>
+                   </div>
+                   <div class="modal-body" id="reporteContenido" style="padding:32px;">
+                     <div class="spinner text-center"><i class="fas fa-spinner fa-spin fa-2x text-primary"></i></div>
+                   </div>
+                   <div class="modal-footer" style="padding:20px 32px; border-top:1px solid var(--border-subtle); background:var(--bg-surface); display:flex; justify-content:flex-end; gap:16px;">
+                     <button class="caja-btn btn-primary" id="btnAceptarReporte" style="background:var(--accent); color:white; border:none; border-radius:12px; padding:12px 24px; font-weight:700;">Finalizar</button>
+                   </div>
+                 </div>
+               </div>
+             
+               <!-- Modal Conciliación -->
+               <div class="modal" id="conciliacionModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px); z-index:2000; display:none; align-items:center; justify-content:center; padding:24px;">
+                 <div class="modal-content" style="background:var(--bg-card); border-radius:24px; width:100%; max-width:500px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid var(--border-subtle); overflow:hidden;">
+                   <div class="modal-header" style="padding:24px 32px; background:var(--bg-surface); border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                     <h2 class="modal-title" style="font-size:1.25rem; font-weight:800; color:var(--text-primary); margin:0;"><i class="fas fa-file-import"></i> Cargar Extracto</h2>
+                     <button class="modal-close" style="background:transparent; border:none; font-size:1.5rem; color:var(--text-secondary); cursor:pointer;">&times;</button>
+                   </div>
+                   <div class="modal-body" style="padding:32px;">
+                     <div class="alert alert-info-custom mb-3">
+                       <i class="fas fa-info-circle"></i> Sube tu extracto (PDF/CSV) para conciliar automáticamente.
+                     </div>
+                     <div class="file-upload-wrapper">
+                       <input type="file" id="fileExtracto" accept=".pdf,.csv,.txt" class="file-input">
+                       <label for="fileExtracto" class="file-label">
+                         <i class="fas fa-cloud-upload-alt"></i>
+                         <span>Seleccionar archivo...</span>
+                       </label>
+                     </div>
+                     <div id="reconResult" class="mt-3" style=""></div>
+                   </div>
+                   <div class="modal-footer" style="padding:20px 32px; border-top:1px solid var(--border-subtle); background:var(--bg-surface); display:flex; justify-content:flex-end; gap:16px;">
+                     <button class="caja-btn bg-light" style="border:1px solid var(--border-subtle); border-radius:12px; padding:12px 24px; font-weight:700;">Cancelar</button>
+                     <button class="caja-btn btn-primary" id="btnProcesarExtracto" style="background:var(--accent); color:white; border:none; border-radius:12px; padding:12px 24px; font-weight:700;">Procesar</button>
+                   </div>
+                 </div>
+               </div>
+
+               <!-- Modal Profesional de Conteo (Denominaciones) -->
+               <div class="modal" id="conteoProfesionalModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px); z-index:2000; display:none; align-items:center; justify-content:center; padding:24px;">
+                 <div class="modal-content modal-lg" style="background:var(--bg-card); border-radius:24px; width:100%; max-width:800px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid var(--border-subtle); overflow:hidden;">
+                   <div class="modal-header" style="padding:24px 32px; background:var(--bg-surface); border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                     <h2 class="modal-title" style="font-size:1.25rem; font-weight:800; color:var(--text-primary); margin:0;"><i class="fas fa-coins text-warning"></i> Conteo Detallado</h2>
+                     <button class="modal-close" id="btnCloseConteo" style="background:transparent; border:none; font-size:1.5rem; color:var(--text-secondary); cursor:pointer;">&times;</button>
+                   </div>
+                   <div class="modal-body" style="padding:32px; overflow-y:auto; max-height:70vh;">
+                     <div class="conteo-container">
+                       <div class="conteo-grid" style="display:grid; grid-template-columns: 1fr 300px; gap:24px;">
+                         <!-- Denominaciones -->
+                         <div class="denominaciones-panel">
+                           <table class="denominaciones-table" style="width:100%; text-align:left;">
+                             <thead>
+                               <tr>
+                                 <th>Moneda</th>
+                                 <th>Cantidad</th>
+                                 <th>Subtotal</th>
+                               </tr>
+                             </thead>
+                             <tbody id="denominacionesBody">
+                               <!-- JS genera via init -->
+                             </tbody>
+                           </table>
+                         </div>
+             
+                         <!-- Resumen y Validación Premium -->
+                         <div class="resumen-panel">
+                           <div class="resumen-card" style="background:var(--bg-surface); padding:20px; border-radius:16px; border:1px solid var(--border-subtle);">
+                             <div class="kpi-row" style="display:flex; flex-direction:column; gap:16px;">
+                               <div class="kpi-entry">
+                                 <label style="color:var(--text-secondary); font-size:0.85rem; font-weight:700;">Efectivo Contado</label>
+                                 <div class="value" id="conteoTotalContado" style="font-size:1.5rem; font-weight:800; color:var(--text-primary);">RD$ 0.00</div>
+                               </div>
+             
+                               <div class="kpi-entry" id="conteoEsperadoContainer" style="display: none;">
+                                 <label style="color:var(--text-secondary); font-size:0.85rem; font-weight:700;">Esperado en Sistema</label>
+                                 <div class="value text-muted" id="conteoTotalEsperado" style="font-size:1.2rem; font-weight:700; color:var(--text-muted);">RD$ 0.00</div>
+                               </div>
+                             </div>
+             
+                             <div class="diff-box mt-3" id="conteoDiferenciaContenedor" style="display: none; background:#fee2e2; padding:16px; border-radius:12px; margin-top:16px;">
+                               <div class="status-badge" id="conteoStatusBadge" style="font-size:0.75rem; font-weight:800; color:#b91c1c; text-transform:uppercase; margin-bottom:4px;">Sincronizando...</div>
+                               <div class="kpi-entry">
+                                 <label style="color:#991b1b; font-size:0.85rem; font-weight:700;">Diferencia de Auditoría</label>
+                                 <div class="value" id="conteoDiferencia" style="font-size:1.2rem; font-weight:800; color:#b91c1c;">RD$ 0.00</div>
+                               </div>
+                             </div>
+             
+                             <div class="input-group mt-3" style="margin-top:16px;">
+                               <label style="font-weight:700; font-size:0.85rem; color:var(--text-secondary);"><i class="fas fa-fingerprint me-1"></i> Notas de Auditoría</label>
+                               <textarea id="conteoObservaciones" class="input" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border-subtle); margin-top:8px; resize:vertical; min-height:80px;" placeholder="Escriba aquí cualquier observación relevante..."></textarea>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                   <div class="modal-footer" style="padding:20px 32px; border-top:1px solid var(--border-subtle); background:var(--bg-surface); display:flex; justify-content:flex-end; gap:16px;">
+                     <button class="caja-btn bg-light" id="btnConteoCancel" style="border:1px solid var(--border-subtle); border-radius:12px; padding:12px 24px; font-weight:700;">Regresar</button>
+                     <button class="caja-btn btn-primary" id="btnGuardarConteo" style="background:var(--accent); color:white; border:none; border-radius:12px; padding:12px 24px; font-weight:700;">Confirmar y Cerrar</button>
+                   </div>
+                 </div>
+               </div>
+             
+               <!-- Modal de Validación de Supervisor -->
+               <div class="modal" id="supervisorModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px); z-index:2000; display:none; align-items:center; justify-content:center; padding:24px;">
+                 <div class="modal-content modal-sm" style="background:var(--bg-card); border-radius:24px; width:100%; max-width:400px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid var(--border-subtle); overflow:hidden;">
+                   <div class="modal-header" style="padding:24px 32px; background:var(--bg-surface); border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                     <h2 class="modal-title" style="font-size:1.25rem; font-weight:800; color:var(--text-primary); margin:0;"><i class="fas fa-user-shield text-danger"></i> Firma de Autorización</h2>
+                     <button class="modal-close" id="btnCloseSupervisor" style="background:transparent; border:none; font-size:1.5rem; color:var(--text-secondary); cursor:pointer;">&times;</button>
+                   </div>
+                   <div class="modal-body text-center" style="padding:32px;">
+                     <div class="alert alert-danger-custom mb-4" id="supervisorAlertBox" style="font-size: 0.9rem; background: #fee2e2; color: #b91c1c; padding: 16px; border-radius: 12px; margin-bottom: 24px;">
+                       <i class="fas fa-exclamation-triangle"></i> <span id="supervisorAlertText">Se requiere la firma de un supervisor para autorizar.</span>
+                     </div>
+             
+                     <div class="input-group text-start mb-3" style="text-align:left; margin-bottom:16px;">
+                       <label style="font-weight:700; font-size:0.85rem; color:var(--text-secondary); display:block; margin-bottom:8px;">PIN o Contraseña</label>
+                       <input type="password" id="supervisorPin" class="input text-center" placeholder="â€¢â€¢â€¢â€¢" style="width:100%; padding:16px; font-size: 1.5rem; letter-spacing: 0.5rem; border:1px solid var(--border-subtle); border-radius:12px; background:var(--bg-surface);" maxlength="20">
+                     </div>
+             
+                     <div class="input-group text-start mb-3" id="supervisorReasonContainer" style="text-align:left;">
+                       <label style="font-weight:700; font-size:0.85rem; color:var(--text-secondary); display:block; margin-bottom:8px;">Motivo de la Autorización</label>
+                       <textarea id="supervisorReason" class="input" placeholder="Escriba aquí el motivo..." style="width:100%; padding:12px; border:1px solid var(--border-subtle); border-radius:12px; background:var(--bg-surface); min-height: 80px;"></textarea>
+                     </div>
+                   </div>
+                   <div class="modal-footer" style="padding:20px 32px; border-top:1px solid var(--border-subtle); background:var(--bg-surface); display:flex; justify-content:flex-end; gap:16px;">
+                     <button class="caja-btn bg-light" id="btnSupervisorCancel" style="border:1px solid var(--border-subtle); border-radius:12px; padding:12px 24px; font-weight:700;">Cancelar</button>
+                     <button class="caja-btn btn-primary" id="btnConfirmarSupervisor" style="background: var(--danger); border-color: var(--danger); color: white; border:none; border-radius:12px; padding:12px 24px; font-weight:700;">Firmar Autorización</button>
+                   </div>
+                 </div>
+               </div>
+             
+             <!-- Modal de Confirmación Final de Cierre -->
+             <div class="modal" id="cierreFinalModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px); z-index:2000; display:none; align-items:center; justify-content:center; padding:24px;">
+               <div class="modal-content" style="max-width: 500px; background:var(--bg-card); border-radius:24px; width:100%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid var(--border-subtle); overflow:hidden;">
+                 <div class="modal-header" style="padding:24px 32px; background:var(--bg-surface); border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+                   <h2 class="modal-title" style="font-size:1.25rem; font-weight:800; color:var(--text-primary); margin:0;"><i class="fas fa-flag-checkered text-primary"></i> Confirmar Cierre</h2>
+                   <button class="modal-close" style="background:transparent; border:none; font-size:1.5rem; color:var(--text-secondary); cursor:pointer;">&times;</button>
+                 </div>
+                 <div class="modal-body" style="padding:32px;">
+                   <div class="resumen-card" style="background: var(--bg-surface); border:1px solid var(--border-subtle); padding:24px; border-radius:16px;">
+                     <div class="kpi-entry mb-4" style="margin-bottom:16px;">
+                       <label style="color:var(--text-secondary); font-size:0.85rem; font-weight:700;">Efectivo Contado en Conteo</label>
+                       <div class="value" id="cierreFinalContado" style="font-size:1.5rem; font-weight:800; color:var(--text-primary);">RD$ 0.00</div>
+                     </div>
+                     <div class="kpi-entry mb-4" style="margin-bottom:16px;">
+                       <label style="color:var(--text-secondary); font-size:0.85rem; font-weight:700;">Esperado por Sistema</label>
+                       <div class="value" id="cierreFinalEsperado" style="font-size:1.2rem; font-weight:700; color:var(--text-muted);">RD$ 0.00</div>
+                     </div>
+                     <div class="diff-box" id="cierreFinalDiffContenedor" style="background:#f1f5f9; padding:16px; border-radius:12px;">
+                       <div class="kpi-entry">
+                         <label id="cierreFinalDiffLabel" style="color:var(--text-secondary); font-size:0.85rem; font-weight:700;">Diferencia Detectada</label>
+                         <div class="value" id="cierreFinalDiff" style="font-size:1.2rem; font-weight:800; color:var(--text-primary);">RD$ 0.00</div>
+                       </div>
+                     </div>
+                   </div>
+                   <div class="alert alert-info-custom mt-4" style="margin-top:24px; background:#eff6ff; color:#1d4ed8; padding:16px; border-radius:12px; display:flex; align-items:center; gap:8px;">
+                     <i class="fas fa-info-circle"></i> <span>Al confirmar, se generará el reporte de auditoría y se cerrará su sesión de trabajo.</span>
+                   </div>
+                 </div>
+                 <div class="modal-footer" style="padding:20px 32px; border-top:1px solid var(--border-subtle); background:var(--bg-surface); display:flex; justify-content:flex-end; gap:16px;">
+                   <button class="caja-btn bg-light" style="border:1px solid var(--border-subtle); border-radius:12px; padding:12px 24px; font-weight:700;">Cancelar</button>
+                   <button class="caja-btn btn-primary" id="btnConfirmarCierreDefinitivo" style="background: var(--danger); color: white; border: none; border-radius:12px; padding:12px 24px; font-weight:700;">
+                     <i class="fas fa-power-off me-2"></i> Cerrar Turno
+                   </button>
+                 </div>
+               </div>
+
+              </div>
+        </main>
+    </div>
+
+    <!-- JS Dependencies -->
+    <script src="/static/lib/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/lib/notyf/notyf.min.js"></script>
+    <script src="/static/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    
+    <!-- Sidebar Toggle Logic -->
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const menuIcon = menuToggle.querySelector('i');
+
+        function updateIcon() {
+            const isHidden = document.body.classList.contains('sidebar-hidden');
+            menuIcon.className = isHidden ? 'fas fa-bars' : 'fas fa-bars-staggered';
+        }
+
+        menuToggle.addEventListener('click', () => {
+            document.body.classList.toggle('sidebar-hidden');
+            updateIcon();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if (e.key.toLowerCase() === 's') {
+                document.body.classList.toggle('sidebar-hidden');
+                updateIcon();
+            }
+        });
+
+        // Initialize
+        updateIcon();
+    </script>
+    
+    <!-- App Logic -->
+    <script src="/caja/static/caja.js"></script>
+</body>
+</html>
+

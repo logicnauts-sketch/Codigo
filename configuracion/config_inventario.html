@@ -1,0 +1,35 @@
+{% extends "admin/config_base.html" %}
+
+{% block config_content %}
+<div class="config-group">
+    <span class="group-title">Gestión de Existencias</span>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Permitir Existencias Negativas</span>
+            <span class="row-desc">Permite vender productos sin existencias registradas en el almacén.</span>
+        </div>
+        <label class="switch">
+            <input type="checkbox" name="inv_stock_negativo" id="cfg-inv-neg">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Alertas de Existencias Bajas</span>
+            <span class="row-desc">Notificar visualmente cuando un producto alcance su nivel crítico.</span>
+        </div>
+        <label class="switch">
+            <input type="checkbox" name="inv_alerta_stock_bajo" id="cfg-inv-alerta">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Existencia Mínima Predeterminada</span>
+            <span class="row-desc">Nivel de alerta base para nuevos productos creados.</span>
+        </div>
+        <input type="number" name="inv_stock_minimo_defecto" id="cfg-inv-min" class="config-input"
+            style="max-width: 120px;">
+    </div>
+</div>
+{% endblock %}

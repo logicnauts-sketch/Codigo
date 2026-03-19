@@ -1,0 +1,467 @@
+{% extends "admin/config_base.html" %}
+
+{% block config_content %}
+<div class="config-group">
+    <span class="group-title">Configuración de Atajos</span>
+
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Habilitar Atajos Globales</span>
+            <span class="row-desc">Permite navegar y realizar acciones rápidas usando el teclado.</span>
+        </div>
+        <label class="switch">
+            <input type="checkbox" name="config[ui_shortcuts_enabled]" id="cfg-ui-shortcuts" {% if
+                config.ui_shortcuts_enabled=='1' or config.ui_shortcuts_enabled==None %}checked{% endif %}>
+            <span class="slider"></span>
+        </label>
+    </div>
+</div>
+
+<div class="config-group">
+    <span class="group-title">Guía de Referencia</span>
+
+    <div
+        style="background: var(--gray-light); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--ln-border);">
+        <h5 style="font-weight: 800; margin-bottom: 1rem; color: var(--ln-primary); font-size: 0.9rem;">
+            <i class="fas fa-info-circle"></i> Teclas Rápidas Disponibles
+        </h5>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Home / General -->
+            <div class="shortcut-module">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="module-icon"
+                            style="color: var(--ln-primary); background: rgba(28, 126, 214, 0.1);"><i
+                                class="fas fa-home"></i></span>
+                        <span class="module-name">Home / General</span>
+                    </div>
+                    <i class="fas fa-chevron-down toggle-arrow"></i>
+                </div>
+                <div class="module-content">
+                    <ul class="shortcut-list">
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">H</kbd> Ir al Dashboard /
+                            Inicio
+                        </li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">S</kbd> Expandir / Contraer
+                            Sidebar
+                        </li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">K</kbd> Búsqueda / Navegación
+                            Rápida
+                        </li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">Esc</kbd> Cerrar modales
+                            activos
+                        </li>
+                        <li
+                            style="margin-top: 0.5rem; color: var(--ln-primary); font-weight: 700; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                            Navegación Instantánea:</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">F</kbd> Ir a Facturación</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">P</kbd> Ir a Productos</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">C</kbd> Ir a Clientes</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">N</kbd> Ir a Proveedores</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">V</kbd> Ir a Ventas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Facturación -->
+            <div class="shortcut-module">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="module-icon" style="color: #10b981; background: rgba(16, 185, 129, 0.1);"><i
+                                class="fas fa-file-invoice-dollar"></i></span>
+                        <span class="module-name">Facturación</span>
+                    </div>
+                    <i class="fas fa-chevron-down toggle-arrow"></i>
+                </div>
+                <div class="module-content">
+                    <ul class="shortcut-list">
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">F</kbd> Ir al POS / Venta
+                        </li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">Enter</kbd> Procesar /
+                            Guardar Venta
+                        </li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">F3</kbd> Buscar Persona
+                            (Cliente)
+                        </li>
+                        <li
+                            style="margin-top: 0.5rem; color: #10b981; font-weight: 700; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                            Global:</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">S</kbd> Sidebar</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">H</kbd> Inicio</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Caja -->
+            <div class="shortcut-module">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="module-icon" style="color: #f59e0b; background: rgba(245, 158, 11, 0.1);"><i
+                                class="fas fa-cash-register"></i></span>
+                        <span class="module-name">Caja</span>
+                    </div>
+                    <i class="fas fa-chevron-down toggle-arrow"></i>
+                </div>
+                <div class="module-content">
+                    <ul class="shortcut-list">
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">V</kbd> Ver Reporte de Ventas
+                        </li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">A</kbd> Abrir / Cerrar Caja
+                        </li>
+                        <li
+                            style="margin-top: 0.5rem; color: #f59e0b; font-weight: 700; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                            Global:</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">S</kbd> Sidebar</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">H</kbd> Inicio</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Clientes / Personas -->
+            <div class="shortcut-module">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="module-icon" style="color: #6366f1; background: rgba(99, 102, 241, 0.1);"><i
+                                class="fas fa-users"></i></span>
+                        <span class="module-name">Clientes / Personas</span>
+                    </div>
+                    <i class="fas fa-chevron-down toggle-arrow"></i>
+                </div>
+                <div class="module-content">
+                    <ul class="shortcut-list">
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">C</kbd> Listado de Clientes
+                        </li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">+</kbd> Nuevo Cliente (Modal)
+                        </li>
+                        <li
+                            style="margin-top: 0.5rem; color: #6366f1; font-weight: 700; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                            Global:</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">S</kbd> Sidebar</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">H</kbd> Inicio</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Proveedores -->
+            <div class="shortcut-module">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="module-icon" style="color: #8b5cf6; background: rgba(139, 92, 246, 0.1);"><i
+                                class="fas fa-truck"></i></span>
+                        <span class="module-name">Proveedores</span>
+                    </div>
+                    <i class="fas fa-chevron-down toggle-arrow"></i>
+                </div>
+                <div class="module-content">
+                    <ul class="shortcut-list">
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">N</kbd> Listado de
+                            Proveedores</li>
+                        <li
+                            style="margin-top: 0.5rem; color: #8b5cf6; font-weight: 700; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                            Global:</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">S</kbd> Sidebar</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">H</kbd> Inicio</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Productos / Inventario -->
+            <div class="shortcut-module">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="module-icon" style="color: #ec4899; background: rgba(236, 72, 153, 0.1);"><i
+                                class="fas fa-boxes"></i></span>
+                        <span class="module-name">Productos / Inventario</span>
+                    </div>
+                    <i class="fas fa-chevron-down toggle-arrow"></i>
+                </div>
+                <div class="module-content">
+                    <ul class="shortcut-list">
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">P</kbd> Ver Catálogo</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">F10</kbd> Búsqueda rápida
+                        </li>
+                        <li
+                            style="margin-top: 0.5rem; color: #ec4899; font-weight: 700; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                            Global:</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">S</kbd> Sidebar</li>
+                        <li><kbd class="key-shortcut" onclick="capturarTecla(this, event)">H</kbd> Inicio</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- CORE Placeholder -->
+            <div style="display: flex; justify-content: center; margin-top: 1rem;">
+                <button class="btn btn-premium"
+                    style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: white; padding: 0.8rem 2rem; border-radius: 50px; font-weight: 800; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: transform 0.2s;"
+                    onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <i class="fas fa-plus-circle"></i> VER MÁS EN MODO CORE <i class="fas fa-lock"></i>
+                </button>
+            </div>
+        </div>
+
+        <div
+            style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed var(--ln-border); font-size: 0.8rem; color: var(--ln-text-muted);">
+            <i class="fas fa-lightbulb"></i> <b>Tip:</b> Los atajos se desactivan automáticamente cuando estás
+            escribiendo en cualquier campo de texto para evitar conflictos.
+        </div>
+    </div>
+</div>
+
+<style>
+    .shortcut-module {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 0.8rem;
+        transition: border-color 0.2s;
+    }
+
+    .shortcut-module:hover {
+        border-color: var(--ln-primary);
+    }
+
+    .module-header {
+        padding: 1.2rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+        background: #fdfdfd;
+    }
+
+    .module-header:hover {
+        background: #f8fafc;
+    }
+
+    .module-name {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 1rem;
+    }
+
+    .toggle-arrow {
+        color: #94a3b8;
+        transition: transform 0.3s;
+    }
+
+    .shortcut-module.active .toggle-arrow {
+        transform: rotate(180deg);
+        color: var(--ln-primary);
+    }
+
+    .shortcut-module.active {
+        border-color: var(--ln-primary);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .module-content {
+        display: none;
+        padding: 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        background: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .shortcut-module.active .module-content {
+        display: block;
+        opacity: 1;
+    }
+
+    .shortcut-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .shortcut-list li {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        color: #475569;
+    }
+
+    .key-shortcut {
+        background: #f8fafc;
+        color: #1e293b;
+        border: 1px solid #cbd5e1;
+        border-bottom: 3px solid #94a3b8;
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-weight: 800;
+        min-width: 40px;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.1s;
+        font-family: 'Roboto Mono', monospace;
+        text-transform: uppercase;
+        margin-right: 15px;
+    }
+
+    .key-shortcut:hover {
+        background: #f1f5f9;
+        transform: translateY(-1px);
+        border-bottom-width: 4px;
+    }
+
+    .key-shortcut:active {
+        transform: translateY(2px);
+        border-bottom-width: 1px;
+    }
+</style>
+
+<script>
+    function toggleModule(header) {
+        const module = header.closest('.shortcut-module');
+        if (!module) return;
+
+        // Efecto acordeón (cerrar otros)
+        document.querySelectorAll('.shortcut-module.active').forEach(m => {
+            if (m !== module) m.classList.remove('active');
+        });
+
+        module.classList.toggle('active');
+    }
+
+    function capturarTecla(element, e) {
+        if (e && e.stopPropagation) e.stopPropagation();
+
+        // Estado original de atajos globales
+        const originalShortcutsState = window.shortcuts ? window.shortcuts.enabled : true;
+        if (window.shortcuts) window.shortcuts.enabled = false;
+
+        Swal.fire({
+            title: 'Configurar Atajo',
+            html: `
+                <div style="padding: 1rem;">
+                    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 2rem;">Presione la tecla que desea asignar...</p>
+                    <div id="captured-key" class="listening-box">?</div>
+                    <div style="margin-top: 1.5rem; font-size: 0.8rem; color: #94a3b8;">
+                        <i class="fas fa-keyboard"></i> Escuchando teclado...
+                    </div>
+                </div>
+                <style>
+                    .listening-box {
+                        font-size: 3.5rem;
+                        font-weight: 800;
+                        color: var(--ln-primary);
+                        padding: 20px 40px;
+                        border: 3px dashed var(--ln-primary);
+                        border-radius: 16px;
+                        display: inline-block;
+                        min-width: 120px;
+                        background: rgba(28, 126, 214, 0.05);
+                        animation: pulse-border 1.5s infinite;
+                    }
+                    @keyframes pulse-border {
+                        0% { transform: scale(1); opacity: 0.8; }
+                        50% { transform: scale(1.05); opacity: 1; }
+                        100% { transform: scale(1); opacity: 0.8; }
+                    }
+                    .key-detected {
+                        animation: none !important;
+                        border-style: solid !important;
+                        background: var(--ln-primary) !important;
+                        color: white !important;
+                        transform: scale(1.1);
+                    }
+                </style>
+            `,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            didOpen: () => {
+                const keyDisplay = document.getElementById('captured-key');
+
+                const handler = (event) => {
+                    if (['Control', 'Shift', 'Alt', 'Meta', 'CapsLock'].includes(event.key)) return;
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    let key = event.key;
+                    if (key === ' ') key = 'Space';
+                    if (key.length === 1) key = key.toUpperCase();
+
+                    if (keyDisplay) {
+                        keyDisplay.innerText = key;
+                        keyDisplay.classList.add('key-detected');
+                    }
+
+                    window.removeEventListener('keydown', handler, true);
+
+                    setTimeout(() => {
+                        if (window.shortcuts) window.shortcuts.enabled = originalShortcutsState;
+
+                        // --- VALIDACIÓN DE DUPLICADOS Y SINCRONIZACIÓN ---
+                        const newKey = key.toUpperCase();
+                        let duplicated = false;
+                        let conflictingActions = [];
+
+                        // Extraer el nombre de la acción del elemento actual
+                        const currentActionName = element.parentElement.textContent.replace(element.textContent, "").trim();
+
+                        document.querySelectorAll('.key-shortcut').forEach(kb => {
+                            if (kb === element) return;
+
+                            const otherKey = kb.textContent.trim().toUpperCase();
+                            const otherActionName = kb.parentElement.textContent.replace(kb.textContent, "").trim();
+
+                            if (otherKey === newKey) {
+                                // Si es la misma acción (ej. Sidebar), no es duplicado real, es un reflejo
+                                if (otherActionName !== currentActionName) {
+                                    duplicated = true;
+                                    if (!conflictingActions.includes(otherActionName)) {
+                                        conflictingActions.push(otherActionName);
+                                    }
+                                }
+                            }
+                        });
+
+                        if (duplicated) {
+                            Swal.fire({
+                                title: 'Atajo Duplicado',
+                                html: `La tecla <b>"${newKey}"</b> ya está siendo usada por:<br><br><b>${conflictingActions.join('<br>')}</b><br><br>Por favor elija una tecla diferente.`,
+                                icon: 'error',
+                                confirmButtonColor: '#d33'
+                            });
+                            return;
+                        }
+
+                        // Sincronizar: si hay otros elementos con la misma acción, actualizarlos también
+                        document.querySelectorAll('.key-shortcut').forEach(kb => {
+                            const actionName = kb.parentElement.textContent.replace(kb.textContent, "").trim();
+                            if (actionName === currentActionName) {
+                                kb.textContent = newKey;
+                            }
+                        });
+
+                        element.textContent = newKey;
+
+                        Swal.fire({
+                            title: '¡Actualizado!',
+                            text: `Se ha asignado la tecla "${newKey}" correctamente.`,
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }, 400);
+                };
+
+                setTimeout(() => {
+                    window.addEventListener('keydown', handler, true);
+                }, 100);
+            },
+            willClose: () => {
+                if (window.shortcuts) window.shortcuts.enabled = originalShortcutsState;
+            }
+        });
+    }
+</script>
+{% endblock %}

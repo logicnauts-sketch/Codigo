@@ -1,0 +1,1700 @@
+{% extends "admin/home.html" %}
+
+{% block title %}Configuración del Sistema - LN Systems{% endblock %}
+
+{% block styles %}
+<style>
+    .config-container {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+        min-height: calc(100vh - 200px);
+    }
+
+    @media (max-width: 900px) {
+        .config-container {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+
+    /* Sidebar de Navegación */
+    .config-nav {
+        background: var(--card-bg);
+        border-radius: 12px;
+        border: 1px solid var(--ln-border);
+        overflow: hidden;
+        position: sticky;
+        top: 2rem;
+        height: fit-content;
+        padding: 0.75rem 0;
+        z-index: 10;
+    }
+
+    @media (max-width: 900px) {
+        .config-nav {
+            position: relative;
+            top: 0;
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 0.5rem;
+            background: var(--gray-light);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-category {
+            display: none;
+        }
+
+        .nav-item {
+            display: inline-flex;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            margin-right: 0.5rem;
+            border: 1px solid transparent;
+        }
+
+        .nav-item.active {
+            background: var(--card-bg);
+            border-color: var(--ln-primary);
+            border-right: none;
+            border-bottom: 2px solid var(--ln-primary);
+        }
+    }
+
+    .nav-category {
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--ln-text-muted);
+        padding: 1rem 1.5rem 0.5rem;
+        opacity: 0.6;
+    }
+
+    .nav-item {
+        padding: 0.85rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        color: var(--ln-text-muted);
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+
+    .nav-item i {
+        width: 18px;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    .nav-item:hover {
+        background: var(--gray-light);
+        color: var(--ln-primary);
+    }
+
+    .nav-item.active {
+        background: rgba(99, 102, 241, 0.08);
+        color: var(--ln-primary);
+        border-right: 3px solid var(--ln-primary);
+        font-weight: 600;
+    }
+
+    /* Panel de Parámetros */
+    .config-panel {
+        background: var(--card-bg);
+        border-radius: 12px;
+        border: 1px solid var(--ln-border);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--ln-border);
+        background: var(--gray-light);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .panel-header h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--ln-primary);
+    }
+
+    .config-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+        .config-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .config-header .btn {
+            width: 100%;
+        }
+    }
+
+    .panel-body {
+        padding: 2rem;
+        display: none;
+    }
+
+    .panel-body.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @media (max-width: 600px) {
+        .panel-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .panel-body {
+            padding: 1.25rem;
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Controles de Configuración */
+    .config-group {
+        margin-bottom: 2rem;
+    }
+
+    .config-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .group-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+        font-weight: 700;
+        margin-bottom: 1.25rem;
+        display: block;
+        border-bottom: 1px dashed var(--ln-border);
+        padding-bottom: 0.5rem;
+    }
+
+    .config-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 0;
+        border-bottom: 1px solid var(--ln-border);
+        gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .config-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .row-info {
+            max-width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .config-select,
+        .config-input {
+            width: 100% !important;
+        }
+
+        .config-row .d-flex {
+            width: 100%;
+        }
+
+        .config-row .btn-sm {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+
+    .row-label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--ln-text);
+    }
+
+    .row-desc {
+        font-size: 0.8rem;
+        color: var(--ln-text-muted);
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    /* Micro-interacciones de Guardado */
+    @keyframes checkPop {
+        0% {
+            transform: scale(0) rotate(-45deg);
+            opacity: 0;
+        }
+
+        70% {
+            transform: scale(1.2) rotate(0deg);
+            opacity: 1;
+        }
+
+        100% {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+        }
+    }
+
+    .config-row {
+        position: relative;
+        transition: background 0.4s ease, border-color 0.4s ease;
+    }
+
+    .config-row.save-success {
+        background: rgba(16, 185, 129, 0.05);
+        border-bottom-color: var(--ln-success);
+    }
+
+    .save-check {
+        color: var(--ln-success);
+        font-size: 1.2rem;
+        animation: checkPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        margin-left: 10px;
+        display: none;
+    }
+
+    .config-row.save-success .save-check {
+        display: inline-block;
+    }
+
+    /* Estilos de inputs específicos */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--gray-light);
+        transition: .4s;
+        border-radius: 34px;
+        border: 1px solid var(--ln-border);
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: var(--text-main);
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.slider {
+        background-color: var(--ln-primary);
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(20px);
+    }
+
+    .config-select,
+    .config-input {
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        border: 1px solid var(--ln-border);
+        font-size: 0.9rem;
+        color: var(--text-main);
+        background-color: var(--gray-light);
+        outline: none;
+        width: 220px;
+        max-width: 100%;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+        border-radius: 6px;
+        white-space: nowrap;
+        height: fit-content;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .btn-sm i {
+        font-size: 0.85rem;
+    }
+
+    .config-select:focus,
+    .config-input:focus {
+        border-color: var(--ln-primary);
+        background-color: var(--card-bg);
+    }
+
+    /* Tablas Responsivas */
+    @media (max-width: 768px) {
+        .table thead {
+            display: none;
+        }
+
+        .table,
+        .table tbody,
+        .table tr,
+        .table td {
+            display: block;
+            width: 100%;
+        }
+
+        .table tr {
+            margin-bottom: 1rem;
+            border: 1px solid var(--ln-border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            background: var(--card-bg);
+        }
+
+        .table td {
+            text-align: right;
+            padding: 0.5rem;
+            border-bottom: 1px dashed var(--ln-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table td:last-child {
+            border-bottom: none;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .table td::before {
+            content: attr(data-label);
+            font-weight: 700;
+            color: var(--ln-primary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+    }
+
+    /* Footer de Acciones */
+    .panel-footer {
+        padding: 1.5rem;
+        border-top: 1px solid var(--ln-border);
+        background: var(--gray-light);
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 1rem;
+        border-bottom-left-radius: 12px;
+        border-bottom-right-radius: 12px;
+    }
+
+    @media (max-width: 600px) {
+        .panel-footer {
+            flex-direction: column;
+            border-radius: 0;
+            align-items: stretch;
+        }
+
+        .panel-footer button {
+            width: 100%;
+        }
+    }
+
+    /* Warning Alert */
+    .config-alert {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        padding: 1rem;
+        border-radius: 8px;
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        align-items: center;
+    }
+
+    .config-alert i {
+        color: #f59e0b;
+        font-size: 1.25rem;
+    }
+
+    .badge-premium {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        text-transform: uppercase;
+        font-weight: 700;
+        margin-left: 0.5rem;
+        border: none;
+    }
+
+
+    .config-alert-text {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .group-header-sm {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--ln-primary);
+        letter-spacing: 1px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        opacity: 0.8;
+    }
+
+    .group-header-sm::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(to right, var(--ln-border), transparent);
+    }
+
+    /* Seccion Módulos */
+    .module-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 0.75rem;
+    }
+
+    @media (max-width: 500px) {
+        .module-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .module-card {
+        padding: 1rem;
+        border: 1px solid var(--ln-border);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.2s;
+    }
+
+    .module-card:hover {
+        border-color: var(--ln-primary);
+        background: var(--gray-light);
+    }
+
+    .locked-module {
+        opacity: 0.85;
+        background: var(--gray-light);
+        cursor: not-allowed;
+    }
+
+    .locked-module i.fa-lock {
+        color: var(--ln-text-muted);
+        font-size: 0.75rem;
+    }
+
+    .locked-module .slider {
+        cursor: not-allowed;
+        background-color: #e2e8f0 !important;
+    }
+
+    .table-responsive {
+        margin-top: 1rem;
+        border: 1px solid var(--ln-border);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--ln-border);
+    }
+
+    .table th {
+        background: var(--gray-light);
+        font-weight: 700;
+        color: var(--ln-text-muted);
+        text-transform: uppercase;
+        font-size: 0.7rem;
+    }
+
+    .table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="header-ln">
+    <div class="header-info">
+        <h1>Configuración Global</h1>
+        <p>Espacio reservado para parámetros operativos del sistema.</p>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-outline-secondary" onclick="window.location.reload()">
+            <i class="fas fa-sync"></i> Recargar
+        </button>
+    </div>
+</div>
+
+<div class="config-container">
+    <!-- Navegación Lateral -->
+    <div class="config-nav">
+        <div class="nav-category">General</div>
+        <div class="nav-item active" data-target="panel-general">
+            <i class="fas fa-cog"></i> General
+        </div>
+        <div class="nav-item" data-target="panel-license">
+            <i class="fas fa-id-card"></i> Suscripción
+        </div>
+        <div class="nav-item" data-target="panel-ui">
+            <i class="fas fa-desktop"></i> Interfaz
+        </div>
+
+        <div class="nav-category">Operaciones</div>
+        <div class="nav-item" data-target="panel-facturacion">
+            <i class="fas fa-file-invoice-dollar"></i> Facturación
+        </div>
+        <div class="nav-item" data-target="panel-caja">
+            <i class="fas fa-cash-register"></i> Caja
+        </div>
+        <div class="nav-item" data-target="panel-inventario">
+            <i class="fas fa-boxes"></i> Inventario
+        </div>
+
+        <div class="nav-category">Finanzas y Bancos</div>
+        <div class="nav-item" data-target="panel-bancos">
+            <i class="fas fa-university"></i> Datos Bancarios <i class="fas fa-lock ms-auto"
+                style="font-size: 0.65rem; color: #f59e0b;" title="Requiere Plan CORE"></i>
+        </div>
+        Riverside
+        <div class="nav-category">Hardware y Terminales</div>
+        <div class="nav-item" data-target="panel-impresion">
+            <i class="fas fa-print"></i> Agente de Impresión
+        </div>
+        <div class="nav-item" data-target="panel-verifone">
+            <i class="fas fa-credit-card"></i> Gestión de Verifones
+        </div>
+        <div class="nav-item" data-target="panel-unidades">
+            <i class="fas fa-ruler-combined"></i> Unidades
+        </div>
+
+        <div class="nav-category">Sistema</div>
+        <div class="nav-item" data-target="panel-modulos">
+            <i class="fas fa-th-large"></i> Módulos
+        </div>
+        <div class="nav-item" data-target="panel-seguridad">
+            <i class="fas fa-shield-alt"></i> Seguridad
+        </div>
+        <div class="nav-item" data-target="panel-backup">
+            <i class="fas fa-database"></i> Backups
+        </div>
+        <div class="nav-item" data-target="panel-automation">
+            <i class="fas fa-robot"></i> Automatización
+        </div>
+        <div class="nav-item" data-target="panel-clientes-admin">
+            <i class="fas fa-user-cog"></i> Administración de Clientes
+        </div>
+    </div>
+
+    <!-- Paneles de Configuración -->
+    <div class="config-panel">
+        <div class="panel-header">
+            <h2 id="panel-title">Operaciones Generales</h2>
+            <span class="badge badge-outline-primary" style="font-size: 0.7rem; font-weight: 700;">ADMIN ONLY</span>
+        </div>
+
+        <form id="formConfig" onsubmit="return false;">
+            <!-- 1. General -->
+            <div class="panel-body active" id="panel-general">
+                <div class="config-group">
+                    <span class="group-title">Formatos y Ubicación</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Moneda Base</span>
+                            <span class="row-desc">Moneda principal para reportes y contabilidad.</span>
+                        </div>
+                        <select name="moneda" id="cfg-moneda" class="config-select">
+                            <option value="DOP">Peso Dominicano (RD$)</option>
+                            <option value="USD">Dólar Estadounidense (US$)</option>
+                        </select>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Formato de Fecha</span>
+                            <span class="row-desc">Cómo se visualizarán las fechas en todo el sistema.</span>
+                        </div>
+                        <select name="formato_fecha" id="cfg-fmt-fecha" class="config-select">
+                            <option value="DD/MM/YYYY">31/12/2023</option>
+                            <option value="YYYY-MM-DD">2023-12-31</option>
+                        </select>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Zona Horaria</span>
+                            <span class="row-desc">Afecta los cierres de caja y registros de auditoría.</span>
+                        </div>
+                        <select name="zona_horaria" id="cfg-zona" class="config-select">
+                            <option value="America/Santo_Domingo">Santo Domingo (AST)</option>
+                            <option value="America/New_York">New York (EST)</option>
+                        </select>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Correo de Notificaciones</span>
+                            <span class="row-desc">Email remitente para alertas y recuperación de contraseñas.</span>
+                        </div>
+                        <input type="email" name="empresa[email]" id="cfg-empresa-email" class="config-input"
+                            placeholder="sistema@empresa.com">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1.5. Licencia -->
+            <div class="panel-body" id="panel-license">
+                <div class="config-group">
+                    <span class="group-title">Estado de Suscripción</span>
+                    <div class="config-alert" id="license-alert">
+                        <i class="fas fa-info-circle"></i>
+                        <div class="config-alert-text" id="license-msg">Cargando información de licencia...</div>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Plan Activo</span>
+                            <span class="row-desc">Nivel de funcionalidades habilitadas.</span>
+                        </div>
+                        <span class="badge badge-primary" id="lbl-plan">...</span>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Vencimiento</span>
+                            <span class="row-desc">Fecha de expiración de la licencia.</span>
+                        </div>
+                        <span id="lbl-expires" style="font-weight: 600;">...</span>
+                    </div>
+                </div>
+                <div class="config-group">
+                    <span class="group-title">Instalar Nueva Licencia</span>
+                    <div class="config-row" style="display: block;">
+                        <div class="row-info" style="margin-bottom: 0.5rem; max-width: 100%;">
+                            <span class="row-label">Token de Licencia</span>
+                            <span class="row-desc">Pegue aquí el código de licencia proporcionado por LN Systems.</span>
+                        </div>
+                        <textarea id="txt-license-token" class="config-input"
+                            style="width: 100%; height: 100px; font-family: monospace;" placeholder="eyJ..."></textarea>
+                        <div style="margin-top: 1rem; text-align: right;">
+                            <button type="button" class="btn btn-primary" id="btnInstallLicense">
+                                <i class="fas fa-key"></i> Validar e Instalar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1.8. Interfaz Visual (Nuevo Centralized Config) -->
+            <div class="panel-body" id="panel-ui">
+                <div class="config-header d-flex justify-content-between align-items-center mb-4">
+                    <span class="group-title m-0">Personalización Visual</span>
+                    <span class="badge badge-premium">CORE</span>
+                </div>
+
+                <div class="config-alert mb-4">
+                    <i class="fas fa-magic"></i>
+                    <div class="config-alert-text">
+                        Los cambios visuales se aplican en tiempo real a todos los usuarios conectados sin necesidad de
+                        reiniciar.
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <span class="group-title">Identidad de Marca</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Color Primario</span>
+                            <span class="row-desc">Color principal de botones, enlaces y énfasis.</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="color" name="theme_color" id="cfg-theme-color"
+                                class="form-control form-control-color" style="width: 60px;" title="Seleccionar color">
+                            <input type="text" id="cfg-theme-color-text" class="config-input" style="width: 100px;"
+                                placeholder="#0ea5e9">
+                        </div>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Color Secundario</span>
+                            <span class="row-desc">Utilizado para bordes, elementos inactivos y fondos.</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="color" name="secondary_color" id="cfg-secondary-color"
+                                class="form-control form-control-color" style="width: 60px;" title="Seleccionar color">
+                            <input type="text" id="cfg-secondary-color-text" class="config-input" style="width: 100px;"
+                                placeholder="#64748b">
+                        </div>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Logo del Sistema</span>
+                            <span class="row-desc">Ruta relativa o URL absoluta del logotipo (PNG/SVG).</span>
+                        </div>
+                        <input type="text" name="logo_path" id="cfg-logo-path" class="config-input"
+                            placeholder="/static/img/logo.png">
+                    </div>
+                </div>
+
+                <div class="config-group mt-4">
+                    <span class="group-title">Experiencia de Usuario</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Disposición del Dashboard</span>
+                            <span class="row-desc">Estructura visual de la pantalla de inicio.</span>
+                        </div>
+                        <select name="dashboard_layout" id="cfg-dashboard-layout" class="config-select">
+                            <option value="default">Estándar (Tarjetas)</option>
+                            <option value="compact">Compacto (Lista)</option>
+                            <option value="analytics">Analítico (Gráficos)</option>
+                        </select>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Modo Oscuro Forzado</span>
+                            <span class="row-desc">Obligar a todos los usuarios a usar modo oscuro.</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" name="ui_dark_mode" id="cfg-ui-dark">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="panel-footer mt-4">
+                    <button type="button" class="btn btn-outline-secondary" onclick="VisualEditor.resetDefaults()">
+                        <i class="fas fa-undo"></i> Restaurar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="VisualEditor.save()">
+                        <i class="fas fa-save"></i> Guardar Cambios Visuales
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Facturación -->
+            <div class="panel-body" id="panel-facturacion">
+                <div class="config-alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="config-alert-text">Estos cambios afectan la generación de documentos legales. Procede
+                        con cautela.</div>
+                </div>
+                <div class="config-group">
+                    <span class="group-title">Reglas de Negocio</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Permitir Factura sin Cliente</span>
+                            <span class="row-desc">Habilita facturación a "Consumidor Final" de forma anónima.</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="fact_permite_sin_cliente"
+                                id="cfg-fact-anon"><span class="slider"></span></label>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Editar Factura tras Emisión</span>
+                            <span class="row-desc">Permite modificar datos de facturas ya cerradas (No
+                                recomendado).</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="fact_edicion_post" id="cfg-fact-edit"><span
+                                class="slider"></span></label>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Habilitar Control de Impuestos</span>
+                            <span class="row-desc">Si se desactiva, el sistema ignorará el ITBIS en todas las
+                                operaciones.</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="inv_usar_impuestos" id="cfg-inv-tax"><span
+                                class="slider"></span></label>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Modo de Aplicación</span>
+                            <span class="row-desc">Determina cómo se comporta el sistema en el punto de venta.</span>
+                        </div>
+                        <select name="fact_modo_impuestos" id="cfg-fact-modo-tax" class="config-select">
+                            <option value="siempre">Siempre Aplicar</option>
+                            <option value="nunca">Nunca Aplicar</option>
+                            <option value="preguntar">Preguntar en cada venta</option>
+                        </select>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">ITBIS predeterminado (%)</span>
+                            <span class="row-desc">Tasa impositiva principal definida por DGII (Normalmente 18%).</span>
+                        </div>
+                        <input type="number" name="fact_itbis_tasa" id="cfg-fact-itbis-tasa" class="config-input"
+                            step="1" min="0" max="100" placeholder="18">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Caja -->
+            <div class="panel-body" id="panel-caja">
+                <div class="config-group">
+                    <span class="group-title">Control de Efectivo</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Requerir Apertura de Caja</span>
+                            <span class="row-desc">Bloquea ventas si no hay un turno de caja activo.</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="caja_requerida_fact" id="cfg-caja-req"><span
+                                class="slider"></span></label>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Permitir Arqueos Parciales</span>
+                            <span class="row-desc">Habilita cierres sin terminar la jornada (cambio de turno).</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="caja_permite_arqueo_parcial"
+                                id="cfg-caja-parcial"><span class="slider"></span></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Inventario -->
+            <div class="panel-body" id="panel-inventario">
+                <div class="config-group">
+                    <span class="group-title">Gestión de Stock</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Permitir Stock Negativo</span>
+                            <span class="row-desc">Permite vender productos sin existencias registradas.</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="inv_stock_negativo" id="cfg-inv-neg"><span
+                                class="slider"></span></label>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Alertas de Stock Bajo</span>
+                            <span class="row-desc">Notificar cuando un producto llega al stock mínimo.</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="inv_alerta_stock_bajo"
+                                id="cfg-inv-alerta"><span class="slider"></span></label>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Stock Mínimo Defecto</span>
+                            <span class="row-desc">Valor base para nuevos productos.</span>
+                        </div>
+                        <input type="number" name="inv_stock_minimo_defecto" id="cfg-inv-min" class="config-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4.5. Datos Bancarios -->
+            <div class="panel-body" id="panel-bancos">
+                <div class="config-header d-flex justify-content-between align-items-center mb-4">
+                    <span class="group-title m-0">Cuentas para Conciliación en Tiempo Real</span>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="abrirModalCuenta()">
+                        <i class="fas fa-plus"></i> Nueva Cuenta
+                    </button>
+                </div>
+
+                <div class="config-alert mb-4">
+                    <i class="fas fa-shield-alt"></i>
+                    <div class="config-alert-text">
+                        Las credenciales bancarias se almacenan bajo cifrado <b>AES-256</b>. Configure aquí las cuentas
+                        que desea sincronizar automáticamente.
+                    </div>
+                </div>
+
+                <div class="table-responsive mb-4">
+                    <table class="table" id="tablaCuentasBancarias">
+                        <thead>
+                            <tr>
+                                <th>Banco</th>
+                                <th>Nombre / Número</th>
+                                <th>Estado Sincro</th>
+                                <th>Última Sincro</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuentasBancariasListBody">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Cargando cuentas...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="config-group">
+                    <span class="group-title">Preferencias Globales de Conciliación</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Frecuencia de Cierre</span>
+                            <span class="row-desc">Preferencia para recordatorios de conciliación mensual.</span>
+                        </div>
+                        <select name="frecuencia_cierre" id="cfg-frecuencia-cierre" class="config-select">
+                            <option value="diario">Diario</option>
+                            <option value="semanal">Semanal</option>
+                            <option value="mensual">Mensual</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Otros paneles que necesitan estar dentro del form para persistir datos globales si existieran -->
+            <!-- ... -->
+        </form>
+
+        <!-- 4.1 Unidades de Medida (FUERA DEL FORM PARA EVITAR RECARGAS) -->
+        <div class="panel-body" id="panel-unidades">
+            <div class="config-header d-flex justify-content-between align-items-center mb-4">
+                <span class="group-title m-0">Gestión de Medidas y Dimensiones</span>
+                <button type="button" class="btn btn-primary btn-sm" onclick="abrirModalUnidad()">
+                    <i class="fas fa-plus"></i> Nueva Unidad
+                </button>
+            </div>
+
+            <div class="config-alert mb-4">
+                <i class="fas fa-info-circle"></i>
+                <div class="config-alert-text">
+                    Las unidades con <b>Fórmula Proporcional</b> activada permitirán calcular el precio basado en
+                    dimensiones (Ej: Alto x Ancho) en el punto de venta.
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table" id="tablaUnidades">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Abrev.</th>
+                            <th>Usa Fórmula</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="unidadesListBody">
+                        <!-- Dinámico -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <form id="formConfigResto" onsubmit="return false;">
+            <!-- 5. Seguridad -->
+            <div class="panel-body" id="panel-seguridad">
+                <div class="config-group">
+                    <span class="group-title">Acceso y Contraseñas</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Cambio de Clave Periódico</span>
+                            <span class="row-desc">Forzar actualización cada 90 días.</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="sec_cambio_contra_periodico"
+                                id="cfg-sec-pwd"><span class="slider"></span></label>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Intentos para Bloqueo</span>
+                            <span class="row-desc">Máximo de fallos antes de bloquear la cuenta.</span>
+                        </div>
+                        <input type="number" name="sec_intentos_bloqueo" id="cfg-sec-intentos" class="config-input">
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Cierre de Sesión Automático (Min)</span>
+                            <span class="row-desc">Proteja su información: el sistema cerrará el acceso tras este tiempo
+                                de inactividad.</span>
+                        </div>
+                        <input type="number" name="sec_timeout_sesion" id="cfg-sec-timeout" class="config-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Gestión de Módulos -->
+            <div class="panel-body" id="panel-modulos">
+                <div class="config-alert">
+                    <i class="fas fa-briefcase"></i>
+                    <div class="config-alert-text"><b>Control Avanzado:</b> Desactiva módulos enteros para simplificar
+                        la
+                        experiencia empresarial.</div>
+                </div>
+                <div class="module-categories">
+                    <div class="group-header-sm">Operaciones y Ventas</div>
+                    <div class="module-grid mb-4" id="grid-core">
+                        <div class="module-card {% if session.rol == 'gerente' %}locked-module{% endif %}">
+                            <label class="switch"><input type="checkbox" data-module="ventas" checked {% if
+                                    session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+                            <span>Ventas {% if session.rol == 'gerente' %}<i class="fas fa-lock"></i>{% endif %}</span>
+                        </div>
+                        <div class="module-card {% if session.rol == 'gerente' %}locked-module{% endif %}">
+                            <label class="switch"><input type="checkbox" data-module="caja" checked {% if
+                                    session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+                            <span>Caja {% if session.rol == 'gerente' %}<i class="fas fa-lock"></i>{% endif %}</span>
+                        </div>
+                        <div class="module-card">
+                            <label class="switch"><input type="checkbox" data-module="inventario" checked><span
+                                    class="slider"></span></label>
+                            <span>Inventario</span>
+                        </div>
+                        <div class="module-card">
+                            <label class="switch"><input type="checkbox" data-module="clientes" checked><span
+                                    class="slider"></span></label>
+                            <span>Clientes</span>
+                        </div>
+                        <div class="module-card">
+                            <label class="switch"><input type="checkbox" data-module="proveedores" checked><span
+                                    class="slider"></span></label>
+                            <span>Proveedores</span>
+                        </div>
+                        <div class="module-card {% if session.rol == 'gerente' %}locked-module{% endif %}">
+                            <label class="switch"><input type="checkbox" data-module="restaurante" checked {% if
+                                    session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+                            <span>Restaurante {% if session.rol == 'gerente' %}<i class="fas fa-lock"></i>{% endif
+                                %}</span>
+                        </div>
+                        <div class="module-card">
+                            <label class="switch"><input type="checkbox" data-module="trabajos_pendientes" checked><span
+                                    class="slider"></span></label>
+                            <span>Trabajos Pendientes</span>
+                        </div>
+                    </div>
+
+                    <div class="group-header-sm">Finanzas y Auditoría</div>
+                    <div class="module-grid mb-4" id="grid-finanzas">
+                        <div class="module-card {% if session.rol == 'gerente' %}locked-module{% endif %}">
+                            <label class="switch"><input type="checkbox" data-module="contabilidad" checked {% if
+                                    session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+                            <span>Contabilidad {% if session.rol == 'gerente' %}<i class="fas fa-lock"></i>{% endif
+                                %}</span>
+                        </div>
+                        <div class="module-card {% if session.rol == 'gerente' %}locked-module{% endif %}">
+                            <label class="switch"><input type="checkbox" data-module="reportes" checked {% if
+                                    session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+                            <span>Reportes {% if session.rol == 'gerente' %}<i class="fas fa-lock"></i>{% endif
+                                %}</span>
+                        </div>
+                        <div class="module-card {% if session.rol == 'gerente' %}locked-module{% endif %}">
+                            <label class="switch"><input type="checkbox" data-module="auditoria" checked {% if
+                                    session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+                            <span>Auditoría {% if session.rol == 'gerente' %}<i class="fas fa-lock"></i>{% endif
+                                %}</span>
+                        </div>
+                        <div class="module-card">
+                            <label class="switch"><input type="checkbox" data-module="gastos_diarios" checked><span
+                                    class="slider"></span></label>
+                            <span>Gastos Diarios</span>
+                        </div>
+                        <div class="module-card">
+                            <label class="switch"><input type="checkbox" data-module="caja_diaria" checked><span
+                                    class="slider"></span></label>
+                            <span>Caja Diaria</span>
+                        </div>
+                        <div class="module-card">
+                            <label class="switch"><input type="checkbox" data-module="reporteventas" checked><span
+                                    class="slider"></span></label>
+                            <span>Reporte de Ventas</span>
+                        </div>
+                    </div>
+
+                    <div class="group-header-sm">Infraestructura y Servicios</div>
+                    <div class="module-grid" id="grid-system">
+                        <div class="module-card">
+                            <label class="switch"><input type="checkbox" data-module="usuarios" checked><span
+                                    class="slider"></span></label>
+                            <span>Usuarios</span>
+                        </div>
+                        <div class="module-card">
+                            <label class="switch"><input type="checkbox" data-module="configuracion" checked><span
+                                    class="slider"></span></label>
+                            <span>Parámetros</span>
+                        </div>
+                        <div class="module-card {% if session.rol == 'gerente' %}locked-module{% endif %}">
+                            <label class="switch"><input type="checkbox" data-module="asistencia" checked {% if
+                                    session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+                            <span>Asistencia {% if session.rol == 'gerente' %}<i class="fas fa-lock"></i>{% endif
+                                %}</span>
+                        </div>
+                        <div class="module-card {% if session.rol == 'gerente' %}locked-module{% endif %}">
+                            <label class="switch"><input type="checkbox" data-module="automatizacion" checked {% if
+                                    session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+                            <span>Automatización {% if session.rol == 'gerente' %}<i class="fas fa-lock"></i>{% endif
+                                %}</span>
+                        </div>
+                        <div class="module-card {% if session.rol == 'gerente' %}locked-module{% endif %}">
+                            <label class="switch"><input type="checkbox" data-module="backups" checked {% if
+                                    session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+                            <span>Backups {% if session.rol == 'gerente' %}<i class="fas fa-lock"></i>{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- 7. Backup -->
+            <div class="panel-body {% if session.rol == 'gerente' %}locked-module{% endif %}" id="panel-backup">
+                <div class="config-alert">
+                    <i class="fas fa-cloud"></i>
+                    <div class="config-alert-text">Las configuraciones de MEGA se han movido a
+                        <b>Automatización y Servicios</b>.
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <div class="divider"><span>Backups Recientes</span> {% if session.rol == 'gerente' %}<i
+                            class="fas fa-lock"></i>
+                        <small>(Solo Lectura)</small>{% endif %}
+                    </div>
+                    <div class="header-actions mb-3">
+                        <button type="button" class="btn btn-primary btn-sm" id="btnRunBackup" {% if
+                            session.rol=='gerente' %}disabled{% endif %}><i class="fas fa-play"></i> Ejecutar
+                            Ahora</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Archivo</th>
+                                    <th>Tamaño</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="backupListBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- 8. Interfaz -->
+            <div class="panel-body {% if session.rol == 'gerente' %}locked-module{% endif %}" id="panel-ui">
+                <div class="config-group">
+                    <span class="group-title">Personalización de Apariencia</span>
+
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Habilitar Modo Oscuro</span>
+                            <span class="row-desc">Permite que los usuarios cambien al tema Obsidian.</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" name="ui_allow_dark_mode" id="cfg-ui-allow-dark" {% if
+                                session.rol=='gerente' %}disabled{% endif %}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 9. Automatización de Servicios -->
+            <div class="panel-body {% if session.rol == 'gerente' %}locked-module{% endif %}" id="panel-automation">
+                <div class="config-alert">
+                    <i class="fas fa-robot"></i>
+                    <div class="config-alert-text">
+                        <b>Automatización de Procesos:</b> Centralización de Webhooks y servicios cloud.
+                        {% if session.rol == 'gerente' %}<span class="text-danger">(Solo Lectura)</span>{% endif %}
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <span class="group-title">Integraciones de Sistema (n8n)</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Webhook de Recuperación</span>
+                            <span class="row-desc">URL para el flujo de "Olvidó su contraseña".</span>
+                        </div>
+                        <input type="url" name="n8n_webhook_url" id="cfg-n8n-url" class="config-input"
+                            style="width: 100%;" placeholder="https://...">
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">MEGA Backup Cloud</span>
+                            <span class="row-desc">Activa el respaldo automático en MEGA.NZ.</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="bkp_mega_enabled" id="cfg-bkp-mega-en-auto"
+                                {% if session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+                    </div>
+                    <!-- Campos de MEGA NZ -->
+                    <div id="mega-credentials-box" class="ms-4 ps-3 border-start mb-3">
+                        <div class="config-row">
+                            <div class="row-info">
+                                <span class="row-label">Cuenta de MEGA (Email)</span>
+                                <span class="row-desc">Correo asociado a su cuenta de mega.nz.</span>
+                            </div>
+                            <input type="email" id="cfg-bkp-mega-mail" class="config-input"
+                                placeholder="ejemplo@mega.nz" {% if session.rol=='gerente' %}readonly{% endif %}>
+                        </div>
+                        <div class="config-row">
+                            <div class="row-info">
+                                <span class="row-label">Contraseña de MEGA</span>
+                                <span class="row-desc">Clave de acceso (se encripta localmente).</span>
+                            </div>
+                            <input type="password" id="cfg-bkp-mega-pass" class="config-input" placeholder="••••••••" {%
+                                if session.rol=='gerente' %}readonly{% endif %}>
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2"
+                                onclick="validateMegaCredentials()">
+                                <i class="fas fa-check-circle"></i> Validar Cuenta e Inicializar Carpetas
+                            </button>
+                        </div>
+                        <div class="config-row">
+                            <div class="row-info">
+                                <span class="row-label">Retención de Backups (Días)</span>
+                                <span class="row-desc">Días que se conservarán los archivos .sql locales.</span>
+                            </div>
+                            <input type="number" id="cfg-bkp-retention" class="config-input" min="1" max="90" value="7"
+                                style="width: 80px;">
+                        </div>
+                        <div class="config-row">
+                            <div class="row-info">
+                                <span class="row-label">Sincronización Masiva</span>
+                                <span class="row-desc">Escanear backups locales y subirlos a la nube
+                                    (ln_systems/).</span>
+                            </div>
+                            <button type="button" class="btn btn-outline-info btn-sm" onclick="syncAllBackupsToMega()"
+                                id="btn-sync-mega">
+                                <i class="fas fa-cloud-upload-alt"></i> Escanear y Sincronizar Todo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="config-group">
+                    <span class="group-title">Orquestador de Procesos (n8n Avanzado)</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Activar Notificaciones (Webhooks)</span>
+                            <span class="row-desc">Envía eventos en tiempo real a n8n (Facturación, Stock Bajo).</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="webhook_enabled" id="cfg-webhook-en" {% if
+                                session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+                    </div>
+                    <div class="config-row" style="display: block;">
+                        <div class="row-info" style="margin-bottom:0.5rem; max-width: 100%;">
+                            <span class="row-label">URL de Webhook n8n</span>
+                            <span class="row-desc">Ruta de destino para los paquetes JSON.</span>
+                        </div>
+                        <input type="text" name="webhook_url_n8n" id="cfg-webhook-url" class="config-input"
+                            style="width: 100%;" placeholder="https://n8n.ejemplo.com/webhook/..." {% if
+                            session.rol=='gerente' %}readonly{% endif %}>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Secreto de Firma (HMAC)</span>
+                            <span class="row-desc">Llave para que n8n valide que los datos vienen de este
+                                servidor.</span>
+                        </div>
+                        <input type="password" name="webhook_secret" id="cfg-webhook-secret" class="config-input" {% if
+                            session.rol=='gerente' %}readonly{% endif %}>
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <span class="group-title">Canal WhatsApp (Solo Lectura)</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Habilitar Bot de Consulta</span>
+                            <span class="row-desc">Permite que el bot acceda al catálogo de productos.</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="integration_whatsapp_enabled" id="cfg-wa-en"
+                                {% if session.rol=='gerente' %}disabled{% endif %}><span class="slider"></span></label>
+                    </div>
+
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">API Key Externa (READ-ONLY)</span>
+                            <span class="row-desc">Token obligatorio para n8n: X-LN-API-Key</span>
+                        </div>
+                        <input type="password" name="external_api_key" id="cfg-external-key" class="config-input">
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <span class="group-title">Pruebas de Conectividad</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Teléfono de Prueba (WhatsApp)</span>
+                            <span class="row-desc">Número para recibir el catálogo de prueba (incluir código de
+                                país).</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <input type="text" name="whatsapp_test_phone" id="cfg-wa-test-phone" class="config-input"
+                                placeholder="Ej: 18091234567">
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="btnTestWA">
+                                <i class="fas fa-paper-plane"></i> Probar Enlace
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Fin panel-automation -->
+
+            <!-- 10. Gestión Maestra de Clientes (Satélites) -->
+            <div class="panel-body {% if session.rol == 'gerente' %}locked-module{% endif %}" id="panel-clientes-admin">
+                <div class="config-alert"
+                    style="background: linear-gradient(135deg, #2c3e50, #000000); color: white; border: none;">
+                    <i class="fas fa-satellite-dish" style="color: #00d2ff;"></i>
+                    <div class="config-alert-text">
+                        <b style="color: #00d2ff;">Centro de Control Maestro:</b> Administre todas las instalaciones
+                        remotas de LN Systems.
+                    </div>
+                </div>
+
+                <!-- KPIs del Maestro -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-dark text-white p-3 border-secondary">
+                            <span class="small text-muted">Total Instalaciones</span>
+                            <h3 id="master-total-nodes">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-dark text-white p-3 border-secondary">
+                            <span class="small text-muted">Pruebas Activas</span>
+                            <h3 class="text-info" id="master-trial-nodes">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-dark text-white p-3 border-secondary">
+                            <span class="small text-muted">Alertas Seguridad</span>
+                            <h3 class="text-danger" id="master-security-alerts">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-outline-info w-100 h-100" onclick="loadSatelliteNodes()">
+                            <i class="fas fa-sync-alt"></i> Sincronizar Nodos
+                        </button>
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="group-title m-0">Monitoreo de Nodos Satélite</span>
+                        <div class="search-box-sm" style="position: relative; width: 300px;">
+                            <i class="fas fa-search"
+                                style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--ln-text-muted); font-size: 0.8rem;"></i>
+                            <input type="text" id="searchSatelliteNodes" class="config-input w-100"
+                                style="padding-left: 35px; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);"
+                                placeholder="Buscar por empresa, IP o ID...">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle" style="font-size: 0.85rem;">
+                            <thead>
+                                <tr>
+                                    <th>Empresa</th>
+                                    <th>IP Pública / Local</th>
+                                    <th>Plan Actual</th>
+                                    <th>Estado</th>
+                                    <th>Último Reporte</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="satellite-nodes-list">
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">Cargando datos del maestro...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <span class="group-title">Configuración del Satélite Local</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">URL del Servidor Maestro</span>
+                            <span class="row-desc">Dirección central para reportes y licencias.</span>
+                        </div>
+                        <input type="text" name="master_url" id="cfg-master-url" class="config-input"
+                            value="https://pruebasistema.pythonanywhere.com">
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">ID de Satélite</span>
+                            <span class="row-desc">Identificador único asignado por el servidor central.</span>
+                        </div>
+                        <input type="text" name="satellite_id" id="cfg-satellite-id" class="config-input" readonly
+                            placeholder="Auto-asignado">
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Auto-Bloqueo de Seguridad</span>
+                            <span class="row-desc">Bloquear sistema automáticamente ante violaciones.</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="sys_auto_lock" id="cfg-sys-autolock"><span
+                                class="slider"></span></label>
+                    </div>
+                </div>
+            </div>
+            <!-- 10. Impresión (Agente y Hardware) -->
+            <div class="panel-body" id="panel-impresion">
+                <div class="config-alert">
+                    <i class="fas fa-print"></i>
+                    <div class="config-alert-text">Configure el enlace con el Agente de Impresión Local para tickets
+                        térmicos.</div>
+                </div>
+
+                <!-- Status Orb Section (Re-added for JS compatibility) -->
+                <div class="agent-dashboard mb-4"
+                    style="background: var(--card-bg); border: 1px solid var(--ln-border); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 2rem;">
+                    <div class="agent-status-orb" id="agent-orb"
+                        style="width: 80px; height: 80px; border-radius: 50%; background: rgba(148, 163, 184, 0.1); display: flex; align-items: center; justify-content: center; position: relative;">
+                        <i class="fas fa-satellite-dish" style="font-size: 2rem; color: var(--ln-text-muted);"></i>
+                        <div class="status-dot"
+                            style="position: absolute; bottom: 5px; right: 5px; width: 18px; height: 18px; border-radius: 50%; background: #94a3b8; border: 3px solid white;">
+                        </div>
+                    </div>
+                    <div class="agent-info-main" style="flex: 1;">
+                        <h3 id="agent-status-title" style="margin: 0; font-weight: 800; color: var(--ln-text);">Agente
+                            de Impresión Local</h3>
+                        <p id="agent-status-desc"
+                            style="margin: 5px 0 0; font-size: 0.85rem; color: var(--ln-text-muted);">Verificando estado
+                            del hardware...</p>
+                        <div class="agent-meta-tags d-flex gap-2 mt-2">
+                            <span class="badge badge-outline-secondary" id="tag-version"
+                                style="font-size: 0.65rem;">v2.1</span>
+                            <span class="badge badge-outline-secondary" id="tag-ip"
+                                style="font-size: 0.65rem;">127.0.0.1</span>
+                        </div>
+                    </div>
+                    <div class="agent-actions-quick d-flex flex-column gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm"
+                            onclick="refreshAgentDiagnostics()">
+                            <i class="fas fa-sync me-1"></i> Sincronizar
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm" onclick="testAgentConnection()">
+                            <i class="fas fa-plug me-1"></i> Probar Conexión Manual
+                        </button>
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <span class="group-title">Configuración de Conexión</span>
+                    <div class="config-row" style="display: block;">
+                        <div class="row-info" style="margin-bottom:0.5rem; max-width: 100%;">
+                            <span class="row-label">URL del Agente</span>
+                            <span class="row-desc">Dirección IP y puerto donde corre el agente de impresión (Ej:
+                                http://127.0.0.1:5001/print).</span>
+                        </div>
+                        <input type="text" name="agente_impresion_url" id="cfg-printer-url" class="config-input"
+                            style="width: 100%;" placeholder="http://127.0.0.1:5001/print"
+                            value="http://127.0.0.1:5001/print">
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Token del Agente</span>
+                            <span class="row-desc">Clave de seguridad pactada con el ejecutable local.</span>
+                        </div>
+                        <input type="password" name="agente_token" id="cfg-printer-token" class="config-input">
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <span class="group-title">Hardware y Formato</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Ancho de Papel</span>
+                            <span class="row-desc">Tamaño estándar del ticket térmico.</span>
+                        </div>
+                        <select name="printer_paper_width" id="cfg-printer-width" class="config-select">
+                            <option value="80mm">80mm (Estándar)</option>
+                            <option value="58mm">58mm (Pequeño)</option>
+                        </select>
+                    </div>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Modo Nube (Bridge)</span>
+                            <span class="row-desc">Active si el servidor está en PythonAnywhere. El agente local buscará
+                                las facturas pendientes.</span>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="agente_bridge_mode"
+                                id="cfg-printer-bridge"><span class="slider"></span></label>
+                    </div>
+                </div>
+                <div class="config-group">
+                    <span class="group-title">Descarga e Instalación</span>
+                    <div class="config-row">
+                        <div class="row-info">
+                            <span class="row-label">Agente de Impresión Local</span>
+                            <span class="row-desc">Descargue el instalador para Windows. Ejecútelo en la computadora
+                                conectada a la impresora física.</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="/configuracion/descargar-agente" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-download"></i> Descargar Agente
+                            </a>
+                            <button type="button" class="btn btn-outline-primary btn-sm"
+                                onclick="lanzarAgenteLocal(event)">
+                                <i class="fas fa-external-link-alt"></i> 2. Iniciar Ejecución
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 11. Verifones (Red / IP) -->
+            <div class="panel-body" id="panel-verifone">
+                <div class="config-header d-flex justify-content-between align-items-center mb-4">
+                    <span class="group-title m-0">Gestión de Terminales de Pago (IP)</span>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="abrirModalVerifone()">
+                        <i class="fas fa-plus"></i> Nuevo Verifone
+                    </button>
+                </div>
+
+                <div class="config-alert mb-4">
+                    <i class="fas fa-info-circle"></i>
+                    <div class="config-alert-text">
+                        Registre los Verifones integrados a su red local. Esto permite que el sistema envíe el monto a
+                        cobrar automáticamente a la terminal.
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table" id="tablaVerifones">
+                        <thead>
+                            <tr>
+                                <th>Nombre / Ubicación</th>
+                                <th>Dirección IP</th>
+                                <th>Puerto</th>
+                                <th>Modelo</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="verifonesListBody">
+                            <!-- Dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+        </form>
+        <!-- Fin de Paneles -->
+
+        <div class="panel-footer">
+            <button type="button" class="btn btn-outline-secondary" id="btnDescartar">Descartar</button>
+            <button type="button" class="btn btn-primary" id="btnGuardarConfig">
+                <i class="fas fa-save"></i> Guardar Configuración Operativa
+            </button>
+        </div>
+    </div>
+</div>
+<!-- Modal Configuración de Cuenta Bancaria -->
+<div class="modal fade" id="modalCuentaBancaria" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Configurar Cuenta Bancaria</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formCuentaBancaria">
+                    <input type="hidden" id="cuenta_id">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Entidad Bancaria</label>
+                        <select class="form-select config-select w-100" id="banco" required>
+                            <option value="Popular">Banco Popular Dominicano</option>
+                            <option value="BHD">BHD León</option>
+                            <option value="BanReservas">BanReservas</option>
+                            <option value="Mock">Simulador (Pruebas)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Nombre descriptivo de la cuenta</label>
+                        <input type="text" class="form-control config-input w-100" id="nombre_cuenta"
+                            placeholder="Ej: Corriente Operativa" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Número de Cuenta</label>
+                        <input type="text" class="form-control config-input w-100" id="numero_cuenta"
+                            placeholder="000-000000-0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Credenciales Bancarias (Token/Key)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control config-input" id="credencial"
+                                placeholder="Ingrese token de acceso">
+                        </div>
+                        <div class="form-text mt-1" style="font-size: 0.7rem;">Sus datos serán cifrados con protocolo
+                            AES-256 antes de guardarse en el servidor.</div>
+                    </div>
+                    <div class="form-check form-switch mt-3">
+                        <input class="form-check-input" type="checkbox" id="sincro_activa_cuenta" checked>
+                        <label class="form-check-label fw-bold">Sincronización Automática Activa</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary btn-sm" id="btnGuardarCuentaBancaria">Guardar
+                    Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="/static/js/admin/configuracion.js?v=5"></script>
+<script src="/static/js/admin/visual_config_editor.js"></script>
+{% endblock %}

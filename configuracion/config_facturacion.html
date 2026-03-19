@@ -1,0 +1,76 @@
+{% extends "admin/config_base.html" %}
+
+{% block config_content %}
+<div class="config-alert">
+    <i class="fas fa-exclamation-triangle"></i>
+    <div class="config-alert-text">Estos cambios afectan la generación de documentos legales. Procede con cautela.</div>
+</div>
+<div class="config-group">
+    <span class="group-title">Reglas de Negocio</span>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Permitir Factura sin Cliente</span>
+            <span class="row-desc">Habilita facturación a "Consumidor Final" de forma anónima.</span>
+        </div>
+        <label class="switch"><input type="checkbox" name="fact_permite_sin_cliente" id="cfg-fact-anon"><span
+                class="slider"></span></label>
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Editar Factura tras Emisión</span>
+            <span class="row-desc">Permite modificar datos de facturas ya cerradas (No recomendado).</span>
+        </div>
+        <label class="switch"><input type="checkbox" name="fact_edicion_post" id="cfg-fact-edit"><span
+                class="slider"></span></label>
+    </div>
+
+    {% if license.plan|upper != 'START' %}
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Habilitar Control de Impuestos</span>
+            <span class="row-desc">Si se desactiva, el sistema ignorará el ITBIS en todas las operaciones.</span>
+        </div>
+        <label class="switch"><input type="checkbox" name="inv_usar_impuestos" id="cfg-inv-tax"><span
+                class="slider"></span></label>
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Modo de Aplicación</span>
+            <span class="row-desc">Determina cómo se comporta el sistema en el punto de venta.</span>
+        </div>
+        <select name="fact_modo_impuestos" id="cfg-fact-modo-tax" class="config-select">
+            <option value="siempre">Siempre Aplicar</option>
+            <option value="nunca">Nunca Aplicar</option>
+            <option value="preguntar">Preguntar en cada venta</option>
+        </select>
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">ITBIS predeterminado (%)</span>
+            <span class="row-desc">Tasa impositiva principal definida por DGII (Normalmente 18%).</span>
+        </div>
+        <input type="number" name="fact_itbis_tasa" id="cfg-fact-itbis-tasa" class="config-input" step="1" min="0"
+            max="100" placeholder="18">
+    </div>
+    {% endif %}
+
+    <span class="group-title">Métodos de Pago Secundarios</span>
+    <p class="text-muted mb-3" style="font-size: 0.8rem; margin-top: -1rem;">Seleccione un máximo de 2 métodos
+        adicionales para mostrar en facturación.</p>
+
+    <div class="d-flex flex-wrap gap-4 mt-2">
+        <label class="d-flex align-items-center gap-2 cursor-pointer">
+            <input type="checkbox" class="payment-method-toggle" value="tarjeta" id="cfg-pay-tarjeta">
+            <span class="row-label">Tarjeta</span>
+        </label>
+        <label class="d-flex align-items-center gap-2 cursor-pointer">
+            <input type="checkbox" class="payment-method-toggle" value="transferencia" id="cfg-pay-transferencia">
+            <span class="row-label">Transferencia</span>
+        </label>
+        <label class="d-flex align-items-center gap-2 cursor-pointer">
+            <input type="checkbox" class="payment-method-toggle" value="dolares" id="cfg-pay-dolares">
+            <span class="row-label">Dólares</span>
+        </label>
+    </div>
+</div>
+{% endblock %}

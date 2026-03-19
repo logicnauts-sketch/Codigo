@@ -1,0 +1,95 @@
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <i class="fas fa-money-bill-wave" style="color: var(--primary-color); margin-right: 10px;"></i>
+                Registrar Pago
+            </h3>
+            <button class="modal-close" id="closePaymentModal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <!-- Info Card Premium -->
+            <div class="payment-info-card">
+                <span class="label">Cliente</span>
+                <span id="payClientName" class="client-name">Cargando...</span>
+
+                <div class="debt-container" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span class="label">Deuda Total</span>
+                        <div class="debt-value" style="font-size: 2.5rem; font-weight: 800; color: #ef4444;">
+                            <span id="payClientDebt">0.00</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-wallet" style="font-size: 2.5rem; opacity: 0.15;"></i>
+                </div>
+            </div>
+
+            <!-- Formulario -->
+            <form id="paymentForm">
+                <div class="payment-form-group">
+                    <label for="payInvoiceId">
+                        <i class="fas fa-file-invoice"></i> Factura Pendiente
+                    </label>
+                    <select id="payInvoiceId" class="payment-input">
+                        <option value="">Cargando facturas...</option>
+                    </select>
+                </div>
+
+                <!-- Tipo de Pago (Toggle Premium) -->
+                <div id="payTypeGroup" class="payment-form-group" style="display: none;">
+                    <label><i class="fas fa-sliders-h"></i> Modalidad de Pago</label>
+                    <div class="pay-type-toggle">
+                        <button type="button" id="payTypeFull" class="pay-type-btn active">
+                            <i class="fas fa-check-double"></i> Pago Total
+                        </button>
+                        <button type="button" id="payTypeAbono" class="pay-type-btn">
+                            <i class="fas fa-coins"></i> Abono Parcial
+                        </button>
+                    </div>
+                    <p id="payTypeHint"
+                        style="font-size: 0.75rem; color: #f59e0b; font-weight: 600; margin-top: 4px; display: none; animation: fadeIn 0.3s ease;">
+                        <i class="fas fa-info-circle"></i> Ingrese el monto que desea abonar.
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px;">
+                    <div class="payment-form-group">
+                        <label for="payAmount"><i class="fas fa-dollar-sign"></i> Monto</label>
+                        <div class="amount-wrapper">
+                            <span class="currency-symbol">RD$</span>
+                            <input type="number" id="payAmount" step="0.01" class="payment-input amount"
+                                placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div class="payment-form-group">
+                        <label for="payMethod"><i class="fas fa-university"></i> Método</label>
+                        <select id="payMethod" class="payment-input">
+                            <option value="efectivo">Efectivo</option>
+                            <option value="tarjeta">Tarjeta</option>
+                            <option value="transferencia">Transferencia</option>
+                            <option value="cheque">Cheque</option>
+                            <option value="abono">Abono</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="payment-form-group" style="margin-bottom: 0;">
+                    <label for="payReference"><i class="fas fa-hashtag"></i> Referencia</label>
+                    <input type="text" id="payReference" class="payment-input"
+                        placeholder="Opcional: Nro. Recibo, Transacción...">
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn payment-btn-cancel" id="cancelPaymentBtn">
+                Cancelar
+            </button>
+            <button type="submit" form="paymentForm" class="btn btn-primary payment-btn-register" id="savePaymentBtn">
+                <i class="fas fa-check-circle"></i> Confirmar Pago
+            </button>
+        </div>
+    </div>
+</div>

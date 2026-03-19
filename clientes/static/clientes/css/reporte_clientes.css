@@ -1,0 +1,523 @@
+/* =========================================================
+   LN Systems — Reporte de Clientes
+   Diseño analítico y profesional (Acorde a Admin Dashboard)
+   ========================================================= */
+
+/* Heredamos variables base del admin/home.css pero definimos locales si es necesario */
+@import url('clientes.css');
+
+/* =========================================================
+   Filtros de Período
+   ========================================================= */
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px 0 10px 0;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-label {
+  font-size: 0.813rem;
+  font-weight: 600;
+  color: var(--slate-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.filter-input {
+  /* Match admin input style */
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--ln-border);
+  border-radius: var(--border-radius);
+  font-size: 0.95rem;
+  transition: var(--transition);
+  background: var(--card-bg);
+  color: var(--text-main);
+  height: 42px;
+  /* Uniform height */
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Ajuste botón filtros para alinear con inputs */
+#applyFiltersBtn {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.813rem;
+  letter-spacing: 0.03em;
+}
+
+/* =========================================================
+   KPIs Analíticos (Card Style exacto a Home)
+   ========================================================= */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+/* Home style .card replication */
+.kpi-card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--ln-border);
+  padding: 24px;
+  display: flex;
+  flex-direction: row;
+  /* Icono a la izquierda para reporte funciona bien */
+  align-items: center;
+  gap: 20px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: transparent;
+  transition: var(--transition);
+}
+
+.kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--slate-300);
+}
+
+.kpi-card:hover::after {
+  background: var(--primary-color);
+}
+
+/* Iconos cuadrados con radio como en Home */
+.kpi-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.kpi-card:hover .kpi-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.kpi-icon.blue {
+  background: var(--icon-blue-bg);
+  color: var(--icon-blue-fg);
+}
+
+.kpi-icon.green {
+  background: var(--icon-green-bg);
+  color: var(--icon-green-fg);
+}
+
+.kpi-icon.purple {
+  background: var(--icon-purple-bg);
+  color: var(--icon-purple-fg);
+}
+
+.kpi-icon.orange {
+  background: var(--icon-orange-bg);
+  color: var(--icon-orange-fg);
+}
+
+.kpi-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.kpi-label {
+  font-size: 0.813rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--slate-500);
+  margin-bottom: 6px;
+}
+
+.kpi-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  /* Extra bold matches Home */
+  color: var(--dark-color);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+/* =========================================================
+   Contenedores Generales (Cards para tablas/gráficos)
+   ========================================================= */
+.reporte-card {
+  background: var(--card-bg);
+  border: 1px solid var(--ln-border);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  /* Para que el header no desborde radio */
+  transition: var(--transition);
+}
+
+.reporte-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.reporte-card-header,
+.card-header {
+  /* Compatibilidad si se usa clase genérica */
+  padding: 16px 24px;
+  background: var(--slate-50);
+  border-bottom: 1px solid var(--ln-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reporte-card-title,
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--slate-700);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.reporte-card-body,
+.card-body {
+  padding: 24px;
+}
+
+/* Remove padding for table containers */
+.reporte-card-body.p-0 {
+  padding: 0;
+}
+
+/* =========================================================
+   Tabla de Reporte
+   ========================================================= */
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.report-table thead {
+  background: var(--slate-50);
+}
+
+.report-table th {
+  padding: 14px 24px;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--slate-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  border-bottom: 2px solid var(--ln-border);
+  border-top: none;
+}
+
+.report-table td {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--ln-border);
+  font-size: 0.9rem;
+  color: var(--slate-700);
+  vertical-align: middle;
+}
+
+.report-table tbody tr {
+  transition: background-color 0.2s;
+}
+
+.report-table tbody tr:hover {
+  background: var(--slate-50);
+}
+
+/* Celda destacada (Dinero/Números) */
+.report-table .text-end,
+.report-table .text-right {
+  text-align: right;
+  font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+  /* Monospace for financial data */
+  font-weight: 600;
+  color: var(--slate-800);
+}
+
+/* =========================================================
+   Summary Grid (Distribución / Análisis inferior)
+   ========================================================= */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.summary-stats {
+  padding: 0;
+  /* Controlado el padre */
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--ln-border);
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-label {
+  font-size: 0.9rem;
+  color: var(--slate-500);
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--slate-800);
+  font-family: 'SF Mono', Monaco, monospace;
+}
+
+.summary-value.debt-value {
+  color: var(--ln-danger);
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 1200px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    /* Stacked cards on mobile */
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-table th,
+  .report-table td {
+    padding: 12px 16px;
+  }
+}
+
+/* =========================================================
+   Soporte Modo Oscuro (Dark Theme Overrides)
+   ========================================================= */
+
+/* Textos principales a Blanco/Claro */
+.dark-theme .content-title,
+.dark-theme .reporte-card-title,
+.dark-theme .card-title,
+.dark-theme .section-title,
+.dark-theme .kpi-value,
+.dark-theme .summary-value,
+.dark-theme .filter-label,
+.dark-theme .company-info h2 {
+  color: #f1f5f9 !important;
+  /* slate-100 */
+}
+
+/* Textos secundarios a Gris Claro */
+.dark-theme .company-info p,
+.dark-theme .company-info strong,
+.dark-theme .summary-label,
+.dark-theme .report-table td,
+.dark-theme .text-main,
+.dark-theme .filter-input {
+  color: #cbd5e1 !important;
+  /* slate-300 */
+}
+
+/* Textos terciarios / muted a Gris medio */
+.dark-theme .content-subtitle,
+.dark-theme .kpi-label,
+.dark-theme .report-table th {
+  color: #94a3b8 !important;
+  /* slate-400 */
+}
+
+/* Contenedores (Cards, Tablas) */
+.dark-theme .reporte-card,
+.dark-theme .kpi-card,
+.dark-theme .company-header,
+.dark-theme .card {
+  background-color: #1e293b !important;
+  /* slate-800 */
+  border-color: #334155 !important;
+}
+
+.dark-theme .reporte-card-header,
+.dark-theme .card-header,
+.dark-theme .report-table thead,
+.dark-theme .report-table tbody tr:hover {
+  background-color: #0f172a !important;
+  /* slate-900 */
+  border-color: #334155 !important;
+}
+
+/* Bordes Generales */
+.dark-theme .report-table th,
+.dark-theme .report-table td,
+.dark-theme .summary-item,
+.dark-theme .filter-input {
+  border-color: #334155 !important;
+}
+
+/* Inputs / Filtros Background */
+.dark-theme .filter-input,
+.dark-theme .btn-export {
+  background-color: #334155 !important;
+  /* slate-700 */
+}
+
+/* Valores especificos highlight */
+.dark-theme .text-danger {
+  color: #f87171 !important;
+}
+
+.dark-theme .text-success {
+  color: #4ade80 !important;
+}
+
+.dark-theme .report-table .text-end {
+  color: #f1f5f9 !important;
+}
+
+/* KPI hover borders in dark */
+.dark-theme .kpi-card:hover {
+  border-color: #6366f1 !important;
+  /* primary light */
+}
+
+/* =========================================================
+   HOTFIX: DataTables & Table Contrast
+   ========================================================= */
+
+/* Ocultar 'Showing 1 to X of X' info */
+.dataTables_info,
+.dataTables_length {
+  display: none !important;
+}
+
+/* Forzar color blanco en celdas de nombre y documento en Dark Mode */
+.dark-theme .report-table tbody td div.fw-bold.text-dark {
+  color: #f1f5f9 !important;
+  /* Blanco para nombre */
+}
+
+.dark-theme .report-table tbody td div.text-muted {
+  color: #cbd5e1 !important;
+  /* Gris claro para documento */
+}
+
+/* Hard override si las clases anteriores fallan por especificidad en JS */
+.dark-theme .report-table tbody td:first-child,
+.dark-theme .report-table tbody td:nth-child(2) {
+  color: #f1f5f9 !important;
+}
+
+/* Semanticas nuevas (JS Refactor) */
+.client-name-text {
+  color: var(--slate-800);
+}
+
+.client-doc-text {
+  color: var(--slate-500);
+}
+
+.dark-theme .client-name-text {
+  color: #ffffff !important;
+}
+
+/* Blanco Puro */
+.dark-theme .client-doc-text {
+  color: #e2e8f0 !important;
+}
+
+/* Botones y Hovers Globales para Reporte */
+.btn-outline-primary {
+  background: transparent !important;
+  color: var(--primary-color) !important;
+  border: 1.5px solid var(--primary-color) !important;
+  font-weight: 600 !important;
+}
+
+.btn-outline-primary:hover:not(:disabled) {
+  background: var(--primary-color) !important;
+  color: white !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.15);
+}
+
+.btn-sm {
+  padding: 6px 10px !important;
+  font-size: 0.813rem !important;
+  min-width: auto !important;
+}
+
+
+
+/* Botones y Hovers en Modo Oscuro */
+.dark-theme .btn-outline-primary {
+  color: #818cf8 !important;
+  /* Indigo 400 */
+  border-color: #818cf8 !important;
+}
+
+.dark-theme .btn-outline-primary:hover:not(:disabled) {
+  background: #6366f1 !important;
+  /* Indigo 500 */
+  color: white !important;
+  border-color: #6366f1 !important;
+}
+
+/* Fix sticky header color in dark mode for modals */
+.dark-theme thead tr[style*="sticky"] {
+  background-color: #1e293b !important;
+}

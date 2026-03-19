@@ -1,0 +1,98 @@
+{% extends "admin/config_base.html" %}
+
+{% block config_content %}
+<div class="maintenance-screen">
+    <div class="maintenance-content">
+        <div class="maintenance-icon">
+            <i class="fas fa-tools"></i>
+        </div>
+        <h2 class="maintenance-title">Módulo en Mantenimiento</h2>
+        <p class="maintenance-text">
+            La gestión de terminales de pago (Verifones) está siendo mejorada.<br>
+            Estará disponible próximamente.
+        </p>
+        <div class="maintenance-info">
+            <i class="fas fa-info-circle"></i>
+            <span>Mientras tanto, puede configurar sus impresoras en la sección de Impresión.</span>
+        </div>
+        <a href="{{ url_for('configuracion.panel_impresion') }}" class="btn btn-primary mt-4">
+            <i class="fas fa-print me-2"></i>Ir a Configuración de Impresión
+        </a>
+    </div>
+</div>
+
+<style>
+    .maintenance-screen {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+        text-align: center;
+    }
+
+    .maintenance-content {
+        max-width: 500px;
+        padding: 3rem;
+    }
+
+    .maintenance-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse-maintenance 2s infinite;
+    }
+
+    .maintenance-icon i {
+        font-size: 2.5rem;
+        color: white;
+    }
+
+    .maintenance-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 1rem;
+    }
+
+    .maintenance-text {
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .maintenance-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        background: var(--bg-subtle);
+        border-radius: 8px;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+
+    .maintenance-info i {
+        color: var(--primary);
+    }
+
+    @keyframes pulse-maintenance {
+
+        0%,
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+        }
+
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px 10px rgba(245, 158, 11, 0);
+        }
+    }
+</style>
+{% endblock %}

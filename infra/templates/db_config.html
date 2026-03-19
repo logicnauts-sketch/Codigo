@@ -1,0 +1,230 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar Base de Datos â€” Next Design</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            color: #e2e8f0;
+        }
+        .setup-container {
+            width: 100%; max-width: 520px; padding: 2rem;
+        }
+        .setup-header { text-align: center; margin-bottom: 2rem; }
+        .setup-icon {
+            width: 60px; height: 60px; border-radius: 16px;
+            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1rem; font-size: 1.5rem; color: #fff;
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
+        }
+        .setup-header h1 { font-size: 1.5rem; font-weight: 700; color: #f1f5f9; }
+        .setup-header p { font-size: 0.88rem; color: #94a3b8; margin-top: 0.4rem; }
+        .setup-card {
+            background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(16px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label {
+            display: block; font-size: 0.8rem; font-weight: 600;
+            color: #94a3b8; margin-bottom: 0.4rem; text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-input {
+            width: 100%; padding: 0.6rem 0.85rem; background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px;
+            color: #f1f5f9; font-size: 0.9rem; font-family: inherit;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            outline: none; border-color: #38bdf8;
+            background: rgba(15, 23, 42, 0.6);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+        }
+        .form-input::placeholder { color: #475569; }
+        .form-row { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
+        .btn-group { display: flex; gap: 0.75rem; margin-top: 1.75rem; }
+        .btn {
+            flex: 1; padding: 0.55rem 0.9rem; border: none; border-radius: 6px;
+            font-weight: 600; font-size: 0.82rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            transition: all 0.2s; font-family: inherit;
+            text-transform: uppercase; letter-spacing: 0.3px;
+        }
+        .btn-test {
+            background: rgba(255, 255, 255, 0.05); color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn-test:hover { background: rgba(148, 163, 184, 0.25); }
+        .btn-save {
+            background: linear-gradient(135deg, #0ea5e9, #6366f1); color: #fff;
+        }
+        .btn-save:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* Status */
+        .status-bar {
+            margin-top: 1.25rem; padding: 0.85rem 1rem; border-radius: 8px;
+            font-size: 0.88rem; font-weight: 500; display: none;
+            align-items: center; gap: 0.5rem;
+        }
+        .status-bar.success { display: flex; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-bar.error { display: flex; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .status-bar.info { display: flex; background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.2); }
+
+        /* Already configured badge */
+        .configured-badge {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            background: rgba(16, 185, 129, 0.15); color: #34d399;
+            padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.78rem;
+            font-weight: 600; margin-top: 0.5rem;
+        }
+
+        /* Link */
+        .skip-link {
+            text-align: center; margin-top: 1.5rem;
+        }
+        .skip-link a {
+            color: #64748b; font-size: 0.85rem; text-decoration: none;
+            transition: color 0.2s;
+        }
+        .skip-link a:hover { color: #0ea5e9; }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <div class="setup-header">
+            <div class="setup-icon"><i class="fas fa-database"></i></div>
+            <h1>Configurar Base de Datos</h1>
+            <p>Conecta Next Design a tu servidor MariaDB / MySQL</p>
+            {% if is_configured %}
+            <div class="configured-badge"><i class="fas fa-check-circle"></i> Conexión configurada</div>
+            {% endif %}
+        </div>
+
+        <div class="setup-card">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Host / Servidor</label>
+                    <input type="text" class="form-input" id="db-host" value="{{ config.host }}" placeholder="localhost">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Puerto</label>
+                    <input type="number" class="form-input" id="db-port" value="{{ config.port }}" placeholder="3306">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Usuario</label>
+                <input type="text" class="form-input" id="db-user" value="{{ config.user }}" placeholder="root">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Contraseña</label>
+                <input type="password" class="form-input" id="db-password" value="{{ config.password }}" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nombre de la Base de Datos</label>
+                <input type="text" class="form-input" id="db-name" value="{{ config.database }}" placeholder="Next Design">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-test" id="btnTest"><i class="fas fa-plug"></i> Probar</button>
+                <button class="btn btn-save" id="btnSave"><i class="fas fa-save"></i> Guardar y Conectar</button>
+            </div>
+
+            <div class="status-bar" id="statusBar">
+                <i id="statusIcon"></i>
+                <span id="statusMsg"></span>
+            </div>
+        </div>
+
+        {% if is_configured %}
+        <div class="skip-link">
+            <a href="/home"><i class="fas fa-arrow-left me-1"></i> Volver al Dashboard</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+    function getFormData() {
+        return {
+            host: document.getElementById('db-host').value,
+            port: parseInt(document.getElementById('db-port').value) || 3306,
+            user: document.getElementById('db-user').value,
+            password: document.getElementById('db-password').value,
+            database: document.getElementById('db-name').value
+        };
+    }
+
+    function showStatus(type, icon, msg) {
+        const bar = document.getElementById('statusBar');
+        bar.className = 'status-bar ' + type;
+        document.getElementById('statusIcon').className = icon;
+        document.getElementById('statusMsg').textContent = msg;
+    }
+
+    // Test Connection
+    document.getElementById('btnTest').addEventListener('click', async function() {
+        const btn = this, orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Conectando...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/infra/db/test', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(getFormData())
+            });
+            const data = await res.json();
+            
+            if (data.ok) {
+                showStatus('success', 'fas fa-check-circle', data.msg);
+            } else {
+                showStatus('error', 'fas fa-times-circle', data.error);
+            }
+        } catch (e) {
+            showStatus('error', 'fas fa-times-circle', 'Error de red: ' + e.message);
+        }
+        btn.innerHTML = orig; btn.disabled = false;
+    });
+
+    // Save Config
+    document.getElementById('btnSave').addEventListener('click', async function() {
+        const btn = this, orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Guardando...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/infra/db/save', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(getFormData())
+            });
+            const data = await res.json();
+            
+            if (data.ok) {
+                showStatus('success', 'fas fa-check-circle', data.msg);
+                setTimeout(() => { window.location.href = '/home'; }, 1500);
+            } else {
+                showStatus('error', 'fas fa-times-circle', data.error);
+                btn.innerHTML = orig; btn.disabled = false;
+            }
+        } catch (e) {
+            showStatus('error', 'fas fa-times-circle', 'Error de red: ' + e.message);
+            btn.innerHTML = orig; btn.disabled = false;
+        }
+    });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Design â€” Iniciar Sesión</title>
+    <link rel="stylesheet" href="/static/lib/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/login/static/login.css">
+</head>
+
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-background" id="auth-bg"></div>
+
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="enterprise-logo">
+                    <i class="fas fa-store"></i>
+                    <span>Next Design</span>
+                </div>
+                <div class="auth-subtitle">Sistema de Gestión</div>
+            </div>
+
+            <div class="auth-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="auth-alert {{ category }}" style="display:block; margin-bottom:1rem;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <h2 class="auth-title">Iniciar Sesión</h2>
+                <p class="auth-description">Ingresa tus credenciales para acceder al sistema.</p>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">Usuario</label>
+                        <div class="input-container">
+                            <i class="fas fa-user-shield"></i>
+                            <input type="text" id="username" name="username" placeholder="p. ej. admin" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <div class="input-container">
+                            <i class="fas fa-key"></i>
+                            <input type="password" id="password" name="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="custom-checkbox">
+                            <input type="checkbox" id="remember">
+                            <span class="checkmark"></span>
+                            Recuerda mi cuenta
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-auth" id="btn-login">
+                        <span>Ingresar al Sistema</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </form>
+
+                <div id="error-message" class="auth-alert error"></div>
+
+                <div class="suggested-accounts" id="saved-sessions">
+                    <div class="divider">
+                        <span>Cuentas Recientes</span>
+                    </div>
+                    <div class="accounts-grid" id="saved-users-list"></div>
+                </div>
+            </div>
+
+            <div class="auth-footer">
+                <div class="footer-status">
+                    <span class="status-dot"></span>
+                    Sistema Operativo
+                </div>
+                <div class="footer-copyright">
+                    &copy; 2026 Next Design Â· v1.0
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="/login/static/login.js"></script>
+</body>
+
+</html>

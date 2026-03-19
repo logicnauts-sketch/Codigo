@@ -1,0 +1,94 @@
+{% extends "admin/config_base.html" %}
+
+{% block config_content %}
+<div class="config-group">
+    <span class="group-title">Estado de Suscripción Institucional</span>
+    <div class="config-alert" id="license-alert">
+        <i class="fas fa-certificate"></i>
+        <div class="config-alert-text" id="license-msg">Validando estado con LN Systems...</div>
+    </div>
+
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Plan Activo</span>
+        </div>
+        <span class="badge badge-primary" id="lbl-plan" style="font-size: 1rem; padding: 0.5rem 1rem;">...</span>
+    </div>
+
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Vencimiento de Suscripción</span>
+            <span class="row-desc">Periodo de 30 días activado desde su primera factura registrada.</span>
+        </div>
+        <span id="lbl-expires" style="font-weight: 700; color: var(--ln-primary);">...</span>
+    </div>
+</div>
+
+<div class="config-group">
+    <span class="group-title">Infraestructura y Blindaje: Plan {{ get_current_plan() }}</span>
+    <div class="config-info-box"
+        style="background: rgba(var(--ln-primary-rgb), 0.03); border: 1px solid rgba(var(--ln-primary-rgb), 0.1); border-radius: 12px; padding: 1.5rem;">
+
+        <div class="mb-4">
+            <p class="small text-muted mb-2">Tu infraestructura actual cuenta con:</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                <div class="feature-item" style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem;">
+                    <i class="fas fa-check-circle text-success"></i> Trazabilidad Operativa
+                </div>
+                <div class="feature-item" style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem;">
+                    <i class="fas fa-check-circle text-success"></i> Control de Caja Blindado
+                </div>
+                <div class="feature-item" style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem;">
+                    <i class="fas fa-check-circle text-success"></i> Gestión de Clientes/Créditos
+                </div>
+                <div class="feature-item" style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem;">
+                    <i class="fas fa-check-circle text-success"></i> Integridad de Datos SHE
+                </div>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 10px; padding: 1.2rem; border-left: 4px solid var(--ln-primary);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h5 class="mb-1" style="font-weight: 800; color: var(--ln-text);">¿Listo para el siguiente nivel?
+                    </h5>
+                    <p class="small text-muted mb-0">Activa el <b>Plan CORE</b> para automatizar tus reportes fiscales
+                        (606, 607, 608) y blindar tu negocio.</p>
+                </div>
+                <a href="{{ url_for('home.plan_core') }}" class="btn btn-primary btn-sm px-4"
+                    style="border-radius: 8px;">
+                    Ver Beneficios CORE <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: center;">
+            <p class="small text-muted mb-3">Para soporte técnico o activación inmediata:</p>
+            <button class="btn btn-outline-secondary btn-sm" onclick="showSupportOptions()">
+                <i class="fas fa-headset me-2"></i> Contactar a Soporte Institucional
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showSupportOptions() {
+        Swal.fire({
+            title: 'Soporte LN Systems',
+            html: `
+            <p>Elige tu método de contacto preferido para activar funciones fiscales o empresariales:</p>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                <a href="https://wa.me/18497852248" target="_blank" class="btn btn-success" style="background-color: #25D366; border: none;">
+                    <i class="fab fa-whatsapp me-2"></i> WhatsApp Directo
+                </a>
+                <a href="mailto:soporte@lnsystems.com.do" class="btn btn-primary">
+                    <i class="fas fa-envelope me-2"></i> Enviar Correo Electrónico
+                </a>
+            </div>
+        `,
+            showConfirmButton: false,
+            showCloseButton: true
+        });
+    }
+</script>
+{% endblock %}

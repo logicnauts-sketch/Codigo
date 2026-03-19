@@ -1,0 +1,1060 @@
+/* =========================================
+   LN SYSTEMS | CAJA (CASH CONTROL)
+   Standard: Premium Control Pad v2.0
+   ========================================= */
+
+:root {
+    /* --- PALETTE: Financial Security --- */
+    --caja-primary: #10b981;
+    --caja-secondary: #0ea5e9;
+    --caja-danger: #ef4444;
+    --caja-warn: #f59e0b;
+    --caja-warning: var(--caja-warn);
+
+    /* Heritage from LN Design System (base.css) */
+    --bg-surface: var(--bg-primary);
+    --bg-card: #ffffff;
+    --border-subtle: rgba(71, 85, 105, 0.12);
+
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+
+    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme,
+body.dark-mode {
+    --bg-surface: var(--bg-deep) !important;
+    --bg-card: var(--bg-card) !important;
+    --border-subtle: var(--border-subtle) !important;
+    --text-primary: var(--text-primary) !important;
+    --text-secondary: var(--text-muted) !important;
+}
+
+/* body {
+    font-family: 'Inter', sans-serif !important;
+} */
+
+.container {
+    padding: 32px;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* --- HEADER: Control Status --- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    padding: 24px 32px;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 32px;
+}
+
+.header-left h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    margin: 0 0 8px 0;
+}
+
+.system-status-indicator {
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-closed {
+    background: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+}
+
+.status-open {
+    background: #eff6ff;
+    color: #10b981;
+    border: 1px solid #bbf7d0;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* --- KPI DASHBOARD (Cards) --- */
+.audit-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.audit-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.audit-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--caja-secondary);
+}
+
+/* Gradient Top Stripe */
+.audit-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #e2e8f0, #e2e8f0);
+}
+
+.audit-card:hover::before {
+    background: linear-gradient(90deg, var(--caja-secondary), var(--caja-primary));
+}
+
+.audit-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.audit-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Specific Highlight */
+.audit-card.highlight {
+    background: #f8fafc;
+}
+
+
+/* --- GRID LAYOUT --- */
+.grid-3 {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 32px;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* --- ACTIONS PANEL (Control Pad) --- */
+#panelOperativo {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-card);
+    position: sticky;
+    top: 32px;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* The Matrix Details */
+.mt-4.pt-3 {
+    border-top: 1px solid var(--border-subtle);
+    margin-top: 24px;
+    padding-top: 16px;
+}
+
+.caja-btn-grid-2x2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+}
+
+/* Action Buttons */
+.caja-btn {
+    padding: 24px 16px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.caja-btn i {
+    font-size: 1.6rem;
+    transition: transform 0.2s;
+}
+
+.caja-btn:hover {
+    background: var(--bg-card);
+    border-color: var(--caja-primary);
+    color: var(--caja-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.caja-btn:hover i {
+    transform: scale(1.1);
+}
+
+/* Finalizar Button Special */
+#btnFinalizar {
+    background: #fef2f2;
+    border-color: #fee2e2;
+    color: var(--caja-danger);
+}
+
+#btnFinalizar:hover {
+    background: var(--caja-danger);
+    border-color: var(--caja-danger);
+    color: white;
+}
+
+/* Input Fields */
+.input-group label {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    display: block;
+}
+
+.input {
+    width: 100%;
+    padding: 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    outline: none;
+    transition: border 0.2s;
+}
+
+.input:focus {
+    background: #ffffff;
+    border-color: var(--caja-secondary);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.caja-btn-primary {
+    width: 100%;
+    padding: 18px;
+    font-size: 1.1rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    margin-top: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.caja-btn-primary:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+}
+
+/* --- TABLE (Log) --- */
+.table-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background: var(--bg-surface);
+    padding: 18px 24px;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.table td {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.caja-card-ghost {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+}
+
+
+/* Dark theme removed to enforce Premium Light Mode */
+
+/* Arqueo Differences States */
+.audit-card.negative {
+    border-color: var(--caja-danger) !important;
+    background: #fef2f2 !important;
+}
+
+.audit-card.negative .audit-value {
+    color: var(--caja-danger) !important;
+}
+
+.audit-card.positive {
+    border-color: var(--caja-primary) !important;
+    background: #f0fdf4 !important;
+}
+
+.audit-card.positive .audit-value {
+    color: var(--16a34a) !important;
+}
+
+/* Dark Mode States for Arqueo */
+.dark-theme .audit-card.negative {
+    background: rgba(239, 68, 68, 0.1) !important;
+    /* Red 500 10% */
+    border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.dark-theme .audit-card.negative .audit-value {
+    color: #f87171 !important;
+}
+
+.dark-theme .audit-card.positive {
+    background: rgba(16, 185, 129, 0.1) !important;
+    /* Emerald 500 10% */
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.dark-theme .audit-card.positive .audit-value {
+    color: #4ade80 !important;
+}
+
+/* =========================================
+   MOBILE / TABLET OPTIMIZATIONS
+   ========================================= */
+@media (max-width: 900px) {
+    .container {
+        padding: 16px;
+    }
+
+    /* Stack Header */
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+        gap: 16px;
+    }
+
+    .header-right {
+        text-align: left !important;
+        width: 100%;
+        padding-top: 16px;
+        border-top: 1px dashed var(--border-subtle);
+    }
+
+    /* KPI Grid Adjustments */
+    .audit-kpi-grid {
+        grid-template-columns: 1fr 1fr;
+        /* 2 cols on mobile */
+        gap: 12px;
+    }
+
+    .audit-card {
+        padding: 16px;
+        gap: 8px;
+    }
+
+    .audit-label {
+        font-size: 0.7rem;
+    }
+
+    .audit-value {
+        font-size: 1.25rem;
+    }
+
+    /* Main Grid Stack */
+    .grid-3 {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    /* Action Panel Sticky Mobile */
+    #panelOperativo {
+        position: relative;
+        top: 0;
+        padding: 20px;
+        order: 1;
+        /* Actions first */
+    }
+
+    /* Table to Cards Transformation */
+    .table thead {
+        display: none;
+    }
+
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        background: var(--bg-card);
+        margin-bottom: 16px;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-subtle);
+        padding: 16px;
+        box-shadow: var(--shadow-card);
+    }
+
+    .table td {
+        padding: 8px 0;
+        border-bottom: 1px dashed var(--border-subtle);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+    }
+
+    .table td:last-child {
+        border-bottom: none;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-right: 12px;
+    }
+
+    /* Empty state exception */
+    .table td.empty-state {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .table td.empty-state::before {
+        content: none;
+    }
+
+    /* Action Buttons Grid */
+    .caja-btn-grid-2x2 {
+        gap: 12px;
+    }
+
+    .caja-btn {
+        padding: 16px 8px;
+    }
+}
+
+/* --- MODALS: Financial Audit Interface --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.85);
+    /* Slate 900 Glass */
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: none;
+    /* Hidden by default */
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.active {
+    display: flex !important;
+    opacity: 1 !important;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-subtle);
+    overflow: hidden;
+    transform: translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal.active .modal-content {
+    transform: translateY(0);
+}
+
+.modal-header {
+    padding: 24px 32px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-body {
+    padding: 32px;
+}
+
+.modal-footer {
+    padding: 20px 32px;
+    border-top: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    border-radius: 0 0 20px 20px;
+}
+
+.dark-theme .modal-footer,
+body.dark-mode .modal-footer {
+    background: var(--bg-card-hover) !important;
+}
+
+/* Modal form adjustments */
+.modal .input-group {
+    margin-bottom: 20px;
+}
+
+.modal .input-group:last-child {
+    margin-bottom: 0;
+}
+
+.modal textarea.input {
+    min-height: 100px;
+    resize: none;
+}
+
+/* --- FINANCIAL INDICATORS: Professional Pills --- */
+.pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    line-height: 1;
+    border: 1px solid transparent;
+}
+
+/* Variants */
+.pill-ingreso {
+    background: #ecfdf5;
+    /* Emerald 50 */
+    color: #059669;
+    /* Emerald 600 */
+    border-color: #d1fae5;
+}
+
+.pill-egreso {
+    background: #fef2f2;
+    /* Red 50 */
+    color: #dc2626;
+    /* Red 600 */
+    border-color: #fee2e2;
+}
+
+.pill-cash {
+    background: #eff6ff;
+    /* Blue 50 */
+    color: #2563eb;
+    /* Blue 600 */
+    border-color: #dbeafe;
+}
+
+.pill-card {
+    background: #f5f3ff;
+    /* Violet 50 */
+    color: #7c3aed;
+    /* Violet 600 */
+    border-color: #ede9fe;
+}
+
+/* =========================================
+   LN SYSTEMS PREMIUM CONTEO UI (v2.2)
+   Fixed: Institutional Dark Mode Integration
+   ========================================= */
+
+:root {
+    --ln-glass-bg: rgba(255, 255, 255, 0.82);
+    --ln-glass-border: rgba(71, 85, 105, 0.12);
+    --ln-glass-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal sizing - Compacted */
+.modal-lg {
+    max-width: 820px;
+}
+
+.modal-sm {
+    max-width: 400px;
+}
+
+/* Modal Content Glassmorphism */
+#conteoProfesionalModal .modal-content {
+    background: var(--ln-glass-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--ln-glass-border);
+    box-shadow: var(--ln-glass-shadow);
+    border-radius: 20px;
+    color: var(--text-primary);
+}
+
+#conteoProfesionalModal .modal-header {
+    background: transparent;
+    border-bottom: 1px solid var(--ln-glass-border);
+    padding: 18px 25px;
+}
+
+#conteoProfesionalModal .modal-title {
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--accent);
+}
+
+.dark-theme #conteoProfesionalModal .modal-title,
+body.dark-mode #conteoProfesionalModal .modal-title {
+    color: #60a5fa;
+    /* Blue 400 for better visibility in dark */
+}
+
+/* Layout Grid */
+.conteo-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 20px;
+    padding: 10px;
+}
+
+/* Denominaciones Panel */
+.denominaciones-panel {
+    background: var(--bg-deep);
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid var(--ln-glass-border);
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.denominaciones-table {
+    width: 100%;
+    border-spacing: 0 6px;
+    border-collapse: separate;
+}
+
+.denominaciones-table th {
+    padding: 8px 16px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.denominaciones-table tr td {
+    background: var(--bg-card);
+    padding: 10px 16px;
+    color: var(--text-primary);
+    transition: all 0.2s;
+}
+
+.dark-theme .denominaciones-table tr td,
+body.dark-mode .denominaciones-table tr td {
+    background: rgba(30, 41, 59, 0.4);
+    /* Refined glass row */
+}
+
+.denominaciones-table tr td:first-child {
+    border-radius: 10px 0 0 10px;
+}
+
+.denominaciones-table tr td:last-child {
+    border-radius: 0 10px 10px 0;
+}
+
+.denominaciones-table tr:hover td {
+    background: var(--bg-card-hover);
+}
+
+/* Denominaciones Controls */
+.den-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.den-input {
+    width: 100%;
+    max-width: 90px;
+    background: var(--bg-deep) !important;
+    border: 1px solid var(--border-subtle) !important;
+    color: var(--text-primary) !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+    font-weight: 800 !important;
+    text-align: center !important;
+}
+
+.den-subtotal {
+    font-weight: 800;
+    color: var(--accent);
+    text-align: right;
+}
+
+/* Summary Area (Right) */
+.resumen-card {
+    background: var(--bg-card-hover);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid var(--ln-glass-border);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.kpi-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.kpi-entry label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.kpi-entry .value {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--text-primary);
+}
+
+.diff-box {
+    margin-top: 8px;
+    padding: 20px;
+    border-radius: 16px;
+    background: var(--bg-deep);
+    border: 2px solid var(--border-subtle);
+    transition: border 0.3s;
+}
+
+.status-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    margin-bottom: 12px;
+}
+
+/* Dynamic Integrity Glows (More Subtle in Fix) */
+.state-exacto {
+    border-color: var(--success) !important;
+}
+
+.state-exacto .status-badge {
+    background: rgba(34, 197, 94, 0.2);
+    color: var(--success);
+}
+
+.state-faltante {
+    border-color: var(--danger) !important;
+}
+
+.state-faltante .status-badge {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+.state-sobrante {
+    border-color: var(--warning) !important;
+}
+
+.state-sobrante .status-badge {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--warning);
+}
+
+/* Observations Area */
+#conteoObservaciones {
+    min-height: 100px;
+    background: var(--bg-deep);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 12px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    resize: none;
+}
+
+.caja-btn-secondary {
+    padding: 10px 20px;
+    background: rgba(100, 116, 139, 0.1);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.caja-btn-secondary:hover {
+    background: rgba(100, 116, 139, 0.2);
+    border-color: var(--text-muted);
+}
+
+.caja-btn-primary {
+    padding: 12px 28px;
+    font-size: 1rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.caja-btn-primary:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+}
+
+/* Footer Restored */
+.modal-footer {
+    padding: 20px 32px;
+    border-top: 1px solid var(--ln-glass-border);
+    background: var(--bg-card-hover);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    border-radius: 0 0 20px 20px;
+}
+
+.dark-theme .modal-footer,
+body.dark-mode .modal-footer {
+    background: rgba(15, 23, 42, 0.8) !important;
+}
+
+/* PIN Auth Modal Restored */
+#supervisorModal .modal-content {
+    background: var(--bg-card-hover);
+    border: 1px solid var(--ln-glass-border);
+    color: var(--text-primary);
+}
+
+.pin-input {
+    font-size: 2.5rem !important;
+    text-align: center !important;
+    letter-spacing: 0.4em !important;
+    padding: 20px !important;
+    background: var(--bg-deep) !important;
+    color: var(--text-primary) !important;
+    border: 2px solid var(--border-subtle) !important;
+    border-radius: 12px !important;
+    font-weight: 800 !important;
+}
+
+/* Custom Alerts */
+.alert-info-custom {
+    background: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+    border-color: rgba(14, 165, 233, 0.2);
+    padding: 14px;
+    border-radius: 10px;
+}
+
+.alert-warning-custom {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.2);
+    padding: 14px;
+    border-radius: 10px;
+}
+
+/* Elegant Fixed Circular Alert (Top Corner) */
+.alert-circular {
+    position: fixed;
+    top: 100px;
+    right: 40px;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    background: rgba(239, 68, 68, 0.95);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    line-height: 1.2;
+    animation: pulse-red 2s infinite;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+    pointer-events: none;
+    /* No bock clicks */
+}
+
+.alert-circular i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+@keyframes pulse-red {
+    0% {
+        transform: scale(0.98);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+    }
+
+    100% {
+        transform: scale(0.98);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+@media (max-width: 800px) {
+    .conteo-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   SWEETALERT2 DARK MODE INTEGRATION
+   ========================================= */
+
+.dark-theme .swal2-popup,
+body.dark-mode .swal2-popup {
+    background-color: var(--bg-card-hover) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.dark-theme .swal2-title,
+.dark-theme .swal2-html-container,
+body.dark-mode .swal2-title,
+body.dark-mode .swal2-html-container {
+    color: var(--text-primary) !important;
+}
+
+.dark-theme .swal2-footer,
+body.dark-mode .swal2-footer {
+    border-top: 1px solid var(--border-subtle) !important;
+    color: var(--text-muted) !important;
+}
+
+.dark-theme .swal2-close,
+body.dark-mode .swal2-close {
+    color: var(--text-muted) !important;
+}
+
+.dark-theme .swal2-input,
+body.dark-mode .swal2-input {
+    background-color: var(--bg-deep) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-subtle) !important;
+}

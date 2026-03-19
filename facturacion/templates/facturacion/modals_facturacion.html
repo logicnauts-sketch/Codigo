@@ -1,0 +1,412 @@
+<!-- Modal: Buscar Productos -->
+<div id="products-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:16px; overflow:hidden;">
+            <div class="modal-header bg-light border-0 p-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                        style="width:48px; height:48px; font-size:1.25rem;"><i class="fas fa-search"></i></div>
+                    <div>
+                        <h4 class="modal-title fw-bold m-0">Explorador de Inventario</h4>
+                        <p class="text-muted small m-0">Búsqueda avanzada de productos y servicios</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" id="close-products-modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="search-field mb-4">
+                    <i class="fas fa-filter"></i>
+                    <input type="text" id="modal-product-search" class="form-control"
+                        style="padding-left:2.5rem; height:50px; border-radius:12px;"
+                        placeholder="Escriba código, nombre o categoría...">
+                </div>
+                <div style="max-height:400px; overflow-y:auto; border-radius:12px; border:1px solid var(--pos-border);">
+                    <table class="table table-hover m-0">
+                        <thead class="bg-light sticky-top">
+                            <tr>
+                                <th style="font-size:0.7rem; text-transform:uppercase;">Código</th>
+                                <th style="font-size:0.7rem; text-transform:uppercase;">Producto</th>
+                                <th style="font-size:0.7rem; text-transform:uppercase;">Categoría</th>
+                                <th style="font-size:0.7rem; text-transform:uppercase;">Stock</th>
+                                <th style="font-size:0.7rem; text-transform:uppercase; text-align:right;">Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Seleccionar Cliente -->
+<div id="client-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:16px;">
+            <div class="modal-header border-0 p-4 pb-0">
+                <div>
+                    <h4 class="fw-bold m-0">Directorio Institucional</h4>
+                    <p class="text-muted small m-0">Vincular operación a una entidad registrada</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" id="close-client-modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex gap-2 mb-4">
+                    <button class="btn btn-outline-primary active w-100 tab" data-tab="clients">Clientes</button>
+                    <button class="btn btn-outline-primary w-100 tab" data-tab="suppliers">Proveedores</button>
+                </div>
+                <div class="search-field mb-4">
+                    <i class="fas fa-user-tag"></i>
+                    <input type="text" id="client-search" class="form-control"
+                        style="padding-left:2.5rem; height:50px; border-radius:12px;"
+                        placeholder="Buscar por RNC/Cédula o Nombre...">
+                </div>
+                <div id="clients-tab" class="tab-content active">
+                    <div id="clients-list" class="row g-3" style="max-height:350px; overflow-y:auto;"></div>
+                </div>
+                <div id="suppliers-tab" class="tab-content hidden">
+                    <div id="suppliers-list" class="row g-3" style="max-height:350px; overflow-y:auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Confirmar Pago -->
+<div id="payment-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-2xl" style="border-radius:24px;">
+            <div class="modal-body p-5 text-center">
+                <div class="mb-4">
+                    <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width:80px; height:80px; font-size:2.5rem; box-shadow:0 10px 20px rgba(16,185,129,0.3);">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h3 class="fw-bold">Cierre de Operación</h3>
+                    <p class="text-muted">Procesando recaudo en efectivo</p>
+                </div>
+
+                <div class="bg-light p-4 rounded-4 mb-4 text-start">
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
+                        <span class="fw-bold text-muted uppercase" style="font-size:0.75rem;">Total a Recibir:</span>
+                        <span class="fs-4 fw-black text-primary" id="modal-total">RD$ 0.00</span>
+                    </div>
+
+                    <label class="fw-bold text-muted uppercase mb-2" style="font-size:0.75rem;">Monto Entregado:</label>
+                    <div class="input-group input-group-lg mb-3">
+                        <span class="input-group-text bg-white border-end-0 text-success fw-bold"
+                            style="border-radius:12px 0 0 12px;">RD$</span>
+                        <input type="text" id="amount-received" class="form-control border-start-0 text-end fw-black"
+                            style="border-radius:0 12px 12px 0;" placeholder="0.00">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-info uppercase" style="font-size:0.75rem;">Cambio para el
+                            Cliente:</span>
+                        <span class="fs-4 fw-black text-info" id="modal-change">RD$ 0.00</span>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary btn-lg fw-bold py-3" id="confirm-payment" disabled
+                        style="border-radius:12px;">
+                        <i class="fas fa-print me-2"></i> Finalizar y Emitir Comprobante
+                    </button>
+                    <button class="btn btn-link text-muted fw-bold" data-bs-dismiss="modal">Cancelar (ESC)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Confirmar Crédito -->
+<div id="credit-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:16px;">
+            <div class="modal-header border-0 bg-light p-4">
+                <h5 class="modal-title fw-bold text-primary">
+                    <i class="fas fa-file-invoice-dollar me-2"></i> Facturación a Crédito
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted mb-4">Confirme la fecha de vencimiento para esta factura a crédito.</p>
+
+                <div class="form-group mb-4">
+                    <label for="due-date" class="form-label fw-bold small text-uppercase text-muted">Fecha de
+                        Vencimiento</label>
+                    <input type="date" id="due-date" class="form-control form-control-lg fw-bold"
+                        style="border-radius:12px;">
+                </div>
+
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                    <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
+                    <div>
+                        Esta operación generará una cuenta por cobrar en el balance del cliente.
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button class="btn btn-primary btn-lg fw-bold" id="confirm-credit">
+                        <i class="fas fa-check-circle me-2"></i> Confirmar Crédito
+                    </button>
+                    <button class="btn btn-light btn-lg fw-bold text-muted" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos para tabs de modales -->
+<!-- Modal: Validar Tarjeta -->
+<div id="card-validation-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:24px;">
+            <div class="modal-body p-5 text-center">
+                <div class="mb-4">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width:80px; height:80px; font-size:2.5rem; box-shadow:0 10px 20px rgba(59,130,246,0.3);">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h3 class="fw-bold">Pago con Tarjeta</h3>
+                    <p class="text-muted">Deslice la tarjeta en el verifone y confirme la aprobación</p>
+                </div>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary btn-lg fw-bold py-3" id="confirm-card-invoice"
+                        style="border-radius:12px;">
+                        <i class="fas fa-check-circle me-2"></i> Transacción Aprobada
+                    </button>
+                    <button class="btn btn-link text-muted fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Validar Transferencia -->
+<div id="transfer-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:24px;">
+            <div class="modal-body p-5 text-center">
+                <div class="mb-4">
+                    <div class="bg-indigo text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width:80px; height:80px; font-size:2.5rem; box-shadow:0 10px 20px rgba(99,102,241,0.3); background-color: #6366f1;">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h3 class="fw-bold">Transferencia Bancaria</h3>
+                    <p class="text-muted">Verifique la recepción de fondos en la cuenta bancaria</p>
+                </div>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary btn-lg fw-bold py-3" id="confirm-transfer-invoice"
+                        style="border-radius:12px; background-color: #6366f1; border-color: #6366f1;">
+                        <i class="fas fa-check-circle me-2"></i> Transferencia Verificada
+                    </button>
+                    <button class="btn btn-link text-muted fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .tab-content.hidden {
+        display: none;
+    }
+
+    .client-card-elite {
+        background: #f8fafc;
+        border: 1px solid var(--pos-border);
+        border-radius: 12px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .client-card-elite:hover {
+        border-color: var(--pos-primary);
+        background: white;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .client-card-elite.active {
+        border-color: var(--pos-primary);
+        background: rgba(99, 102, 241, 0.05);
+    }
+
+    .fw-black {
+        font-weight: 900;
+    }
+
+    /* Dark Mode Support for Modals - Both selectors */
+    [data-theme="dark"] .modal-content,
+    .dark-theme .modal-content {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    [data-theme="dark"] .modal-header,
+    [data-theme="dark"] .modal-body,
+    [data-theme="dark"] .modal-footer,
+    .dark-theme .modal-header,
+    .dark-theme .modal-body,
+    .dark-theme .modal-footer {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] .modal-header.bg-light,
+    .dark-theme .modal-header.bg-light {
+        background-color: #0f172a !important;
+    }
+
+    [data-theme="dark"] .modal-title,
+    [data-theme="dark"] h4.fw-bold,
+    [data-theme="dark"] h5.fw-bold,
+    [data-theme="dark"] h3.fw-bold,
+    .dark-theme .modal-title,
+    .dark-theme h4.fw-bold,
+    .dark-theme h5.fw-bold,
+    .dark-theme h3.fw-bold {
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] .text-muted,
+    .dark-theme .text-muted {
+        color: #94a3b8 !important;
+    }
+
+    [data-theme="dark"] .client-card-elite,
+    .dark-theme .client-card-elite {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] .client-card-elite:hover,
+    .dark-theme .client-card-elite:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: var(--pos-primary) !important;
+    }
+
+    [data-theme="dark"] .client-card-elite .fw-bold,
+    .dark-theme .client-card-elite .fw-bold {
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] .search-field input,
+    .dark-theme .search-field input,
+    [data-theme="dark"] #modal-product-search,
+    .dark-theme #modal-product-search,
+    [data-theme="dark"] #client-search,
+    .dark-theme #client-search {
+        background-color: #0f172a !important;
+        border-color: rgba(255, 255, 255, 0.2) !important;
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] .search-field input::placeholder,
+    .dark-theme .search-field input::placeholder {
+        color: #64748b !important;
+    }
+
+    [data-theme="dark"] .bg-light,
+    .dark-theme .bg-light {
+        background-color: #0f172a !important;
+    }
+
+    /* Table in Products Modal */
+    [data-theme="dark"] #products-modal .table,
+    .dark-theme #products-modal .table {
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] #products-modal .table thead,
+    .dark-theme #products-modal .table thead {
+        background-color: #0f172a !important;
+    }
+
+    [data-theme="dark"] #products-modal .table th,
+    .dark-theme #products-modal .table th {
+        color: #f1f5f9 !important;
+        background-color: #1e293b !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    [data-theme="dark"] #products-modal .sticky-top,
+    .dark-theme #products-modal .sticky-top {
+        background-color: #1e293b !important;
+        z-index: 10;
+        top: -1px;
+    }
+
+    [data-theme="dark"] #products-modal .table td,
+    .dark-theme #products-modal .table td {
+        color: #f1f5f9 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    [data-theme="dark"] #products-modal .table tbody tr:hover,
+    .dark-theme #products-modal .table tbody tr:hover {
+        background-color: rgba(99, 102, 241, 0.1) !important;
+    }
+
+    /* Payment Modal specific */
+    [data-theme="dark"] #payment-modal .bg-light,
+    .dark-theme #payment-modal .bg-light {
+        background-color: #0f172a !important;
+    }
+
+    [data-theme="dark"] #payment-modal .input-group-text,
+    .dark-theme #payment-modal .input-group-text {
+        background-color: #334155 !important;
+        border-color: rgba(255, 255, 255, 0.2) !important;
+        color: var(--pos-success) !important;
+    }
+
+    [data-theme="dark"] #payment-modal #amount-received,
+    .dark-theme #payment-modal #amount-received {
+        background-color: #0f172a !important;
+        border-color: rgba(255, 255, 255, 0.2) !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Credit Modal specific */
+    [data-theme="dark"] #credit-modal .form-control,
+    .dark-theme #credit-modal .form-control {
+        background-color: #0f172a !important;
+        border-color: rgba(255, 255, 255, 0.2) !important;
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] #credit-modal .alert-warning,
+    .dark-theme #credit-modal .alert-warning {
+        background-color: rgba(245, 158, 11, 0.15) !important;
+        border-color: rgba(245, 158, 11, 0.3) !important;
+        color: #fbbf24 !important;
+    }
+
+    /* Buttons in Modals */
+    [data-theme="dark"] .btn-light,
+    .dark-theme .btn-light {
+        background-color: #334155 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] .btn-outline-primary,
+    .dark-theme .btn-outline-primary {
+        border-color: var(--pos-primary) !important;
+        color: var(--pos-primary) !important;
+    }
+
+    [data-theme="dark"] .btn-outline-primary:hover,
+    [data-theme="dark"] .btn-outline-primary.active,
+    .dark-theme .btn-outline-primary:hover,
+    .dark-theme .btn-outline-primary.active {
+        background-color: var(--pos-primary) !important;
+        color: white !important;
+    }
+</style>

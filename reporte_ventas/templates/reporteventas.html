@@ -1,0 +1,445 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Ventas | Next Design Premium</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Core & Module CSS -->
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/reporteventas/static/reporteventas.css">
+    
+    <!-- Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="sidebar-hidden">
+    <div class="app-layout">
+        <!-- Sidebar Unified -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/home" class="brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="brand-details">
+                        <span class="brand-name">Next Design</span>
+                        <span class="brand-sub">SaaS Enterprise</span>
+                    </div>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">Módulos Principales</div>
+                <a href="/home" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/facturacion" class="nav-item">
+                    <i class="fas fa-receipt"></i>
+                    <span>Facturación</span>
+                </a>
+                <a href="/caja" class="nav-item">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Caja</span>
+                </a>
+                <a href="/trabajos_pendientes" class="nav-item">
+                    <i class="fas fa-tools"></i>
+                    <span>Trabajos Pendientes</span>
+                </a>
+                <a href="/gastos_diarios" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Gastos Diarios</span>
+                </a>
+                
+                <div class="nav-section">Administración</div>
+                <a href="/inventario" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Inventario</span>
+                </a>
+                <a href="/productos" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Productos</span>
+                </a>
+                <a href="/clientes" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+                <a href="/proveedores" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Proveedores</span>
+                </a>
+                <a href="/reporteventas" class="nav-item active">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Reporte de Ventas</span>
+                </a>
+                <a href="/usuarios" class="nav-item">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="/configuracion" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+                <div class="sidebar-heading px-3 mt-4 mb-2 text-muted text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">Extras</div>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Logros</span>
+                </a>
+            </nav>
+
+        </aside>
+
+        <!-- Main Container -->
+        <div class="main-container">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="topbar-context">
+                        <h1>Reporte de Ventas</h1>
+                        <span class="context-badge">
+                            <i class="fas fa-chart-pie"></i> Intelligence Center
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="topbar-right">
+                    <div class="quick-actions me-3">
+                        <button class="btn-action-outline" id="btnComparar">
+                            <i class="fas fa-exchange-alt me-2"></i> Comparar
+                        </button>
+                        <button class="btn-action-outline ms-2" id="btnExport">
+                            <i class="fas fa-download me-2"></i> Exportar
+                        </button>
+                    </div>
+                    
+                    <div class="dropdown">
+                        <div class="user-display" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                            <div class="user-avatar">{{ iniciales }}</div>
+                            <div class="user-meta">
+                                <span class="user-name">{{ nombre_completo }}</span>
+                                <span class="user-role">{{ rol|upper }}</span>
+                            </div>
+                            <i class="fas fa-chevron-down ms-2 text-muted" style="font-size: 0.8rem;"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" style="border-radius: 12px; min-width: 200px;">
+                            <li><h6 class="dropdown-header">Mi Cuenta</h6></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold d-flex align-items-center py-2" href="/logout">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content-wrapper">
+                <!-- Alert Panel (Security Hub) -->
+                <div id="alertsPanel" class="no-print" style="display: none; background: #fff1f2; border: 1px solid #fecaca; padding: 20px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0; color: #be123c; font-size: 16px; font-weight: 800;"><i class="fas fa-shield-virus"></i> SECURITY ALERTS</h3>
+                        <button id="markAllRead" style="background: none; border: none; font-size: 12px; color: #9f1239; cursor: pointer; font-weight: 700;">Clear All Alerts</button>
+                    </div>
+                    <div id="alertsList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                </div>
+
+                <!-- Filters & Controls -->
+                <div class="filters-bar no-print shadow-sm">
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <label><i class="fas fa-calendar-alt me-1"></i> Período</label>
+                            <select id="filter-period" class="premium-select">
+                                <option value="hoy">Hoy</option>
+                                <option value="ayer">Ayer</option>
+                                <option value="semana">Últimos 7 días</option>
+                                <option value="mes" selected>Este Mes</option>
+                                <option value="personalizado">Personalizado</option>
+                            </select>
+                        </div>
+                        <div id="custom-range" class="filter-item animate-in" style="display: none; flex-direction: row; gap: 10px;">
+                            <div class="filter-item">
+                                <label>Desde</label>
+                                <input type="date" id="date-start" class="premium-input">
+                            </div>
+                            <div class="filter-item">
+                                <label>Hasta</label>
+                                <input type="date" id="date-end" class="premium-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <label><i class="fas fa-filter me-1"></i> Estado</label>
+                            <select id="filter-estado" class="premium-select">
+                                <option value="">Todos los Estados</option>
+                                <option value="PAGADA">Completadas</option>
+                                <option value="PENDIENTE">Pendientes</option>
+                                <option value="ANULADA">Anuladas</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label><i class="fas fa-store me-1"></i> Origen</label>
+                            <select id="filter-origen" class="premium-select">
+                                <option value="">Todos los Orígenes</option>
+                                <option value="POS">Tienda (POS)</option>
+                                <option value="DELIVERY">Delivery</option>
+                                <option value="ONLINE">Online</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="action-group">
+                        <button id="applyFilters" class="btn-premium-analyze">
+                            <span><i class="fas fa-sync-alt me-2"></i> Actualizar</span>
+                        </button>
+                        <button id="printBtn" class="btn-action-icon shadow-sm" title="Imprimir Reporte">
+                            <i class="fas fa-print"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPIs Premium Grid -->
+                <div class="kpi-grid">
+                    <div class="kpi-card premium">
+                        <div class="kpi-icon blue"><i class="fas fa-chart-line"></i></div>
+                        <div class="kpi-info" id="kpi-total-container">
+                            <span class="kpi-label">Ventas Totales</span>
+                            <div class="kpi-value" id="kpi-total">RD$ 0.00</div>
+                            <div class="kpi-trend" id="trend-box">
+                                <i class="fas fa-arrow-up"></i> <span id="trend-value">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card premium">
+                        <div class="kpi-icon green"><i class="fas fa-ticket-alt"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Ticket Promedio</span>
+                            <div class="kpi-value" id="kpi-ticket">RD$ 0.00</div>
+                            <span class="kpi-sub" id="kpi-cantidad">0 transacciones</span>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card premium">
+                        <div class="kpi-icon orange"><i class="fas fa-layer-group"></i></div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Margen Estimado</span>
+                            <div class="kpi-value" id="kpi-margen">RD$ 0.00</div>
+                            <span class="kpi-sub" id="kpi-margen-pct">0% del total</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resumen Ejecutivo (Insights) -->
+                <div class="summary-intelligence no-print mb-4 animate-in">
+                    <div class="summary-card gold-edge shadow-sm">
+                        <div class="row g-0">
+                            <div class="col-md-4 border-end">
+                                <div class="intelligence-item">
+                                    <div class="intel-icon bg-success-glow"><i class="fas fa-crown text-success"></i></div>
+                                    <div class="intel-content">
+                                        <span class="intel-lbl">Mejor Desempeño</span>
+                                        <div class="intel-val" id="insight-mejor-dia">N/A</div>
+                                        <div class="intel-sub" id="insight-mejor-fecha">---</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 border-end">
+                                <div class="intelligence-item">
+                                    <div class="intel-icon bg-danger-glow"><i class="fas fa-meteor text-danger"></i></div>
+                                    <div class="intel-content">
+                                        <span class="intel-lbl">Bajo Desempeño</span>
+                                        <div class="intel-val" id="insight-peor-dia">N/A</div>
+                                        <div class="intel-sub" id="insight-peor-fecha">---</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="intelligence-item">
+                                    <div class="intel-icon bg-blue-glow"><i class="fas fa-dna text-primary"></i></div>
+                                    <div class="intel-content">
+                                        <span class="intel-lbl">Normalidad Diaria</span>
+                                        <div class="intel-val" id="insight-promedio-diario">RD$ 0.00</div>
+                                        <div class="intel-sub">Promedio consolidado</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Analytics Section -->
+                <div class="analytics-layout">
+                    <!-- Trends section (Top) -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <i class="fas fa-wave-square"></i> Actividad de Ventas
+                            </div>
+                            <div class="tabs-group no-print">
+                                <button class="tab-btn active" data-trend="semanal">Semanal</button>
+                                <button class="tab-btn" data-trend="mensual">Mensual</button>
+                            </div>
+                        </div>
+                        <div class="chart-main-container">
+                            <canvas id="chartTendencia"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <i class="fas fa-clock"></i> Distribución Horaria
+                            </div>
+                        </div>
+                        <div class="chart-secondary-container">
+                            <canvas id="chartVentasHora"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Grid: Methods & Rankings -->
+                    <div class="analytics-footer-grid">
+                        <div class="section-card">
+                            <div class="section-header">
+                                <div class="section-title"><i class="fas fa-wallet"></i> Métodos de Pago</div>
+                            </div>
+                            <div class="chart-doughnut-container">
+                                <canvas id="chartCanales"></canvas>
+                            </div>
+                            <div class="methods-stats">
+                                <div class="method-item">
+                                    <span class="method-label"><i class="fas fa-money-bill-wave green"></i> Efectivo</span>
+                                    <span id="kpi-efectivo" class="method-value">RD$ 0.00</span>
+                                </div>
+                                <div class="method-item">
+                                    <span class="method-label"><i class="fas fa-credit-card blue"></i> Tarjeta</span>
+                                    <span id="kpi-tarjeta" class="method-value">RD$ 0.00</span>
+                                </div>
+                                <div class="method-item">
+                                    <span class="method-label"><i class="fas fa-university purple"></i> Transferencia</span>
+                                    <span id="kpi-transfer" class="method-value">RD$ 0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-header">
+                                <div class="section-title"><i class="fas fa-fire"></i> Top Productos</div>
+                            </div>
+                            <div id="topProductosList" class="ranking-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Transactions Table -->
+                <div class="section-card full-width">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fas fa-history"></i> Historial de Transacciones</div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="premium-table">
+                            <thead>
+                                <tr>
+                                    <th>Ref.</th>
+                                    <th>Fecha/Hora</th>
+                                    <th>Cliente</th>
+                                    <th>Canal</th>
+                                    <th>Método</th>
+                                    <th>Estado</th>
+                                    <th class="text-right">Total</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ventasBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Comparativo -->
+    <div id="modalComparativo" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fas fa-exchange-alt"></i> Comparativo de Períodos</h3>
+                <button onclick="closeModal('modalComparativo')" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                    <!-- Período 1 -->
+                    <div style="padding: 20px; background: #f0fdf4; border-radius: 14px; border: 1px solid #bbf7d0;">
+                        <div style="font-weight: 700; font-size: 0.8rem; color: #16a34a; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">
+                            <i class="fas fa-calendar-check me-1"></i> Período A
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-size: 0.75rem; font-weight: 600; color: #64748b;">Desde</label>
+                            <input type="date" id="comp-inicio-1" class="premium-input">
+                            <label style="font-size: 0.75rem; font-weight: 600; color: #64748b;">Hasta</label>
+                            <input type="date" id="comp-fin-1" class="premium-input">
+                        </div>
+                    </div>
+                    <!-- Período 2 -->
+                    <div style="padding: 20px; background: #eff6ff; border-radius: 14px; border: 1px solid #bfdbfe;">
+                        <div style="font-weight: 700; font-size: 0.8rem; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">
+                            <i class="fas fa-calendar-alt me-1"></i> Período B
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-size: 0.75rem; font-weight: 600; color: #64748b;">Desde</label>
+                            <input type="date" id="comp-inicio-2" class="premium-input">
+                            <label style="font-size: 0.75rem; font-weight: 600; color: #64748b;">Hasta</label>
+                            <input type="date" id="comp-fin-2" class="premium-input">
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <button onclick="ejecutarComparativo()" class="btn-premium-analyze" style="margin: 0 auto;">
+                        <i class="fas fa-chart-bar me-2"></i> Comparar Períodos
+                    </button>
+                </div>
+                <div id="comparativo-resultado" style="display: none;">
+                    <!-- Resumen Numérico -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; padding: 15px; background: #f8fafc; border-radius: 14px; border: 1px dashed #cbd5e1;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Período A</div>
+                            <div id="comp-total-1" style="font-size: 1.25rem; font-weight: 800; color: #1e293b;">RD$ 0.00</div>
+                            <div id="comp-qty-1" style="font-size: 0.75rem; color: #64748b;">0 ventas</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Período B</div>
+                            <div id="comp-total-2" style="font-size: 1.25rem; font-weight: 800; color: #1e293b;">RD$ 0.00</div>
+                            <div id="comp-qty-2" style="font-size: 0.75rem; color: #64748b;">0 ventas</div>
+                        </div>
+                        <div style="grid-column: span 2; padding-top: 15px; border-top: 1px solid #e2e8f0; display: flex; justify-content: center; align-items: center; gap: 15px;">
+                            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">Diferencia:</div>
+                            <div id="comp-diff-pct" class="diff-pct" style="padding: 4px 10px; border-radius: 20px; font-weight: 800; font-size: 0.85rem;">0%</div>
+                            <div id="comp-diff-abs" style="font-weight: 700; color: #1e293b;">RD$ 0.00</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-comparative-container">
+                        <canvas id="chartComparativo"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModal('modalComparativo')" class="btn-secondary">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/reporteventas/static/reporteventas.js"></script>
+</body>
+</html>

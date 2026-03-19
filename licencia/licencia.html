@@ -1,0 +1,420 @@
+{% extends "admin/home.html" %}
+
+{% block title %}Gestión de Suscripción{% endblock %}
+
+{% block styles %}
+<style>
+    .license-container {
+        padding: 1.5rem;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .header-section {
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .header-info h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 0.25rem;
+    }
+
+    .header-info p {
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+
+    /* CARD DE LICENCIA (ESTILO PASAPORTE) */
+    .license-card-wrapper {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .license-card {
+        background: var(--card-bg);
+        border: 1px solid var(--ln-border);
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        transition: var(--transition);
+    }
+
+    .license-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
+        opacity: 0.1;
+        pointer-events: none;
+    }
+
+    .plan-badge-large {
+        font-size: 0.75rem;
+        padding: 0.5rem 1.25rem;
+        border-radius: 50px;
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+    }
+
+    .plan-FREE {
+        background: var(--slate-100);
+        color: var(--slate-600);
+    }
+
+    .plan-START {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+    }
+
+    .plan-CORE {
+        background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+        color: white;
+    }
+
+    .plan-LIDER {
+        background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+        color: white;
+    }
+
+    .license-id {
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--gray);
+        font-size: 0.85rem;
+        opacity: 0.7;
+        margin-bottom: 2rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .info-item label {
+        display: block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: var(--gray);
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.05em;
+    }
+
+    .info-item span {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+
+    /* ESTADO LATERAL */
+    .license-side-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .status-box {
+        background: var(--card-bg);
+        border: 1px solid var(--ln-border);
+        border-radius: 20px;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .status-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .status-text {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--dark-color);
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    /* FEATURES LIST */
+    .features-list {
+        background: var(--card-bg);
+        border: 1px solid var(--ln-border);
+        border-radius: 20px;
+        padding: 1.5rem;
+    }
+
+    .features-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--dark-color);
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+        color: var(--dark-color);
+    }
+
+    .feature-item i {
+        color: var(--secondary-color);
+        font-size: 0.8rem;
+    }
+
+    .feature-item.disabled {
+        opacity: 0.4;
+        text-decoration: line-through;
+    }
+
+    .feature-item.disabled i {
+        color: var(--gray);
+    }
+
+    /* BOTONES */
+    .action-section {
+        margin-top: 2rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .btn-premium-ui {
+        padding: 1rem;
+        border-radius: 12px;
+        font-weight: 700;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+
+    .btn-update {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .btn-update:hover {
+        background: var(--primary-dark);
+        transform: translateY(-3px);
+    }
+
+    .btn-support {
+        background: var(--slate-100);
+        color: var(--slate-700);
+    }
+
+    .btn-support:hover {
+        background: var(--slate-200);
+    }
+
+    /* MODO OSCURO */
+    .dark-theme .btn-support {
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+    }
+
+    .dark-theme .status-box {
+        background: rgba(16, 185, 129, 0.05);
+        border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    @media (max-width: 992px) {
+        .license-card-wrapper {
+            grid-template-columns: 1fr;
+        }
+
+        .action-section {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .license-container {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="license-container">
+    <div class="header-section">
+        <div class="header-info">
+            <h2><i class="fas fa-certificate text-primary me-2"></i> Licenciamiento de Nodo</h2>
+            <p>Estado de activación y suscripción institucional de LN Systems.</p>
+        </div>
+        <div>
+            <span class="badge bg-light text-dark p-2 rounded-3 border">IP Local: {{ local_ip }}</span>
+        </div>
+    </div>
+
+    <div class="license-card-wrapper">
+        <!-- Tarjeta Principal -->
+        <div class="license-card">
+            <span class="plan-badge-large plan-{{ lic.plan }}">{{ lic.plan }}</span>
+            <div class="license-id">CLI-ID: {{ lic.customer }}</div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Propietario / Cliente</label>
+                    <span>{{ lic.customer }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Fecha de Expiración</label>
+                    <span class="{% if lic.status == 'expired' %}text-danger{% endif %}">
+                        {{ lic.expires_at }}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <label>Versión del Core</label>
+                    <span>{{ APP_VERSION }} Stable</span>
+                </div>
+                <div class="info-item">
+                    <label>Tipo de Nodo</label>
+                    <span>Instalación Física</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral -->
+        <div class="license-side-panel">
+            <div class="status-box">
+                <div class="status-icon">
+                    {% if lic.status == 'active' %}
+                    <i class="fas fa-check-circle text-success f-fade"></i>
+                    {% elif lic.status == 'grace' %}
+                    <i class="fas fa-clock text-warning"></i>
+                    {% else %}
+                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                    {% endif %}
+                </div>
+                <span class="status-text">{{ status_text }}</span>
+                <span class="text-muted small">Estado validado localmente</span>
+            </div>
+
+            <div class="features-list">
+                <div class="features-title">
+                    <i class="fas fa-list-check"></i> Capacidades del Sistema
+                </div>
+
+                {% if domain %}
+                {% for cap in domain.plan.value|get_capabilities %}
+                <div class="feature-item">
+                    <i class="fas fa-check-circle text-success"></i>
+                    <span>{{ cap.value|replace('_', ' ')|capitalize }}</span>
+                </div>
+                {% endfor %}
+
+                {% if domain.features_override %}
+                <div class="mt-2 pt-2 border-top small text-muted">Añadidos a medida:</div>
+                {% for cap in domain.features_override %}
+                <div class="feature-item">
+                    <i class="fas fa-plus-circle text-info"></i>
+                    <span>{{ cap.value|replace('_', ' ')|capitalize }}</span>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% else %}
+                <div class="feature-item">
+                    <i class="fas fa-info-circle text-muted"></i>
+                    <span>Capacidades básicas habilitadas por defecto.</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="action-section">
+        <button class="btn-premium-ui btn-update" id="btnSyncLocal" onclick="manualSync()">
+            <i class="fas fa-sync-alt"></i> Sincronizar Suscripción
+        </button>
+        <button class="btn-premium-ui btn-support"
+            onclick="Swal.fire('Soporte LN Systems', 'Para asistencia técnica institucional contacte al 849 785 2248', 'info')">
+            <i class="fas fa-headset"></i> Soporte Técnico
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    async function manualSync() {
+        const btn = document.getElementById('btnSyncLocal');
+        const oldHtml = btn.innerHTML;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sincronizando...';
+
+        try {
+            const res = await fetch('/configuracion/maestro/api/force-report', { method: 'POST' });
+            const data = await res.json();
+
+            if (data.success) {
+                Swal.fire({
+                    title: '¡Sincronizado!',
+                    text: 'El nodo se ha comunicado con el maestro y ha actualizado su configuración.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    background: document.body.classList.contains('dark-theme') ? '#1e293b' : '#fff',
+                    color: document.body.classList.contains('dark-theme') ? '#f1f5f9' : '#1e293b'
+                });
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (e) {
+            Swal.fire('Error', e.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = oldHtml;
+        }
+    }
+    // Animación sutil de entrada
+    document.addEventListener('DOMContentLoaded', () => {
+        const card = document.querySelector('.license-card');
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease-out';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100);
+    });
+</script>
+{% endblock %}

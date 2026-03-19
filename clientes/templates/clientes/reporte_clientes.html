@@ -1,0 +1,337 @@
+{% extends "admin/home.html" %}
+
+{% block title %}Reporte de Clientes | {{ BRAND_NAME }}{% endblock %}
+
+{% block styles %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+<link rel="stylesheet" href="/clientes/static/clientes/css/reporte_clientes.css">
+<style>
+  /* Estilos específicos para la cabecera de empresa */
+  .company-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--ln-border);
+    box-shadow: var(--shadow);
+  }
+
+  .company-logo {
+    max-height: 80px;
+    max-width: 150px;
+    object-fit: contain;
+  }
+
+  .company-info h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 5px 0;
+  }
+
+  .company-info p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  /* Ajustes DataTables */
+  .dataTables_wrapper .dataTables_length select {
+    padding-right: 30px;
+  }
+
+  #reportTable_wrapper {
+    padding: 20px;
+  }
+
+  table.dataTable thead th {
+    background-color: var(--gray-light) !important;
+    color: var(--text-muted) !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--ln-border) !important;
+  }
+
+  /* Global adjustments */
+  .card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--ln-border);
+  }
+
+  .card-header {
+    background-color: var(--gray-light) !important;
+    border-bottom: 1px solid var(--ln-border) !important;
+  }
+
+  .card-title {
+    color: var(--text-main) !important;
+  }
+
+  .filter-input {
+    background-color: var(--gray-light) !important;
+    border: 1px solid var(--ln-border) !important;
+    color: var(--text-main) !important;
+    padding: 8px 12px;
+    border-radius: 8px;
+  }
+
+  .kpi-card {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--ln-border) !important;
+  }
+
+  .kpi-label {
+    color: var(--text-muted) !important;
+  }
+
+  .kpi-value {
+    color: var(--text-main) !important;
+  }
+
+  .summary-item {
+    color: var(--text-muted) !important;
+  }
+
+  .summary-value {
+    color: var(--text-main) !important;
+  }
+
+  .badge-active {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+  }
+
+  .badge-inactive {
+    background-color: var(--gray-light) !important;
+    color: var(--text-muted) !important;
+  }
+
+  /* Glassmorphism for filters and kpis */
+  .glass-filter-card {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  }
+
+  .glass-kpi {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  }
+
+  .dark-theme .glass-filter-card,
+  .dark-theme .glass-kpi {
+    background: rgba(30, 41, 59, 0.7) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+</style>
+<link rel="stylesheet" href="/clientes/static/clientes/css/clientes.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Cabecera de Empresa -->
+  {% if empresa and empresa.nombre %}
+  <div class="company-header">
+    {% if empresa.logo_path %}
+    <img src="{{ empresa.logo_path }}" alt="Logo" class="company-logo">
+    {% endif %}
+    <div class="company-info">
+      <h2>{{ empresa.nombre }}</h2>
+      <p>{{ empresa.direccion }}</p>
+      <p><strong>RNC:</strong> {{ empresa.rnc }} | <strong>Tel:</strong> {{ empresa.telefono }}</p>
+      <p>{{ empresa.email }}</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <div class="system-status-indicator">
+        <div class="status-dot"></div>
+        <span>Reportes · Análisis de Clientes</span>
+      </div>
+      <h2 class="content-title">Reporte de Clientes</h2>
+      <p class="content-subtitle">Análisis operativo y financiero detallado</p>
+    </div>
+    <div class="header-right">
+      <button class="btn" id="exportPDFBtn">
+        <i class="fas fa-file-pdf"></i> PDF
+      </button>
+      <button class="btn btn-primary" id="exportExcelBtn">
+        <i class="fas fa-file-excel"></i> Excel
+      </button>
+    </div>
+  </header>
+
+  <!-- Filtros de Período -->
+  <div class="reporte-card glass-filter-card mb-4">
+    <div class="reporte-card-header">
+      <h3 class="reporte-card-title"><i class="fas fa-calendar-alt me-2"></i>Filtros de Período</h3>
+    </div>
+    <div class="reporte-card-body">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label class="filter-label">Fecha Inicio</label>
+          <input type="date" class="filter-input" id="startDate">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Fecha Fin</label>
+          <input type="date" class="filter-input" id="endDate">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Estado</label>
+          <select class="filter-input" id="filterStatus">
+            <option value="">Todos</option>
+            <option value="activo">Activos</option>
+            <option value="inactivo">Inactivos</option>
+          </select>
+        </div>
+        <div class="filter-group d-flex align-items-end">
+          <button class="btn btn-primary w-100" id="applyFiltersBtn">
+            <i class="fas fa-sync-alt"></i> Actualizar Reporte
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs Generales -->
+  <div class="kpi-grid mb-4">
+    <div class="kpi-card glass-kpi">
+      <div class="kpi-icon blue">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Total Clientes</div>
+        <div class="kpi-value" id="totalClients">0</div>
+      </div>
+    </div>
+    <div class="kpi-card glass-kpi">
+      <div class="kpi-icon green">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Clientes Activos</div>
+        <div class="kpi-value" id="activeClients">0</div>
+      </div>
+    </div>
+    <div class="kpi-card glass-kpi">
+      <div class="kpi-icon purple">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Facturación Total</div>
+        <div class="kpi-value" id="totalRevenue">RD$ 0</div>
+      </div>
+    </div>
+    <div class="kpi-card glass-kpi">
+      <div class="kpi-icon orange">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Deuda Pendiente</div>
+        <div class="kpi-value" id="totalDebt">RD$ 0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Detalles -->
+  <div class="reporte-card shadow-lg">
+    <div class="reporte-card-header border-bottom">
+      <h3 class="reporte-card-title"><i class="fas fa-list-ul me-2"></i>Detalle por Cliente</h3>
+    </div>
+    <div class="reporte-card-body p-0">
+      <div class="table-responsive">
+        <table id="reportTable" class="table table-hover w-100">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Documento</th>
+              <th class="text-center">Facturas</th>
+              <th class="text-end">Total Facturado</th>
+              <th class="text-end">Total Pagado</th>
+              <th class="text-end">Deuda Actual</th>
+              <th class="text-center">Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="reportTableBody">
+            <!-- DataTables filled via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resumen por Estado -->
+  <div class="summary-grid mt-4">
+    <div class="reporte-card">
+      <div class="reporte-card-header border-bottom">
+        <h3 class="reporte-card-title">Distribución por Estado</h3>
+      </div>
+      <div class="reporte-card-body">
+        <div class="summary-stats">
+          <div class="summary-item">
+            <span class="summary-label">
+              <span class="badge badge-active">Activos</span>
+            </span>
+            <span class="summary-value" id="countActive">0</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">
+              <span class="badge badge-inactive">Inactivos</span>
+            </span>
+            <span class="summary-value" id="countInactive">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reporte-card">
+      <div class="card-header border-bottom">
+        <h3 class="card-title">Análisis de Deuda</h3>
+      </div>
+      <div class="card-body">
+        <div class="summary-stats">
+          <div class="summary-item">
+            <span class="summary-label">Clientes con Deuda</span>
+            <span class="summary-value debt-value" id="clientsWithDebt">0</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Promedio de Deuda</span>
+            <span class="summary-value" id="avgDebt">RD$ 0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include "clientes/modal_perfil.html" %}
+  {% include "clientes/modal_pago.html" %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<!-- DataTables & Dependencies (solo los especificos del reporte) -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+
+<!-- Scripts de Negocio -->
+<script src="/clientes/static/clientes/js/clientes.js"></script>
+<script src="/clientes/static/clientes/js/reporte_clientes.js"></script>
+{% endblock %}

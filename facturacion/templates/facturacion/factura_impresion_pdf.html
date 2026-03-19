@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% if is_cotizacion %}Cotización{% else %}Factura{% endif %} {{ factura.ncf or factura.id }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #1f2937;
+            background: #fff;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        /* Header */
+        .header {
+            width: 100%;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .header-table {
+            width: 100%;
+        }
+
+        .company-logo {
+            max-width: 180px;
+            max-height: 80px;
+            object-fit: contain;
+        }
+
+        .company-info {
+            text-align: left;
+        }
+
+        .company-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #111827;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -0.025em;
+        }
+
+        .company-meta {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .invoice-title-block {
+            text-align: right;
+            vertical-align: top;
+        }
+
+        .invoice-type {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #6b7280;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .invoice-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4f46e5;
+            margin: 0;
+        }
+
+        /* Grid */
+        .info-grid {
+            width: 100%;
+            margin-bottom: 2.5rem;
+        }
+
+        .info-col {
+            width: 48%;
+            /* Slightly less than 50% for gap */
+            vertical-align: top;
+        }
+
+        .box-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #9ca3af;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.25rem;
+        }
+
+        .box-content p {
+            margin: 0 0 0.25rem 0;
+        }
+
+        .box-content strong {
+            color: #374151;
+        }
+
+        /* Tabla Items */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        .items-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background-color: #f9fafb;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: #4b5563;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .items-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Totales */
+        .totals-container {
+            width: 100%;
+            page-break-inside: avoid;
+        }
+
+        .notes-section {
+            width: 55%;
+            float: left;
+            font-size: 0.85rem;
+            color: #6b7280;
+            padding-right: 2rem;
+        }
+
+        .totals-table {
+            width: 40%;
+            float: right;
+            border-collapse: collapse;
+        }
+
+        .totals-table td {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .totals-table .label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .totals-table .value {
+            text-align: right;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .totals-table .total-row td {
+            border-top: 2px solid #111827;
+            border-bottom: none;
+            padding-top: 1rem;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-pagada {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-pendiente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-cancelada {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px dashed #e5e7eb;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #9ca3af;
+            clear: both;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <table class="header-table">
+            <tr>
+                <td style="width: 60%;">
+                    {% if empresa.logo_path_abs %}
+                    <img src="{{ empresa.logo_path_abs }}" alt="Logo" class="company-logo"
+                        style="display: block; margin-bottom: 10px;">
+                    {% endif %}
+                    <div class="company-info">
+                        <h1 class="company-name">{{ empresa.nombre }}</h1>
+                        <div class="company-meta">
+                            {{ empresa.direccion }}<br>
+                            RNC: {{ empresa.rnc }} • Tel: {{ empresa.telefono }}<br>
+                            {{ empresa.email }}
+                        </div>
+                    </div>
+                </td>
+                <td class="invoice-title-block">
+                    <div class="invoice-type">
+                        {% if is_cotizacion %}COTIZACIÓNDE VENTA{% elif factura.tipo == 'compra' %}FACTURA DE COMPRA{%
+                        else %}FACTURA DE VENTA{% endif %}
+                    </div>
+                    <div class="invoice-number">{{ factura.ncf or ('# ' + (factura.uuid or factura.id)|string) }}</div>
+                    {% if factura.uuid and factura.ncf %}
+                    <div style="font-size: 0.75rem; color: #6b7280; font-family: monospace; margin-top: 2px;">
+                        ID: {{ factura.uuid }}
+                    </div>
+                    {% endif %}
+
+                    <div style="margin-top: 1rem;">
+                        <span class="badge badge-{{ factura.estado|lower|replace(' ', '') }}">{{ factura.estado
+                            }}</span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="info-grid">
+        <table style="width: 100%;">
+            <tr>
+                <td class="info-col" style="padding-right: 20px;">
+                    <div class="box-title">{% if is_cotizacion %}Cotizado A{% else %}Facturado A{% endif %}</div>
+                    <div class="box-content">
+                        <p><strong>{{ factura.persona_nombre }}</strong></p>
+                        <p>{% if factura.tipo == 'compra' %}RNC:{% else %}Cédula/RNC:{% endif %} {{ factura.persona_doc
+                            }}</p>
+                        <p>{{ factura.persona_direccion or 'Dirección no registrada' }}</p>
+                        <p>{{ factura.persona_telefono or '' }}</p>
+                    </div>
+                </td>
+                <td class="info-col" style="padding-left: 20px;">
+                    <div class="box-title">Detalles</div>
+                    <div class="box-content">
+                        <table style="width: 100%; font-size: 13px;">
+                            <tr>
+                                <td style="padding: 2px 0; color: #666;">Fecha Emisión:</td>
+                                <td style="text-align: right;"><strong>{{ factura.fecha_creacion }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 2px 0; color: #666;">{% if is_cotizacion %}Válido Hasta:{% else
+                                    %}Vencimiento:{% endif %}</td>
+                                <td style="text-align: right;">{{ factura.fecha_vencimiento or '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 2px 0; color: #666;">Método Pago:</td>
+                                <td style="text-align: right; text-transform: capitalize;">{{ factura.metodo_pago }}
+                                </td>
+                            </tr>
+                            {% if factura.codigo_autorizacion %}
+                            <tr>
+                                <td style="padding: 2px 0; color: #666;">Auth Code:</td>
+                                <td style="text-align: right;">{{ factura.codigo_autorizacion }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 50%;">Descripción</th>
+                <th class="text-center" style="width: 15%;">Cant</th>
+                <th class="text-right" style="width: 15%;">Precio</th>
+                <th class="text-right" style="width: 20%;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in detalles %}
+            <tr>
+                <td>
+                    <div style="font-weight: 500;">{{ item.nombre }}</div>
+                </td>
+                <td class="text-center">{{ item.cantidad }}</td>
+                <td class="text-right">{{ utils.formatCurrency(item.precio) }}</td>
+                <td class="text-right">{{ utils.formatCurrency(item.cantidad * item.precio) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="totals-container clearfix">
+        <div class="notes-section">
+            {% if credit_info %}
+            {{ credit_info|safe }}
+            {% endif %}
+
+            {% if empresa.mensaje_legal %}
+            <div style="margin-top: 1rem;">
+                <strong>Términos y Condiciones:</strong><br>
+                {{ empresa.mensaje_legal }}
+            </div>
+            {% endif %}
+        </div>
+
+        <table class="totals-table">
+            <tr>
+                <td class="label">Subtotal</td>
+                <td class="value">{{ utils.formatCurrency(factura.subtotal) }}</td>
+            </tr>
+            <tr>
+                <td class="label">ITBIS (18%)</td>
+                <td class="value">{{ utils.formatCurrency(factura.itbis_total) }}</td>
+            </tr>
+            <!-- Podría haber descuento aquí si lo tuvieras en BD -->
+            <tr class="total-row">
+                <td>Total</td>
+                <td>{{ utils.formatCurrency(factura.total) }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>Gracias por su preferencia · {{ empresa.website or '' }} · {{ empresa.email or '' }}</p>
+        <p>Generado automáticamente por Sistema de Facturación LN Systems</p>
+    </div>
+
+</body>
+
+</html>

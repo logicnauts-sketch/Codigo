@@ -1,0 +1,79 @@
+{% extends "admin/config_base.html" %}
+
+{% block config_content %}
+<div class="config-group">
+    <span class="group-title">Experiencia Visual y Temas</span>
+
+    <!-- Modo Oscuro (Bloqueado START) -->
+    <div class="config-row locked-feature">
+        <div class="row-info">
+            <span class="row-label">Modo Oscuro (Obsidian)</span>
+            <span class="row-desc">Interfaz de alto contraste para fatiga visual reducida.</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+            <span class="premium-lock-tag"><i class="fas fa-lock"></i> MODO CORE</span>
+            <label class="switch">
+                <input type="checkbox" disabled>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Paletas de Colores -->
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Paleta de Identidad</span>
+            <span class="row-desc">Cambie el color principal de la marca institucional.</span>
+        </div>
+        <div class="palette-grid">
+            <div class="palette-item active" style="background: #4f46e5;" title="Indigo (Predeterminado - START)"></div>
+            <div class="palette-item locked" style="background: #0ea5e9;" title="Sky Blue (Plan CORE)"></div>
+            <div class="palette-item locked" style="background: #10b981;" title="Emerald (Plan CORE)"></div>
+            <div class="palette-item locked" style="background: #f43f5e;" title="Rose (Plan CORE)"></div>
+        </div>
+    </div>
+</div>
+
+<div class="config-group">
+    <span class="group-title">Tipografía y Estilo</span>
+
+    <!-- Fuentes -->
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Fuente del Sistema</span>
+            <span class="row-desc">Tipografía predeterminada para reportes e interfaz.</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 250px;">
+            <div class="font-preview-box" style="font-family: 'Inter', sans-serif;">
+                Inter (Activo) <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="font-preview-box locked-feature" style="font-family: 'Montserrat', sans-serif; opacity: 0.5;">
+                Montserrat <span class="premium-lock-tag" style="padding: 2px 6px; font-size: 0.55rem;">CORE</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expansión Futura -->
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Personalización Avanzada</span>
+            <span class="row-desc">Iconografía personalizada y bordes redondeados.</span>
+        </div>
+        <button class="locked-btn-more">
+            <i class="fas fa-plus-circle"></i> Más opciones <i class="fas fa-lock"></i>
+        </button>
+    </div>
+</div>
+
+<div class="config-info-box"
+    style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 12px; padding: 1.25rem; margin-top: 1rem;">
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <i class="fas fa-crown" style="font-size: 2rem; color: #f59e0b;"></i>
+        <div>
+            <h4 style="margin: 0; font-size: 1rem; font-weight: 800; color: #d97706;">Acceso CORE requerido</h4>
+            <p style="margin: 5px 0 0; font-size: 0.85rem; color: var(--ln-text-muted);">Las opciones de Modo Oscuro y
+                Paletas personalizadas están reservadas para usuarios con suscripción institucional CORE o LIDER.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

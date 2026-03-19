@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Reporte de Cierre - Turno #{{ turno_id }}</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 10mm;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #1e293b;
+      background-color: #fff;
+      margin: 0;
+      padding: 20px;
+      font-size: 12px;
+    }
+
+    .header {
+      display: table;
+      width: 100%;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 15px;
+    }
+
+    .logo-section {
+      display: table-cell;
+      vertical-align: middle;
+      width: 80px;
+    }
+
+    .logo-box {
+      width: 64px;
+      height: 64px;
+      background: #f1f5f9;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    .logo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .logo-text {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2563eb;
+      text-align: center;
+      line-height: 64px;
+    }
+
+    .company-info {
+      display: table-cell;
+      vertical-align: middle;
+      padding-left: 15px;
+    }
+
+    .company-name {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #0f172a;
+    }
+
+    .company-meta {
+      color: #64748b;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .report-meta {
+      display: table-cell;
+      vertical-align: middle;
+      text-align: right;
+    }
+
+    .report-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .report-subtitle {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    /* KPI CARDS */
+    .kpi-container {
+      display: table;
+      width: 100%;
+      border-spacing: 10px 0;
+      margin-bottom: 20px;
+    }
+
+    .kpi-card {
+      display: table-cell;
+      width: 33.33%;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+      vertical-align: top;
+    }
+
+    .kpi-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+
+    .kpi-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .kpi-sub {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .text-green {
+      color: #16a34a !important;
+    }
+
+    .text-blue {
+      color: #2563eb !important;
+    }
+
+    /* TABLES */
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+      background: #f1f5f9;
+      padding: 6px 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      margin-top: 20px;
+      border-left: 3px solid #2563eb;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    table.data-table th {
+      background-color: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    table.data-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+    }
+
+    table.data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .font-bold {
+      font-weight: 700;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-green {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-blue {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge-gray {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .footer {
+      margin-top: 30px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 10px;
+      text-align: center;
+      font-size: 9px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+
+<body>
+
+  {# === Safe defaults para datos anidados opcionales === #}
+  {% set stats = datos_cierre.estadisticas if datos_cierre.estadisticas is defined else {} %}
+  {% set vitality = datos_cierre.vitality if datos_cierre.vitality is defined else {} %}
+  {% set business = datos_cierre.business if datos_cierre.business is defined else {} %}
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-section">
+      <div class="logo-box">
+        {% if logo_uri %}
+        <img src="{{ logo_uri }}" alt="Logo">
+        {% else %}
+        <div class="logo-text">{{ empresa_nombre[:2] | upper }}</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="company-info">
+      <div class="company-name">{{ empresa_nombre }}</div>
+      <div class="company-meta">
+        {% if empresa_rnc %}RNC: {{ empresa_rnc }} | {% endif %}
+        {% if empresa_telefono %}Tel: {{ empresa_telefono }}<br>{% endif %}
+        {{ empresa_direccion }}
+      </div>
+    </div>
+    <div class="report-meta">
+      <div class="report-title">Reporte de Cierre</div>
+      <div class="report-subtitle">
+        Turno #{{ turno_id }}<br>
+        Generado: {{ now }}
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI SUMMARY -->
+  <div class="kpi-container">
+    <div class="kpi-card">
+      <div class="kpi-label">Apertura</div>
+      <div class="kpi-value">RD$ {{ '%0.2f'|format(turno.monto_inicial or 0) }}</div>
+      <div class="kpi-sub">{{ turno.fecha_apertura.strftime('%d/%m %H:%M') if turno.fecha_apertura else '--' }}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label text-green">Ventas Totales</div>
+      <div class="kpi-value text-green">RD$ {{ '%0.2f'|format(stats.total_facturado|default(0)) }}</div>
+      <div class="kpi-sub">{{ stats.total_facturas|default(0) }} facturas registradas</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label text-blue">Total en Caja</div>
+      <div class="kpi-value text-blue">RD$ {{ '%0.2f'|format(datos_cierre.monto_total) }}</div>
+      <div class="kpi-sub">Efectivo + Tarjeta</div>
+    </div>
+  </div>
+
+  <!-- DETALLES FINANCIEROS -->
+  <div class="section-title">Desglose Financiero</div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Concepto</th>
+        <th class="text-right">Monto</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Efectivo en Caja (Contado)</td>
+        <td class="text-right font-bold text-green">RD$ {{ '%0.2f'|format(datos_cierre.monto_efectivo) }}</td>
+      </tr>
+      <tr>
+        <td>Tarjetas / Vouchers</td>
+        <td class="text-right font-bold text-blue">RD$ {{ '%0.2f'|format(datos_cierre.monto_tarjeta) }}</td>
+      </tr>
+      <tr style="background-color: #f8fafc;">
+        <td class="font-bold">TOTAL CIERRE</td>
+        <td class="text-right font-bold" style="font-size: 13px;">RD$ {{ '%0.2f'|format(datos_cierre.monto_total) }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- METRICAS DE FACTURACION -->
+  <div class="section-title">Métricas de Operación</div>
+  <table class="data-table">
+    <tbody>
+      <tr>
+        <td>Ventas en Efectivo</td>
+        <td class="text-right">RD$ {{ '%0.2f'|format(stats.total_efectivo|default(0)) }}</td>
+        <td>Ventas con Tarjeta</td>
+        <td class="text-right">RD$ {{ '%0.2f'|format(stats.total_tarjeta|default(0)) }}</td>
+      </tr>
+      <tr>
+        <td>ITBIS Recaudado</td>
+        <td class="text-right">RD$ {{ '%0.2f'|format(stats.total_itbis|default(0)) }}</td>
+        <td>Otros Métodos</td>
+        <td class="text-right">RD$ {{ '%0.2f'|format(stats.total_otros|default(0)) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- VITALITY: CATEGORIAS Y NCF -->
+  <div style="display: table; width: 100%; margin-top: 20px;">
+    <div style="display: table-cell; width: 48%; vertical-align: top;">
+      <div class="section-title">Ventas por Categoría</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Categoría</th>
+            <th class="text-right">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cat in (vitality.categories|default([])) %}
+          <tr>
+            <td>{{ cat.categoria }}</td>
+            <td class="text-right">RD$ {{ '%0.2f'|format(cat.total) }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="2" class="text-center text-muted">Aún no hay desglose.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div style="display: table-cell; width: 4%; "></div>
+    <div style="display: table-cell; width: 48%; vertical-align: top;">
+      <div class="section-title">Resumen Fiscal (NCF)</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Tipo NCF</th>
+            <th class="text-right">Cant.</th>
+            <th class="text-right">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ncf in (vitality.ncf|default([])) %}
+          <tr>
+            <td>{{ ncf.tipo_ncf }}</td>
+            <td class="text-right">{{ ncf.cantidad }}</td>
+            <td class="text-right">RD$ {{ '%0.2f'|format(ncf.total) }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="3" class="text-center text-muted">Aún no hay desglose.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ESTADO DEL NEGOCIO (COMPLETO) -->
+  <div class="section-title" style="background-color: #0f172a; color: white;">Estado Vital del Negocio (Día Actual)
+  </div>
+  <table class="data-table" style="background-color: #f1f5f9; border-radius: 8px;">
+    <tbody>
+      <tr>
+        <td class="font-bold">Total Ingresos (Ventas + Otros)</td>
+        <td class="text-right font-bold text-green" style="font-size: 14px;">RD$ {{
+          '%0.2f'|format(business.total_ingresos|default(0)) }}</td>
+      </tr>
+      <tr>
+        <td class="font-bold">Total Egresos (Gastos + Otros)</td>
+        <td class="text-right font-bold text-red" style="color: #dc2626; font-size: 14px;">RD$ {{
+          '%0.2f'|format(business.total_egresos|default(0)) }}</td>
+      </tr>
+      <tr style="border-top: 2px solid #cbd5e1;">
+        <td class="font-bold" style="padding-top: 10px;">BALANCE NETO DE OPERACIÓN</td>
+        <td class="text-right font-bold" style="font-size: 16px; padding-top: 10px; color: #2563eb;">RD$ {{
+          '%0.2f'|format(business.balance_neto|default(0)) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- TOP PRODUCTOS -->
+  <div class="section-title">Top 10 Productos del Turno</div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th class="text-right">Cant.</th>
+        <th class="text-right">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in (vitality.top_products|default([])) %}
+      <tr>
+        <td>{{ p.nombre }}</td>
+        <td class="text-right">{{ p.cant }}</td>
+        <td class="text-right">RD$ {{ '%0.2f'|format(p.total) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- ULTIMOS MOVIMIENTOS -->
+  <div class="section-title">Movimientos Recientes</div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Hora</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+        <th>Método</th>
+        <th class="text-right">Monto</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mov in movimientos[:20] %}
+      <tr>
+        <td>{{ mov.fecha.strftime('%H:%M') if mov.fecha else '--' }}</td>
+        <td>
+          <span class="badge {{ 'badge-green' if mov.tipo == 'venta' or mov.tipo == 'ingreso' else 'badge-gray' }}">
+            {{ mov.tipo | upper }}
+          </span>
+        </td>
+        <td>{{ mov.descripcion or 'Referencia: ' ~ (mov.referencia or '--') }}</td>
+        <td>{{ mov.metodo_pago | capitalize }}</td>
+        <td class="text-right font-bold {{ 'text-green' if mov.tipo in ['venta','ingreso'] else 'text-muted' }}">
+          {{ '+' if mov.tipo in ['venta','ingreso'] else '-' }} RD$ {{ '%0.2f'|format(mov.monto) }}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="5" class="text-center text-muted">No hay movimientos registrados.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if datos_cierre.observaciones %}
+  <div class="section-title">Observaciones de Auditoría</div>
+  <div
+    style="background: #fff; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; font-size: 11px; color: #475569;">
+    {{ datos_cierre.observaciones }}
+  </div>
+  {% endif %}
+
+  <div class="footer">
+    Este documento es un reporte interno generado por el Sistema de Facturación LN Systems. <br>
+    Cajero Responsable: <strong>{{ datos_cierre.cajero }}</strong>
+  </div>
+
+</body>
+
+</html>

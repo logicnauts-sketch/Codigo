@@ -1,0 +1,90 @@
+{% extends "admin/config_base.html" %}
+
+{% block config_content %}
+<div class="config-group">
+    <span class="group-title">Formatos y Ubicación</span>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Moneda Base</span>
+            <span class="row-desc">Moneda principal para reportes y contabilidad.</span>
+        </div>
+        <select name="moneda" id="cfg-moneda" class="config-select">
+            <option value="DOP" {% if empresa.moneda=='DOP' %}selected{% endif %}>Peso Dominicano (RD$)</option>
+            <option value="USD" {% if empresa.moneda=='USD' %}selected{% endif %}>Dólar Estadounidense (US$)</option>
+        </select>
+    </div>
+
+    <!-- Gestión de Divisas y Tasa de Cambio -->
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Habilitar Multi-Moneda</span>
+            <span class="row-desc">Permitir cobros en Dólares (USD) utilizando una tasa de cambio fija.</span>
+        </div>
+        <label class="switch">
+            <input type="checkbox" name="config[uso_multimoneda]" id="cfg-use-multicurrency" {% if
+                config.uso_multimoneda=='1' %}checked{% endif %}>
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="config-row" id="row-tasa-cambio"
+        style="display: {% if config.uso_multimoneda=='1' %}flex{% else %}none{% endif %}; background: rgba(59, 130, 246, 0.05);">
+        <div class="row-info">
+            <span class="row-label">Tasa de Cambio (USD)</span>
+            <span class="row-desc">Valor de 1 Dólar en Pesos Dominicanos para conversiones automáticas.</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-weight: 600; color: var(--ln-primary);">RD$</span>
+            <input type="number" step="0.01" min="1" name="config[tasa_dolar]" id="cfg-tasa-usd" class="config-input"
+                style="width: 120px; text-align: right; font-weight: 700;"
+                value="{{ config.tasa_dolar|default('58.50') }}">
+        </div>
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Formato de Fecha</span>
+            <span class="row-desc">Cómo se visualizarán las fechas en todo el sistema.</span>
+        </div>
+        <select name="formato_fecha" id="cfg-fmt-fecha" class="config-select">
+            <option value="DD/MM/YYYY" {% if empresa.formato_fecha=='DD/MM/YYYY' %}selected{% endif %}>31/12/2023
+            </option>
+            <option value="YYYY-MM-DD" {% if empresa.formato_fecha=='YYYY-MM-DD' %}selected{% endif %}>2023-12-31
+            </option>
+        </select>
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Zona Horaria</span>
+            <span class="row-desc">Afecta los cierres de caja y registros de auditoría.</span>
+        </div>
+        <select name="zona_horaria" id="cfg-zona" class="config-select">
+            <option value="America/Santo_Domingo" {% if empresa.zona_horaria=='America/Santo_Domingo' %}selected{% endif
+                %}>Santo Domingo (AST)</option>
+            <option value="America/New_York" {% if empresa.zona_horaria=='America/New_York' %}selected{% endif %}>New
+                York (EST)</option>
+        </select>
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Impresión de Documentos</span>
+            <span class="row-desc">Formato predeterminado para facturas y documentos (Ticket = Térmico, A4 =
+                PDF).</span>
+        </div>
+        <select name="config[global_print_format]" id="cfg-global-print-format" class="config-select">
+            <option value="default" {% if config.global_print_format=='default' or not config.global_print_format
+                %}selected{% endif %}>Automático (Ticket/A4)</option>
+            <option value="ticket" {% if config.global_print_format=='ticket' %}selected{% endif %}>Siempre Ticket
+                (Térmico)</option>
+            <option value="a4" {% if config.global_print_format=='a4' %}selected{% endif %}>Siempre A4 (PDF)</option>
+        </select>
+    </div>
+    <div class="config-row">
+        <div class="row-info">
+            <span class="row-label">Correo de Notificaciones</span>
+            <span class="row-desc">Email remitente para alertas y recuperación de contraseñas.</span>
+        </div>
+        <input type="email" name="empresa[email]" id="cfg-empresa-email" class="config-input"
+            value="{{ empresa.email }}" placeholder="sistema@empresa.com">
+    </div>
+</div>
+{% endblock %}

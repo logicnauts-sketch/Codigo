@@ -1,0 +1,397 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios â€” {{ BRAND_NAME }}</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="/static/lib/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/static/lib/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/datatables/dataTables.bootstrap5.min.css">
+    
+    <!-- System Styles -->
+    <link rel="stylesheet" href="/static/base.css?v=2">
+    <link rel="stylesheet" href="/usuarios/static/usuarios.css?v=2">
+</head>
+<body class="sidebar-hidden">
+    <div class="app-layout">
+        <!-- Unified Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/home" class="brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="brand-details">
+                        <span class="brand-name">Next Design</span>
+                        <span class="brand-sub">SaaS Enterprise</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">Módulos Principales</div>
+                <a href="/home" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/facturacion" class="nav-item">
+                    <i class="fas fa-receipt"></i>
+                    <span>Facturación</span>
+                </a>
+                <a href="/caja" class="nav-item">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Caja</span>
+                </a>
+                <a href="/trabajos_pendientes" class="nav-item">
+                    <i class="fas fa-tools"></i>
+                    <span>Trabajos Pendientes</span>
+                </a>
+                <a href="/gastos_diarios" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Gastos Diarios</span>
+                </a>
+                
+                <div class="nav-section">Administración</div>
+                <a href="/inventario" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Inventario</span>
+                </a>
+                <a href="/productos" class="nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>Productos</span>
+                </a>
+                <a href="/clientes" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+                <a href="/proveedores" class="nav-item">
+                    <i class="fas fa-building"></i>
+                    <span>Proveedores</span>
+                </a>
+                <a href="/reporteventas" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Reporte de Ventas</span>
+                </a>
+                <a href="/usuarios" class="nav-item active">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="/configuracion" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+                <div class="sidebar-heading px-3 mt-4 mb-2 text-muted text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">Extras</div>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Logros</span>
+                </a>
+            </nav>
+
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-container">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="page-info">
+                        Administración / <span>Gestión de Usuarios</span>
+                    </div>
+                </div>
+                
+                <div class="topbar-right">
+                    <div class="datetime-display d-none d-md-flex me-3" id="timeDisplay">
+                        <i class="far fa-clock me-2"></i>
+                        <span>Cargando...</span>
+                    </div>
+                    <div class="status-pill offline me-3">
+                        <div class="status-dot"></div>
+                        AGENTE: OFFLINE
+                    </div>
+                    <div class="dropdown">
+                        <div class="user-display" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                            <div class="user-avatar">{{ iniciales }}</div>
+                            <div class="user-meta">
+                                <span class="user-name">{{ nombre_completo }}</span>
+                                <span class="user-role">{{ rol|upper }}</span>
+                            </div>
+                            <i class="fas fa-chevron-down ms-2 text-muted" style="font-size: 0.8rem;"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" style="border-radius: 12px; min-width: 200px;">
+                            <li><h6 class="dropdown-header">Mi Cuenta</h6></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold d-flex align-items-center py-2" href="/logout">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <div class="users-app" data-rol-actual="{{ rol }}">
+                <!-- Header -->
+                <div class="content-header mb-4">
+                    <div>
+                        <h2 class="content-title">Gestión de Usuarios</h2>
+                        <p class="content-subtitle text-muted">Administración de colaboradores y seguridad del sistema</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="action-btn primary" onclick="abrirModalUsuario()">
+                            <i class="fas fa-plus me-1"></i> Nuevo Usuario
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="card-grid mb-4">
+                    <div class="kpi-card blue">
+                        <div class="kpi-icon-box"><i class="fas fa-users"></i></div>
+                        <div class="info d-flex flex-column">
+                            <span class="kpi-label">Total Usuarios</span>
+                            <span class="kpi-value" id="kpi-total">0</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card green">
+                        <div class="kpi-icon-box"><i class="fas fa-user-check"></i></div>
+                        <div class="info d-flex flex-column">
+                            <span class="kpi-label">Personal Activo</span>
+                            <span class="kpi-value" id="kpi-activos">0</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card rose">
+                        <div class="kpi-icon-box"><i class="fas fa-key"></i></div>
+                        <div class="info d-flex flex-column">
+                            <span class="kpi-label">Accesos Hoy</span>
+                            <span class="kpi-value" id="kpi-accesos">0</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card purple">
+                        <div class="kpi-icon-box"><i class="fas fa-user-slash"></i></div>
+                        <div class="info d-flex flex-column">
+                            <span class="kpi-label">Bloqueados</span>
+                            <span class="kpi-value" id="kpi-bloqueados">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Section -->
+                <div class="users-section card border-0 shadow-sm" style="border-radius:15px; overflow:hidden;">
+                    <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between users-nav-bar">
+                        <div class="users-tabs">
+                            <button class="users-tab active" onclick="switchTab('tab-lista', this)">
+                                <i class="fas fa-users-cog me-2"></i>Colaboradores
+                            </button>
+                            <button class="users-tab" onclick="switchTab('tab-auditoria', this)">
+                                <i class="fas fa-history me-2"></i>Seguridad
+                            </button>
+                        </div>
+                        <div class="users-search-wrapper">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="customSearch" class="search-input-premium" placeholder="Buscar colaborador...">
+                        </div>
+                    </div>
+
+                    <!-- Tab: Lista -->
+                    <div id="tab-lista" class="tab-content active">
+                        <div class="table-responsive">
+                            <table class="users-table table table-hover" id="tablaUsuarios">
+                                <thead>
+                                    <tr>
+                                        <th>Identidad</th>
+                                        <th>Cuenta</th>
+                                        <th>Estado</th>
+                                        <th>Actividad</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usuariosBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Auditoría -->
+                    <div id="tab-auditoria" class="tab-content p-4">
+                        <div id="auditoria-placeholder" class="text-center py-5">
+                            <div class="empty-state-icon mb-3">
+                                <i class="fas fa-shield-halved fa-3x text-muted opacity-25"></i>
+                            </div>
+                            <h5>Registro de Seguridad</h5>
+                            <p class="text-muted">Cargando eventos de trazabilidad...</p>
+                        </div>
+                        <div id="global-security-log" class="audit-timeline"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Usuario -->
+    <div class="modal fade" id="modalUsuario" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius:15px;">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center">
+                        <div id="view-avatar" class="me-3 d-flex align-items-center justify-content-center fw-bold" style="width:50px; height:50px; background:var(--accent-soft); color:var(--accent-primary); border-radius:12px; font-size:1.5rem;">+</div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="modalUsuarioTitle">Ficha de Colaborador</h5>
+                            <p class="text-muted small mb-0" id="modalUsuarioSubtitle">Gestión de perfil y permisos</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formUsuario">
+                        <input type="hidden" id="usr-id">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Nombre Completo</label>
+                                <input type="text" id="usr-nombre" class="form-control" required placeholder="Juan Pérez">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Rol</label>
+                                <select id="usr-rol" class="form-select">
+                                    <option value="empleado">Empleado</option>
+                                    <option value="gerente">Gerente</option>
+                                    <option value="admin">Administrador</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Usuario (Login)</label>
+                                <input type="text" id="usr-username" class="form-control" required placeholder="juan.perez">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Correo</label>
+                                <input type="email" id="usr-email" class="form-control" placeholder="juan@sk.com">
+                            </div>
+                            <div class="col-md-6" id="sec-password">
+                                <label class="form-label small fw-bold">Contraseña</label>
+                                <input type="password" id="usr-password" class="form-control" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center mt-auto pb-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="usr-forzar">
+                                    <label class="form-check-label small fw-bold ms-2">Forzar cambio de clave</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-3">
+                                <label class="form-label small fw-bold">Días Libres (Descanso)</label>
+                                <div id="dias-libres-container" class="d-flex flex-wrap gap-2">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="dia-1" value="1">
+                                        <label class="form-check-label small" for="dia-1">Lun</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="dia-2" value="2">
+                                        <label class="form-check-label small" for="dia-2">Mar</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="dia-3" value="3">
+                                        <label class="form-check-label small" for="dia-3">Mié</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="dia-4" value="4">
+                                        <label class="form-check-label small" for="dia-4">Jue</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="dia-5" value="5">
+                                        <label class="form-check-label small" for="dia-5">Vie</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="dia-6" value="6">
+                                        <label class="form-check-label small" for="dia-6">Sáb</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="dia-0" value="0">
+                                        <label class="form-check-label small" for="dia-0">Dom</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Actions Section -->
+                        <div id="sec-auditoria-ficha" class="mt-4 pt-3 border-top" style="display:none;">
+                            <h6 class="fw-bold mb-3 small text-uppercase opacity-75">Acciones de Seguridad</h6>
+                            <div class="d-flex gap-2">
+                                <button type="button" id="btnToggleBloqueo" class="btn btn-outline-danger btn-sm px-3" onclick="toggleBloqueo()">
+                                    <i class="fas fa-lock me-1"></i> Bloquear
+                                </button>
+                                <button type="button" id="btnToggleActivo" class="btn btn-outline-secondary btn-sm px-3" onclick="toggleActivo()">
+                                    <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-sm px-3" onclick="resetPassword()">
+                                    <i class="fas fa-key me-1"></i> Reset Clave
+                                </button>
+                            </div>
+                            
+                            <div id="auditoria-container" class="mt-3 small text-muted">
+                                <!-- User specific audit will be injected here if needed -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 p-3">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary px-4 fw-bold" onclick="guardarUsuario()">Procesar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/lib/jquery/jquery.min.js"></script>
+    <script src="/static/lib/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/static/lib/datatables/jquery.dataTables.min.js"></script>
+    <script src="/static/lib/datatables/dataTables.bootstrap5.min.js"></script>
+    <script src="/static/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    
+    <script>
+        // Sidebar Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const menuIcon = menuToggle.querySelector('i');
+
+        function updateIcon() {
+            const isHidden = document.body.classList.contains('sidebar-hidden');
+            menuIcon.className = isHidden ? 'fas fa-bars' : 'fas fa-bars-staggered';
+        }
+
+        menuToggle.addEventListener('click', () => {
+            document.body.classList.toggle('sidebar-hidden');
+            updateIcon();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if (e.key.toLowerCase() === 's') {
+                document.body.classList.toggle('sidebar-hidden');
+                updateIcon();
+            }
+        });
+
+        updateIcon();
+
+        // Reloj Dinámico
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('es-ES', { 
+                hour: 'numeric', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: true 
+            });
+            const timeDisplay = document.getElementById('timeDisplay');
+            if (timeDisplay) {
+                timeDisplay.querySelector('span').textContent = timeStr;
+            }
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+    <script src="/usuarios/static/usuarios.js"></script>
+</body>
+</html>

@@ -1,0 +1,455 @@
+{% extends "admin/home.html" %}
+
+{% block title %}Calculadora de Formalidad — LN Systems{% endblock %}
+
+{% block styles %}
+<style>
+    .calc-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .glass-card {
+        background: var(--ln-card-bg);
+        border: 1px solid var(--ln-border);
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+
+    .calc-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .calc-header h1 {
+        font-weight: 800;
+        color: var(--ln-text);
+        letter-spacing: -1px;
+    }
+
+    .calc-header p {
+        color: var(--ln-text-muted);
+        font-size: 1.1rem;
+    }
+
+    .input-group-custom {
+        margin-bottom: 2rem;
+    }
+
+    .input-group-custom label {
+        display: block;
+        margin-bottom: 0.8rem;
+        font-weight: 600;
+        color: var(--ln-text);
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-wrapper i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--ln-primary);
+    }
+
+    .custom-input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border-radius: 1rem;
+        border: 2px solid var(--ln-border);
+        background: var(--ln-bg);
+        color: var(--ln-text);
+        font-size: 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .custom-input:focus {
+        border-color: var(--ln-primary);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        outline: none;
+    }
+
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 3rem;
+    }
+
+    .result-pill {
+        padding: 1.5rem;
+        border-radius: 1.2rem;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .result-pill:hover {
+        transform: translateY(-5px);
+    }
+
+    .pill-informal {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .pill-formal {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .pill-saving {
+        background: linear-gradient(135deg, var(--ln-primary), #4f46e5);
+        color: white;
+        grid-column: span 2;
+    }
+
+    .pill-label {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+        display: block;
+        opacity: 0.8;
+    }
+
+    .pill-value {
+        font-size: 2rem;
+        font-weight: 800;
+        display: block;
+    }
+
+    .cta-section {
+        margin-top: 3rem;
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid var(--ln-border);
+    }
+
+    .btn-upgrade {
+        background: var(--ln-primary);
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 1rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-upgrade:hover {
+        background: #2563eb;
+        transform: scale(1.05);
+        color: white;
+    }
+
+    .plan-mini-card {
+        background: var(--ln-bg);
+        border: 1px solid var(--ln-border);
+        border-radius: 1rem;
+        padding: 1.2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 1rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .plan-mini-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--ln-primary);
+        background: white;
+        box-shadow: 0 10px 25px rgba(var(--ln-primary-rgb), 0.15);
+    }
+
+    .plan-mini-card i {
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
+        display: block;
+    }
+
+    .plan-mini-card h4 {
+        font-weight: 800;
+        margin-bottom: 0.2rem;
+        font-size: 1rem;
+        color: var(--ln-text);
+    }
+
+    .plan-mini-card small {
+        color: var(--ln-text-muted);
+        font-size: 0.75rem;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 600px) {
+        .results-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .pill-saving {
+            grid-column: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="calc-container">
+    <div class="glass-card">
+        <div class="calc-header">
+            <div class="mb-3">
+                <i class="fas fa-calculator-alt fa-3x text-primary"></i>
+            </div>
+            <h1>Calculadora de Formalidad</h1>
+            <p>Descubre cuánto estás perdiendo por no estar formalizado con LN Systems.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="input-group-custom">
+                    <label>Ventas Mensuales (RD$)</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-dollar-sign"></i>
+                        <input type="number" id="ventasInput" class="custom-input" placeholder="0.00" value="100000">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group-custom">
+                    <label>Contabilidad/Gestoría (RD$)</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user-tie"></i>
+                        <input type="number" id="contabilidadInput" class="custom-input" placeholder="0.00"
+                            value="4000">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group-custom">
+                    <label>Papelería y Otros (RD$)</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-print"></i>
+                        <input type="number" id="papeleriaInput" class="custom-input" placeholder="0.00" value="2500">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group-custom">
+                    <label>Horas Diarias en Papeleo (H)</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-clock"></i>
+                        <input type="number" id="horasPapeleoInput" class="custom-input" placeholder="1-3" value="2">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group-custom">
+                    <label>Errores y Merma Est. (%)</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-percentage"></i>
+                        <input type="number" id="erroresInput" class="custom-input" placeholder="1-3" value="2">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-grid">
+            <div class="result-pill pill-informal">
+                <span class="pill-label">Costo Informal</span>
+                <span class="pill-value" id="costoInformal">RD$ 0</span>
+                <small class="text-danger" id="detalleInformal">Multas + Papeleo + Errores</small>
+            </div>
+            <div class="result-pill pill-formal">
+                <span class="pill-label">Costo con LN Core</span>
+                <span class="pill-value" id="costoFormal">RD$ 5,000</span>
+                <small class="text-success">Inmune a errores + Trazabilidad</small>
+            </div>
+            <div class="result-pill pill-saving">
+                <span class="pill-label">Tu Eficiencia Ganada (Mensual)</span>
+                <span class="pill-value" id="ahorroTotal">RD$ 0</span>
+                <p class="mt-2 mb-0" id="mensajeAhorro">¡Eso es más dinero en tu bolsillo cada mes!</p>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h3>¿Listo para automatizar y ahorrar?</h3>
+            <p class="text-muted mb-4">El Plan CORE automatiza todo este proceso y reduce tu carga administrativa por
+                solo RD$ 5,000/mes.</p>
+            {% if not SETUP_MODE %}
+            <a href="{{ url_for('licencia.index') }}" class="btn-upgrade">
+                ¡Empieza el Plan CORE ahora! <i class="fas fa-rocket"></i>
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="mt-5 pt-4 border-top">
+            <div class="text-center mb-4">
+                <h4 class="fw-bold mb-1">Niveles de Infraestructura LN</h4>
+                <p class="small text-muted">Haz clic en cada plan para ver cómo escala tu negocio.</p>
+            </div>
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="plan-mini-card" onclick="showPlanDetail('start')">
+                        <i class="fas fa-store text-primary"></i>
+                        <h4>START</h4>
+                        <small>Gestión Base</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="plan-mini-card" onclick="showPlanDetail('core')">
+                        <i class="fas fa-shield-halved text-success"></i>
+                        <h4>CORE</h4>
+                        <small>Blindaje Fiscal</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="plan-mini-card" onclick="showPlanDetail('pro')">
+                        <i class="fas fa-chart-line text-warning"></i>
+                        <h4>PRO</h4>
+                        <small>Inteligencia</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="plan-mini-card" onclick="showPlanDetail('enterprise')">
+                        <i class="fas fa-network-wired text-info"></i>
+                        <h4>ENTERPRISE</h4>
+                        <small>Red Satelital</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    const inputs = [
+        'ventasInput', 'contabilidadInput', 'papeleriaInput',
+        'horasPapeleoInput', 'erroresInput'
+    ].map(id => document.getElementById(id));
+
+    const divCostoInformal = document.getElementById('costoInformal');
+    const divAhorroTotal = document.getElementById('ahorroTotal');
+    const mensajeAhorro = document.getElementById('mensajeAhorro');
+
+    function formatCurrency(val) {
+        return 'RD$ ' + new Intl.NumberFormat('en-US').format(Math.round(val));
+    }
+
+    function calculate() {
+        const ventas = parseFloat(document.getElementById('ventasInput').value) || 0;
+        const contabilidad = parseFloat(document.getElementById('contabilidadInput').value) || 0;
+        const papeleria = parseFloat(document.getElementById('papeleriaInput').value) || 0;
+        const horasPapeleo = parseFloat(document.getElementById('horasPapeleoInput').value) || 0;
+        const pctErrores = parseFloat(document.getElementById('erroresInput').value) || 0;
+
+        // VALOR DEL TIEMPO (RD$ 250/hora estimado de un gestor/dueño)
+        const valorTiempoMensual = horasPapeleo * 22 * 250;
+
+        // COSTO POR ERRORES HUMANOS Y MERMA (Sin sistema)
+        const costoErrores = ventas * (pctErrores / 100);
+
+        // RIESGO FISCAL (Simulado como 1% de las ventas por falta de NCF)
+        const riesgoFiscal = ventas * 0.01;
+
+        const costoInformal = contabilidad + papeleria + valorTiempoMensual + costoErrores + riesgoFiscal;
+
+        // Costo CORE es fijo (5,000)
+        const costoFormal = 5000;
+
+        const ahorro = costoInformal - costoFormal;
+
+        divCostoInformal.innerText = formatCurrency(costoInformal);
+        divAhorroTotal.innerText = formatCurrency(Math.max(0, ahorro));
+
+        if (ahorro <= 0) {
+            divAhorroTotal.closest('.pill-saving').style.background = '#6b7280';
+            divAhorroTotal.innerText = "¡Plan Core es Inversión!";
+            mensajeAhorro.innerText = "Elimina el estrés administrativo hoy mismo.";
+        } else {
+            divAhorroTotal.closest('.pill-saving').style.background = 'linear-gradient(135deg, var(--ln-primary), #4f46e5)';
+            mensajeAhorro.innerText = "¡Eso es más dinero en tu bolsillo cada mes!";
+        }
+    }
+
+    inputs.forEach(input => input.addEventListener('input', calculate));
+
+    function showPlanDetail(plan) {
+        const details = {
+            'start': {
+                title: 'Plan START — Gestión Base',
+                icon: 'fa-store',
+                color: '#3b82f6',
+                features: ['Facturación POS ultra rápida', 'Control de Caja y Arqueos', 'Inventario Básico', 'Gestión de Clientes y Créditos']
+            },
+            'core': {
+                title: 'Plan CORE — Blindaje Fiscal',
+                icon: 'fa-shield-halved',
+                color: '#10b981',
+                features: ['Todo en START +', 'Reportes Fiscales (606, 607, 608)', 'Validación de NCF DGII', 'Automatización de Tareas Contables', 'Blindaje contra errores de cumplimiento']
+            },
+            'pro': {
+                title: 'Plan PRO — Inteligencia Financiera',
+                icon: 'fa-chart-line',
+                color: '#f59e0b',
+                features: ['Todo en CORE +', 'Auditoría avanzada de movimientos', 'Dashboard de KPIs y Rentabilidad', 'Gestión de cuentas por pagar Pro', 'Trazabilidad y Seguridad reforzada']
+            },
+            'enterprise': {
+                title: 'Plan ENTERPRISE — Red Satelital',
+                icon: 'fa-network-wired',
+                color: '#06b6d4',
+                features: ['Todo en PRO +', 'Control de Nodos Satélites', 'Consolidación financiera de red', 'Actualizaciones remotas masivas', 'Soporte Institucional 24/7']
+            }
+        };
+
+        const data = details[plan];
+        let html = '<ul style="text-align: left; margin-top: 15px;">';
+        data.features.forEach(f => {
+            html += `<li style="margin-bottom: 8px;"><i class="fas fa-check-circle" style="color:${data.color}; margin-right: 10px;"></i> ${f}</li>`;
+        });
+        html += '</ul>';
+
+        Swal.fire({
+            title: `<span style="color:${data.color}">${data.title}</span>`,
+            html: html,
+            iconHtml: `<i class="fas ${data.icon}" style="color:${data.color}"></i>`,
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: data.color,
+            customClass: {
+                popup: 'glass-card'
+            }
+        });
+    }
+
+    // Inicializar
+    calculate();
+</script>
+{% endblock %}
