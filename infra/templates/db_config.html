@@ -1,230 +1,352 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurar Base de Datos â€” Next Design</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Next Design — Inicialización del Sistema</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/lib/fontawesome/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-dark: #09090b;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --font-main: 'Outfit', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-main); }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-            min-height: 100vh; display: flex; align-items: center; justify-content: center;
-            color: #e2e8f0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
         }
-        .setup-container {
-            width: 100%; max-width: 520px; padding: 2rem;
+
+        /* Abstract Background Elements */
+        .bg-orb-1 {
+            position: absolute; top: -10%; left: -10%; width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            border-radius: 50%; filter: blur(60px); z-index: 0;
         }
-        .setup-header { text-align: center; margin-bottom: 2rem; }
-        .setup-icon {
-            width: 60px; height: 60px; border-radius: 16px;
-            background: linear-gradient(135deg, #38bdf8, #6366f1);
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 1rem; font-size: 1.5rem; color: #fff;
-            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
+        .bg-orb-2 {
+            position: absolute; bottom: -20%; right: -10%; width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            border-radius: 50%; filter: blur(80px); z-index: 0;
         }
-        .setup-header h1 { font-size: 1.5rem; font-weight: 700; color: #f1f5f9; }
-        .setup-header p { font-size: 0.88rem; color: #94a3b8; margin-top: 0.4rem; }
-        .setup-card {
-            background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(16px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+
+        .wizard-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 650px;
+            padding: 2rem;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .form-group { margin-bottom: 1.25rem; }
-        .form-label {
-            display: block; font-size: 0.8rem; font-weight: 600;
-            color: #94a3b8; margin-bottom: 0.4rem; text-transform: uppercase;
-            letter-spacing: 0.5px;
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .form-input {
-            width: 100%; padding: 0.6rem 0.85rem; background: rgba(15, 23, 42, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px;
-            color: #f1f5f9; font-size: 0.9rem; font-family: inherit;
-            transition: all 0.2s;
-        }
-        .form-input:focus {
-            outline: none; border-color: #38bdf8;
+
+        .card-glass {
             background: rgba(15, 23, 42, 0.6);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
         }
-        .form-input::placeholder { color: #475569; }
-        .form-row { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
-        .btn-group { display: flex; gap: 0.75rem; margin-top: 1.75rem; }
+
+        .card-glass::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #3b82f6);
+            background-size: 200% auto;
+            animation: gradientMove 3s linear infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .header { text-align: center; margin-bottom: 2.5rem; }
+        .header-icon {
+            width: 70px; height: 70px; margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, rgba(30,41,59,0.8), rgba(15,23,42,0.9));
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; color: #60a5fa;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .header-icon i { position: relative; z-index: 2; }
+        .header-icon::after {
+            content:''; position: absolute; inset: -2px; border-radius: 22px;
+            background: linear-gradient(135deg, #3b82f6, transparent);
+            z-index: 1; opacity: 0.5;
+        }
+
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+        .header p { color: var(--text-muted); font-size: 1.05rem; font-weight: 300; line-height: 1.5;}
+
+        .info-panel {
+            background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 2rem;
+            display: flex; gap: 1rem; align-items: flex-start;
+        }
+        .info-panel i { color: #60a5fa; font-size: 1.25rem; margin-top: 0.25rem; }
+        .info-panel div { font-size: 0.85rem; color: #cbd5e1; line-height: 1.6; }
+        .info-panel strong { color: white; }
+
+        .form-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .input-group.full { grid-column: 1 / -1; }
+        
+        .input-group label { font-size: 0.85rem; font-weight: 500; color: #e2e8f0; margin-left: 0.2rem; }
+        
+        .input-wrapper {
+            position: relative;
+            background: rgba(0,0,0,0.2); border: 1px solid var(--border-light);
+            border-radius: 12px; display: flex; align-items: center; padding: 0 1rem;
+            transition: all 0.3s ease; overflow: hidden;
+        }
+        .input-wrapper:focus-within {
+            border-color: var(--primary); background: rgba(59, 130, 246, 0.05);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-wrapper i { color: var(--text-muted); font-size: 0.95rem; width: 24px; }
+        .input-wrapper:focus-within i { color: var(--primary); }
+        
+        .input-wrapper input {
+            background: transparent; border: none; color: white;
+            padding: 0.9rem 0.5rem; width: 100%; font-size: 0.95rem; outline: none;
+        }
+
+        /* Action Buttons */
+        .actions { display: flex; gap: 1rem; }
         .btn {
-            flex: 1; padding: 0.55rem 0.9rem; border: none; border-radius: 6px;
-            font-weight: 600; font-size: 0.82rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-            transition: all 0.2s; font-family: inherit;
-            text-transform: uppercase; letter-spacing: 0.3px;
+            flex: 1; padding: 1rem; border: none; border-radius: 12px;
+            font-size: 0.95rem; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
         }
+        
         .btn-test {
-            background: rgba(255, 255, 255, 0.05); color: #cbd5e1;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.05); color: white;
+            border: 1px solid var(--border-light);
         }
-        .btn-test:hover { background: rgba(148, 163, 184, 0.25); }
+        .btn-test:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        
         .btn-save {
-            background: linear-gradient(135deg, #0ea5e9, #6366f1); color: #fff;
+            background: linear-gradient(135deg, #3b82f6, #4f46e5); color: white;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
         }
-        .btn-save:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(59, 130, 246, 0.4); }
+        .btn:active { transform: translateY(1px); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
 
-        /* Status */
-        .status-bar {
-            margin-top: 1.25rem; padding: 0.85rem 1rem; border-radius: 8px;
-            font-size: 0.88rem; font-weight: 500; display: none;
-            align-items: center; gap: 0.5rem;
+        /* Status feedback */
+        .status-box {
+            margin-top: 1.5rem; padding: 1rem; border-radius: 10px;
+            font-size: 0.9rem; font-weight: 500; display: none; align-items: center; gap: 0.75rem;
+            animation: fadeIn 0.4s ease;
         }
-        .status-bar.success { display: flex; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
-        .status-bar.error { display: flex; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
-        .status-bar.info { display: flex; background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.2); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .status-success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #34d399; }
+        .status-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; }
+        .status-info { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: #60a5fa; }
 
-        /* Already configured badge */
-        .configured-badge {
-            display: inline-flex; align-items: center; gap: 0.4rem;
-            background: rgba(16, 185, 129, 0.15); color: #34d399;
-            padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.78rem;
-            font-weight: 600; margin-top: 0.5rem;
-        }
+        .status-icon { font-size: 1.25rem; }
 
-        /* Link */
-        .skip-link {
-            text-align: center; margin-top: 1.5rem;
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .actions { flex-direction: column-reverse; }
+            .card-glass { padding: 1.5rem; }
         }
-        .skip-link a {
-            color: #64748b; font-size: 0.85rem; text-decoration: none;
-            transition: color 0.2s;
-        }
-        .skip-link a:hover { color: #0ea5e9; }
     </style>
 </head>
 <body>
-    <div class="setup-container">
-        <div class="setup-header">
-            <div class="setup-icon"><i class="fas fa-database"></i></div>
-            <h1>Configurar Base de Datos</h1>
-            <p>Conecta Next Design a tu servidor MariaDB / MySQL</p>
+    <div class="bg-orb-1"></div>
+    <div class="bg-orb-2"></div>
+
+    <div class="wizard-container">
+        <div class="card-glass">
+            <div class="header">
+                <div class="header-icon"><i class="fas fa-server"></i></div>
+                <h1>Asistente de Inicialización</h1>
+                <p>Conecta el núcleo del sistema a tu infraestructura de datos.</p>
+            </div>
+
+            <div class="info-panel">
+                <i class="fas fa-magic"></i>
+                <div>
+                    <strong>Instalación Automática:</strong> Al guardar la configuración, el sistema verificará tu servidor. Si la base de datos o las tablas no existen, <strong>las creará mágicamente</strong>, incluyendo tu usuario inicial <code>admin</code> con contraseña <code>admin</code>.
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Servidor / Host</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-globe"></i>
+                        <input type="text" id="db-host" value="{{ config.host }}" placeholder="Ej. localhost">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Puerto de Conexión</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-network-wired"></i>
+                        <input type="number" id="db-port" value="{{ config.port }}" placeholder="3306">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Nombre de Usuario</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user-astronaut"></i>
+                        <input type="text" id="db-user" value="{{ config.user }}" placeholder="Ej. root">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-key"></i>
+                        <input type="password" id="db-password" value="{{ config.password }}" placeholder="Tu contraseña seguro">
+                    </div>
+                </div>
+                <div class="input-group full">
+                    <label>Nombre de la Base de Datos</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-database"></i>
+                        <input type="text" id="db-name" value="{{ config.database }}" placeholder="Ej. Next_Design">
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-test" id="btnTest">
+                    <i class="fas fa-vial"></i> <span>Probar Enlace</span>
+                </button>
+                <button class="btn btn-save" id="btnSave">
+                    <i class="fas fa-rocket"></i> <span>Instalar y Conectar</span>
+                </button>
+            </div>
+
+            <div id="statusBox" class="status-box">
+                <i id="statusIcon" class="status-icon"></i>
+                <div id="statusMsg"></div>
+            </div>
+            
             {% if is_configured %}
-            <div class="configured-badge"><i class="fas fa-check-circle"></i> Conexión configurada</div>
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <a href="/login" style="color: var(--text-muted); font-size: 0.85rem; text-decoration: none; border-bottom: 1px dashed var(--text-muted); padding-bottom: 2px; transition: color 0.2s;">
+                    Cancelar y volver al acceso principal
+                </a>
+            </div>
             {% endif %}
         </div>
-
-        <div class="setup-card">
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Host / Servidor</label>
-                    <input type="text" class="form-input" id="db-host" value="{{ config.host }}" placeholder="localhost">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Puerto</label>
-                    <input type="number" class="form-input" id="db-port" value="{{ config.port }}" placeholder="3306">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Usuario</label>
-                <input type="text" class="form-input" id="db-user" value="{{ config.user }}" placeholder="root">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Contraseña</label>
-                <input type="password" class="form-input" id="db-password" value="{{ config.password }}" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Nombre de la Base de Datos</label>
-                <input type="text" class="form-input" id="db-name" value="{{ config.database }}" placeholder="Next Design">
-            </div>
-
-            <div class="btn-group">
-                <button class="btn btn-test" id="btnTest"><i class="fas fa-plug"></i> Probar</button>
-                <button class="btn btn-save" id="btnSave"><i class="fas fa-save"></i> Guardar y Conectar</button>
-            </div>
-
-            <div class="status-bar" id="statusBar">
-                <i id="statusIcon"></i>
-                <span id="statusMsg"></span>
-            </div>
-        </div>
-
-        {% if is_configured %}
-        <div class="skip-link">
-            <a href="/home"><i class="fas fa-arrow-left me-1"></i> Volver al Dashboard</a>
-        </div>
-        {% endif %}
     </div>
 
     <script>
-    function getFormData() {
-        return {
-            host: document.getElementById('db-host').value,
-            port: parseInt(document.getElementById('db-port').value) || 3306,
-            user: document.getElementById('db-user').value,
-            password: document.getElementById('db-password').value,
-            database: document.getElementById('db-name').value
-        };
-    }
-
-    function showStatus(type, icon, msg) {
-        const bar = document.getElementById('statusBar');
-        bar.className = 'status-bar ' + type;
-        document.getElementById('statusIcon').className = icon;
-        document.getElementById('statusMsg').textContent = msg;
-    }
-
-    // Test Connection
-    document.getElementById('btnTest').addEventListener('click', async function() {
-        const btn = this, orig = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Conectando...';
-        btn.disabled = true;
-
-        try {
-            const res = await fetch('/infra/db/test', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(getFormData())
-            });
-            const data = await res.json();
-            
-            if (data.ok) {
-                showStatus('success', 'fas fa-check-circle', data.msg);
-            } else {
-                showStatus('error', 'fas fa-times-circle', data.error);
-            }
-        } catch (e) {
-            showStatus('error', 'fas fa-times-circle', 'Error de red: ' + e.message);
+        function getFormData() {
+            return {
+                host: document.getElementById('db-host').value.trim(),
+                port: parseInt(document.getElementById('db-port').value.trim()) || 3306,
+                user: document.getElementById('db-user').value.trim(),
+                password: document.getElementById('db-password').value,
+                database: document.getElementById('db-name').value.trim()
+            };
         }
-        btn.innerHTML = orig; btn.disabled = false;
-    });
 
-    // Save Config
-    document.getElementById('btnSave').addEventListener('click', async function() {
-        const btn = this, orig = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Guardando...';
-        btn.disabled = true;
-
-        try {
-            const res = await fetch('/infra/db/save', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(getFormData())
-            });
-            const data = await res.json();
-            
-            if (data.ok) {
-                showStatus('success', 'fas fa-check-circle', data.msg);
-                setTimeout(() => { window.location.href = '/home'; }, 1500);
-            } else {
-                showStatus('error', 'fas fa-times-circle', data.error);
-                btn.innerHTML = orig; btn.disabled = false;
-            }
-        } catch (e) {
-            showStatus('error', 'fas fa-times-circle', 'Error de red: ' + e.message);
-            btn.innerHTML = orig; btn.disabled = false;
+        function showStatus(type, icon, title, msg) {
+            const box = document.getElementById('statusBox');
+            box.className = 'status-box status-' + type;
+            box.style.display = 'flex';
+            document.getElementById('statusIcon').className = 'status-icon ' + icon;
+            document.getElementById('statusMsg').innerHTML = `<strong>${title}</strong><br><span style="font-size: 0.8rem; opacity: 0.8;">${msg}</span>`;
         }
-    });
+
+        const btnTest = document.getElementById('btnTest');
+        const btnSave = document.getElementById('btnSave');
+
+        // Probar Conexión
+        btnTest.addEventListener('click', async () => {
+            const origHTML = btnTest.innerHTML;
+            btnTest.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Probando señales...</span>';
+            btnTest.disabled = true;
+            btnSave.disabled = true;
+
+            try {
+                const res = await fetch('/infra/db/test', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(getFormData())
+                });
+                const data = await res.json();
+                
+                if (data.ok) {
+                    showStatus('success', 'fas fa-check-circle', 'Canal Establecido', data.msg);
+                } else {
+                    showStatus('error', 'fas fa-exclamation-triangle', 'Error de Comunicación', data.error);
+                }
+            } catch (e) {
+                showStatus('error', 'fas fa-wifi', 'Fallo Crítico', 'No se pudo contactar al servidor: ' + e.message);
+            } finally {
+                btnTest.innerHTML = origHTML;
+                btnTest.disabled = false;
+                btnSave.disabled = false;
+            }
+        });
+
+        // Guardar e Instalar
+        btnSave.addEventListener('click', async () => {
+            const origHTML = btnSave.innerHTML;
+            btnSave.innerHTML = '<i class="fas fa-cogs fa-spin"></i> <span>Construyendo Sistema...</span>';
+            btnSave.disabled = true;
+            btnTest.disabled = true;
+
+            try {
+                const res = await fetch('/infra/db/save', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(getFormData())
+                });
+                const data = await res.json();
+                
+                if (data.ok) {
+                    showStatus('success', 'fas fa-rocket', '¡Secuencia de Inicialización Completada!', data.msg + ' Preparando módulos...');
+                    setTimeout(() => { window.location.href = '/login'; }, 2000);
+                } else {
+                    showStatus('error', 'fas fa-radiation', 'Fallo en la Construcción', data.error);
+                    btnSave.innerHTML = origHTML;
+                    btnSave.disabled = false;
+                    btnTest.disabled = false;
+                }
+            } catch (e) {
+                showStatus('error', 'fas fa-bug', 'Error Crítico', 'Ha ocurrido un error inesperado al instalar: ' + e.message);
+                btnSave.innerHTML = origHTML;
+                btnSave.disabled = false;
+                btnTest.disabled = false;
+            }
+        });
     </script>
 </body>
 </html>
-
