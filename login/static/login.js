@@ -182,13 +182,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Micro-interacciones de Input
-    const inputs = document.querySelectorAll('.input-container input');
+    const inputs = document.querySelectorAll('.input-wrapper input');
     inputs.forEach(input => {
         input.addEventListener('focus', () => {
-            input.parentElement.closest('.form-group').style.opacity = '1';
+            const group = input.parentElement.closest('.input-group-premium');
+            if (group) group.style.opacity = '1';
         });
         input.addEventListener('blur', () => {
-            if (!input.value) input.parentElement.closest('.form-group').style.opacity = '0.8';
+            const group = input.parentElement.closest('.input-group-premium');
+            if (!input.value && group) group.style.opacity = '0.85';
         });
     });
 

@@ -1,96 +1,142 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Next Design â€” Iniciar Sesión</title>
+    <title>Next Design — Acceso Exclusivo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/lib/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/login/static/login.css">
 </head>
-
 <body>
-    <div class="auth-wrapper">
-        <div class="auth-background" id="auth-bg"></div>
-
-        <div class="auth-card">
-            <div class="auth-header">
-                <div class="enterprise-logo">
-                    <i class="fas fa-store"></i>
-                    <span>Next Design</span>
+    <div class="split-layout">
+        <!-- Panel Izquierdo: Formulario -->
+        <div class="auth-section">
+            <div class="auth-card-premium">
+                <div class="brand-header">
+                    <div class="logo-orb">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <h1>Next Design</h1>
+                    <p>Elevando la gestión empresarial</p>
                 </div>
-                <div class="auth-subtitle">Sistema de Gestión</div>
-            </div>
 
-            <div class="auth-body">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                {% for category, message in messages %}
-                <div class="auth-alert {{ category }}" style="display:block; margin-bottom:1rem;">
-                    {{ message }}
+                <div id="flash-messages">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="premium-alert {{ category }}">
+                            <i class="fas fa-info-circle"></i> {{ message }}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% endwith %}
                 </div>
-                {% endfor %}
-                {% endif %}
-                {% endwith %}
 
-                <h2 class="auth-title">Iniciar Sesión</h2>
-                <p class="auth-description">Ingresa tus credenciales para acceder al sistema.</p>
-
-                <form id="login-form">
-                    <div class="form-group">
+                <form id="login-form" class="premium-form">
+                    <div class="input-group-premium">
                         <label for="username">Usuario</label>
-                        <div class="input-container">
-                            <i class="fas fa-user-shield"></i>
-                            <input type="text" id="username" name="username" placeholder="p. ej. admin" required>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user-shield icon-left"></i>
+                            <input type="text" id="username" name="username" placeholder="Ingresa tu usuario" required autocomplete="off">
+                            <div class="input-highlight"></div>
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="input-group-premium">
                         <label for="password">Contraseña</label>
-                        <div class="input-container">
-                            <i class="fas fa-key"></i>
-                            <input type="password" id="password" name="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock icon-left"></i>
+                            <input type="password" id="password" name="password" placeholder="••••••••" required>
+                            <i class="fas fa-eye-slash toggle-password" id="toggle-pwd"></i>
+                            <div class="input-highlight"></div>
                         </div>
                     </div>
 
-                    <div class="form-options">
-                        <label class="custom-checkbox">
+                    <div class="form-actions">
+                        <label class="premium-checkbox">
                             <input type="checkbox" id="remember">
-                            <span class="checkmark"></span>
-                            Recuerda mi cuenta
+                            <div class="checkbox-box">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span>Recordarme</span>
                         </label>
+                        <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
                     </div>
 
-                    <button type="submit" class="btn-auth" id="btn-login">
-                        <span>Ingresar al Sistema</span>
-                        <i class="fas fa-chevron-right"></i>
+                    <button type="submit" class="btn-premium-login" id="btn-login">
+                        <span class="btn-text">Ingresar al Sistema</span>
+                        <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
                     </button>
+                    
+                    <div id="error-message" class="premium-alert error" style="display: none;"></div>
                 </form>
 
-                <div id="error-message" class="auth-alert error"></div>
-
-                <div class="suggested-accounts" id="saved-sessions">
-                    <div class="divider">
-                        <span>Cuentas Recientes</span>
-                    </div>
-                    <div class="accounts-grid" id="saved-users-list"></div>
+                <!-- Cuentas Guardadas -->
+                <div class="saved-accounts-premium" id="saved-sessions" style="display: none;">
+                    <div class="divider-premium"><span>Cuentas Recientes</span></div>
+                    <div class="accounts-carousel" id="saved-users-list"></div>
                 </div>
             </div>
-
+            
             <div class="auth-footer">
                 <div class="footer-status">
-                    <span class="status-dot"></span>
-                    Sistema Operativo
+                    <span class="status-dot"></span> Sistemas Operativos en Línea
                 </div>
-                <div class="footer-copyright">
-                    &copy; 2026 Next Design Â· v1.0
+                <p>&copy; 2026 Next Design OS. Todos los derechos reservados.</p>
+            </div>
+        </div>
+
+        <!-- Panel Derecho: Visual Background -->
+        <div class="visual-section">
+            <div class="visual-overlay"></div>
+            <div class="visual-content">
+                <div class="glass-badge">
+                    <i class="fas fa-shield-alt"></i> Seguridad Nivel Enterprise
                 </div>
+                <h2>El futuro de<br>tu negocio,<br><span>hoy.</span></h2>
+                <p>Una plataforma hiper-integrada para controlar cada aspecto de tus operaciones con inteligencia, velocidad y precisión absoluta.</p>
             </div>
         </div>
     </div>
 
+    <!-- Modal Recuperación -->
+    <div id="recovery-modal" class="recovery-modal" style="display: none;">
+        <div class="recovery-card">
+            <span class="btn-close-recovery" id="btn-close-recovery">&times;</span>
+            <div class="recovery-icon"><i class="fas fa-envelope-open-text"></i></div>
+            <h3>Recuperar Acceso</h3>
+            <p>Ingresa tu correo asociado a la cuenta empresarial.</p>
+            <form id="recovery-form">
+                <div class="input-wrapper">
+                    <i class="fas fa-at icon-left"></i>
+                    <input type="email" id="recovery-email" placeholder="correo@ejemplo.com" required>
+                </div>
+                <button type="submit" class="btn-premium-login" id="btn-send-recovery">
+                    <span class="btn-text">Enviar Enlace</span>
+                    <span class="btn-icon"><i class="fas fa-paper-plane"></i></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script src="/static/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    <script>
+        // Lógica visual específica del nuevo diseño
+        document.addEventListener('DOMContentLoaded', () => {
+            const togglePwd = document.getElementById('toggle-pwd');
+            const pwdInput = document.getElementById('password');
+
+            if (togglePwd && pwdInput) {
+                togglePwd.addEventListener('click', () => {
+                    const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    pwdInput.setAttribute('type', type);
+                    togglePwd.classList.toggle('fa-eye-slash');
+                    togglePwd.classList.toggle('fa-eye');
+                });
+            }
+        });
+    </script>
     <script src="/login/static/login.js"></script>
 </body>
-
 </html>
