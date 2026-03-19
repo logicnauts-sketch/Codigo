@@ -1,0 +1,6 @@
+flask
+pymysql
+werkzeug
+cryptography
+Pillow
+Flask-Session
