@@ -49,7 +49,7 @@ fi
 # Lógica inteligente para instalar paquetes solo cuando sea necesario
 if git diff --name-only "$OLD_COMMIT" "$NEW_COMMIT" | grep -q 'requirements.txt' || [ ! -f "$LAST_DEPLOY_FILE" ]; then
     echo "⬇️  Se detectaron cambios en requirements.txt. Instalando nuevas librerías..."
-    pip install -r requirements.txt
+    pip install -q --disable-pip-version-check -r requirements.txt
 else
     echo "⚡ No hay nuevas dependencias. Omitiendo instalación de pip (Despliegue ultra-rápido)."
 fi
