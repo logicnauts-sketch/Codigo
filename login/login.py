@@ -1,4 +1,4 @@
-﻿"""
+"""
 Next Design - Módulo de Login (Standalone)
 ==========================================
 Versión simplificada sin dependencias de ln_engine/ln_agent.
@@ -15,6 +15,20 @@ bp = Blueprint('login', __name__, template_folder='templates', static_folder='st
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Página de login con autenticación real."""
+    
+    # Auto-redirección al Asistente de DB si no hay configuración o faltan tablas
+    from infra.infra import get_connection, get_db_config
+    if not get_db_config():
+        return redirect('/infra/db')
+        
+    try:
+        conn = get_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM usuarios LIMIT 1")
+    except Exception as e:
+        if "1146" in str(e) or "doesn't exist" in str(e).lower() or "ConnectionError" in str(type(e)):
+            return redirect('/infra/db')
+
     if request.method == 'POST':
         is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
         
